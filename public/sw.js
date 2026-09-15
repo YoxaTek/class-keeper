@@ -1,4 +1,4 @@
-const CACHE_NAME = "class-manager-shell-v1";
+const CACHE_NAME = "classkeeper-shell-v1";
 const APP_SHELL = ["/", "/manifest.json", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -35,7 +35,12 @@ self.addEventListener("fetch", (event) => {
         const cached = await cache.match(request);
         if (cached) return cached;
         const response = await fetch(request);
-        cache.put(request, response.clone());
+        // Clone immediately, synchronously, with no `await` in between —
+        // any gap here is a window for something else (devtools, an
+        // extension's content script) to consume the body first, which
+        // makes .clone() throw "Response body is already used".
+        const responseToCache = response.clone();
+        cache.put(request, responseToCache).catch(() => {});
         return response;
       })
     );
@@ -47,7 +52,14 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
+        const responseToCache = response.clone();
+        caches
+          .open(CACHE_NAME)
+          .then((cache) => cache.put(request, responseToCache))
+          .catch(() => {
+            // Best-effort offline caching — never let a caching failure
+            // surface as an error for what is otherwise a successful response.
+          });
         return response;
       })
       .catch(() => caches.match(request).then((cached) => cached ?? caches.match("/")))
