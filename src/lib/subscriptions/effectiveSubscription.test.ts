@@ -25,7 +25,15 @@ describe("getEffectiveSubscription", () => {
     expect(result).toBe(orgSub);
   });
 
-  it("returns null when the user belongs to an organization that has no subscription yet", () => {
+  it("falls back to the user's own subscription when their organization has none — an org membership with no org-level plan (e.g. just an institution name set at onboarding) must never erase a personal subscription", () => {
+    const personalSub = { tier: "PRO" as const, status: "ACTIVE" as const };
+    const result = getEffectiveSubscription(
+      user({ organizationId: "org1", organization: { subscription: null }, subscription: personalSub })
+    );
+    expect(result).toBe(personalSub);
+  });
+
+  it("returns null when neither the org nor the user has a subscription", () => {
     const result = getEffectiveSubscription(user({ organizationId: "org1", organization: { subscription: null } }));
     expect(result).toBeNull();
   });

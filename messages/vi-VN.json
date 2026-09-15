@@ -13,7 +13,14 @@
     "date": "Ngày",
     "yes": "Có",
     "no": "Không",
-    "signOut": "Đăng xuất"
+    "signOut": "Đăng xuất",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
+    "role": {
+      "TEACHER": "giáo viên",
+      "TA": "trợ giảng",
+      "STUDENT": "học viên"
+    }
   },
   "login": {
     "title": "Đăng nhập",
@@ -54,7 +61,9 @@
     "weightImpression": "Điểm ấn tượng",
     "midtermMaxScore": "Điểm tối đa giữa kỳ",
     "maxExcusedAbsences": "Số lần nghỉ phép tối đa",
-    "passingScore": "Điểm đạt"
+    "passingScore": "Điểm đạt",
+    "taPending": "Bạn chưa được phân công vào học kỳ nào — hãy xin liên kết mời từ giáo viên của bạn.",
+    "inviteCoTeacher": "Mời đồng giáo viên"
   },
   "roster": {
     "title": "Danh sách học viên",
@@ -62,7 +71,10 @@
     "bulkPastePlaceholder": "Mỗi dòng một tên học viên",
     "addStudents": "Thêm học viên",
     "capReached": "Học kỳ này đã đạt giới hạn tối đa 30 học viên.",
-    "removeStudent": "Xóa khỏi học kỳ"
+    "removeStudent": "Xóa khỏi học kỳ",
+    "invite": "Mời",
+    "inviteTA": "Mời trợ giảng",
+    "inviteTAEmail": "Email (không bắt buộc)"
   },
   "sessions": {
     "title": "Buổi học",
@@ -119,5 +131,27 @@
   },
   "language": {
     "label": "Ngôn ngữ"
+  },
+  "onboarding": {
+    "title": "Thiết lập tài khoản của bạn",
+    "bootstrapSubtitle": "Chỉ còn vài thông tin nữa trước khi bạn bắt đầu.",
+    "name": "Tên của bạn",
+    "institution": "Cơ sở giảng dạy",
+    "optional": "không bắt buộc",
+    "institutionPlaceholder": "vd: Trường THPT Lincoln",
+    "submit": "Tiếp tục",
+    "genericError": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "inviteBanner": "{name} đã mời bạn tham gia với vai trò {role}",
+    "inviteError": {
+      "not_found": "Liên kết mời này không hợp lệ.",
+      "expired": "Lời mời này đã hết hạn. Hãy yêu cầu một lời mời mới.",
+      "already_accepted": "Lời mời này đã được sử dụng.",
+      "email_mismatch": "Lời mời này được gửi đến một địa chỉ email khác. Hãy đăng nhập bằng email đó.",
+      "already_onboarded": "Tài khoản của bạn đã được thiết lập."
+    }
+  },
+  "invite": {
+    "title": "Bạn đã được mời",
+    "subtitle": "Đăng nhập bằng Google để chấp nhận lời mời này."
   }
 }

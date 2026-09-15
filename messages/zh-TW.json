@@ -13,7 +13,14 @@
     "date": "日期",
     "yes": "是",
     "no": "否",
-    "signOut": "登出"
+    "signOut": "登出",
+    "copy": "複製",
+    "copied": "已複製！",
+    "role": {
+      "TEACHER": "老師",
+      "TA": "助教",
+      "STUDENT": "學生"
+    }
   },
   "login": {
     "title": "登入",
@@ -54,7 +61,9 @@
     "weightImpression": "平時印象",
     "midtermMaxScore": "期中考滿分",
     "maxExcusedAbsences": "請假上限",
-    "passingScore": "及格分數"
+    "passingScore": "及格分數",
+    "taPending": "您尚未被指派至任何學期，請向老師索取邀請連結。",
+    "inviteCoTeacher": "邀請共同授課老師"
   },
   "roster": {
     "title": "學生名冊",
@@ -62,7 +71,10 @@
     "bulkPastePlaceholder": "每行輸入一位學生姓名",
     "addStudents": "新增學生",
     "capReached": "此學期已達 30 人上限。",
-    "removeStudent": "自學期移除"
+    "removeStudent": "自學期移除",
+    "invite": "邀請",
+    "inviteTA": "邀請助教",
+    "inviteTAEmail": "電子郵件（選填）"
   },
   "sessions": {
     "title": "課堂",
@@ -119,5 +131,27 @@
   },
   "language": {
     "label": "語言"
+  },
+  "onboarding": {
+    "title": "設定您的帳號",
+    "bootstrapSubtitle": "開始使用前，還需要填寫幾項資料。",
+    "name": "您的姓名",
+    "institution": "任職機構",
+    "optional": "選填",
+    "institutionPlaceholder": "例如：林肯高中",
+    "submit": "繼續",
+    "genericError": "發生錯誤，請再試一次。",
+    "inviteBanner": "{name} 邀請您以「{role}」身份加入",
+    "inviteError": {
+      "not_found": "此邀請連結無效。",
+      "expired": "此邀請已過期，請索取新的邀請連結。",
+      "already_accepted": "此邀請已被使用。",
+      "email_mismatch": "此邀請寄送給另一個電子郵件地址，請改用該信箱登入。",
+      "already_onboarded": "您的帳號已完成設定。"
+    }
+  },
+  "invite": {
+    "title": "您已收到邀請",
+    "subtitle": "請使用 Google 登入以接受此邀請。"
   }
 }

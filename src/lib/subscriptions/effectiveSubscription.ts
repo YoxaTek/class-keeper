@@ -17,12 +17,18 @@ export interface UserForSubscription<T extends SubscriptionLike = SubscriptionLi
  * instead of reading user.subscription / user.organization directly, so
  * solo teachers and org-covered teachers are gated identically.
  *
+ * A user can belong to an Organization purely as an "institution" profile
+ * detail (see /onboarding) with no org-level billing at all — that must
+ * never silently erase a personal subscription they already have, so the
+ * org's plan only takes priority when the org actually has one; otherwise
+ * this falls back to the user's own subscription.
+ *
  * Generic over T so callers that loaded the full Subscription row (e.g. to
  * read stripeCustomerId for the billing portal) get it back typed in full,
  * while gating code that only needs {tier, status} can use the plain shape.
  */
 export function getEffectiveSubscription<T extends SubscriptionLike>(user: UserForSubscription<T>): T | null {
-  if (user.organizationId) return user.organization?.subscription ?? null;
+  if (user.organizationId && user.organization?.subscription) return user.organization.subscription;
   return user.subscription;
 }
 

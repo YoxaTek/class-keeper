@@ -43,15 +43,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           role: user.role,
           locale: user.locale,
+          onboardingComplete: user.onboardingComplete,
+          organizationId: user.organizationId,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.role = user.role as Role;
         token.locale = user.locale as string | null;
+        token.onboardingComplete = user.onboardingComplete;
+        token.organizationId = user.organizationId;
+      } else if (trigger === "update" && token.sub) {
+        // Onboarding completion (or any later profile change) happens after
+        // the JWT was minted, so the client explicitly triggers a refresh
+        // via useSession().update() — re-read the current values from the DB.
+        const fresh = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { role: true, locale: true, onboardingComplete: true, organizationId: true },
+        });
+        if (fresh) {
+          token.role = fresh.role;
+          token.locale = fresh.locale;
+          token.onboardingComplete = fresh.onboardingComplete;
+          token.organizationId = fresh.organizationId;
+        }
       }
       return token;
     },
@@ -60,6 +78,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.sub as string;
         session.user.role = token.role as Role;
         session.user.locale = token.locale as string | null;
+        session.user.onboardingComplete = token.onboardingComplete as boolean;
+        session.user.organizationId = token.organizationId as string | null;
       }
       return session;
     },

@@ -13,7 +13,14 @@
     "date": "Petsa",
     "yes": "Oo",
     "no": "Hindi",
-    "signOut": "Mag-sign out"
+    "signOut": "Mag-sign out",
+    "copy": "Kopyahin",
+    "copied": "Nakopya!",
+    "role": {
+      "TEACHER": "guro",
+      "TA": "teaching assistant",
+      "STUDENT": "estudyante"
+    }
   },
   "login": {
     "title": "Mag-sign in",
@@ -54,7 +61,9 @@
     "weightImpression": "Impresyon",
     "midtermMaxScore": "Pinakamataas na Marka sa Midterm",
     "maxExcusedAbsences": "Pinakamataas na Pinapayagang Absent",
-    "passingScore": "Pasang Marka"
+    "passingScore": "Pasang Marka",
+    "taPending": "Wala ka pang na-assign na term — humingi ng invite link sa iyong guro.",
+    "inviteCoTeacher": "Mag-imbita ng kapwa guro"
   },
   "roster": {
     "title": "Listahan ng Estudyante",
@@ -62,7 +71,10 @@
     "bulkPastePlaceholder": "Isang pangalan ng estudyante bawat linya",
     "addStudents": "Magdagdag ng mga Estudyante",
     "capReached": "Umabot na ang term na ito sa pinakamataas na 30 estudyante.",
-    "removeStudent": "Tanggalin sa term"
+    "removeStudent": "Tanggalin sa term",
+    "invite": "Mag-imbita",
+    "inviteTA": "Mag-imbita ng TA",
+    "inviteTAEmail": "Email (opsyonal)"
   },
   "sessions": {
     "title": "Mga Sesyon",
@@ -119,5 +131,27 @@
   },
   "language": {
     "label": "Wika"
+  },
+  "onboarding": {
+    "title": "I-set up ang iyong account",
+    "bootstrapSubtitle": "Ilang detalye na lang bago ka magsimula.",
+    "name": "Iyong pangalan",
+    "institution": "Institusyon",
+    "optional": "opsyonal",
+    "institutionPlaceholder": "hal. Lincoln High School",
+    "submit": "Magpatuloy",
+    "genericError": "May nangyaring mali. Subukan muli.",
+    "inviteBanner": "Inanyayahan ka ni {name} na sumali bilang {role}",
+    "inviteError": {
+      "not_found": "Hindi valid ang invite link na ito.",
+      "expired": "Nag-expire na ang invite na ito. Humingi ng bago.",
+      "already_accepted": "Nagamit na ang invite na ito.",
+      "email_mismatch": "Ipinadala ang invite na ito sa ibang email address. Mag-sign in gamit ang email na iyon.",
+      "already_onboarded": "Naka-set up na ang iyong account."
+    }
+  },
+  "invite": {
+    "title": "Naimbitahan ka",
+    "subtitle": "Mag-sign in gamit ang Google para tanggapin ang invite na ito."
   }
 }

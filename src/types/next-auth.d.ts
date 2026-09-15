@@ -7,12 +7,16 @@ declare module "next-auth" {
       id: string;
       role: Role;
       locale: string | null;
+      onboardingComplete: boolean;
+      organizationId: string | null;
     } & DefaultSession["user"];
   }
 
   interface User {
     role: Role;
     locale: string | null;
+    onboardingComplete: boolean;
+    organizationId: string | null;
   }
 }
 
@@ -20,5 +24,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: Role;
     locale: string | null;
+    onboardingComplete: boolean;
+    organizationId: string | null;
   }
 }

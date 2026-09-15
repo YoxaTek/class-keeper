@@ -13,7 +13,14 @@
     "date": "Tanggal",
     "yes": "Ya",
     "no": "Tidak",
-    "signOut": "Keluar"
+    "signOut": "Keluar",
+    "copy": "Salin",
+    "copied": "Tersalin!",
+    "role": {
+      "TEACHER": "guru",
+      "TA": "asisten pengajar",
+      "STUDENT": "siswa"
+    }
   },
   "login": {
     "title": "Masuk",
@@ -54,7 +61,9 @@
     "weightImpression": "Kesan",
     "midtermMaxScore": "Nilai maksimum UTS",
     "maxExcusedAbsences": "Batas maksimum izin",
-    "passingScore": "Nilai kelulusan"
+    "passingScore": "Nilai kelulusan",
+    "taPending": "Anda belum ditugaskan ke semester mana pun — minta tautan undangan dari guru Anda.",
+    "inviteCoTeacher": "Undang rekan guru"
   },
   "roster": {
     "title": "Daftar siswa",
@@ -62,7 +71,10 @@
     "bulkPastePlaceholder": "Satu nama siswa per baris",
     "addStudents": "Tambah siswa",
     "capReached": "Semester ini sudah mencapai batas maksimum 30 siswa.",
-    "removeStudent": "Keluarkan dari semester"
+    "removeStudent": "Keluarkan dari semester",
+    "invite": "Undang",
+    "inviteTA": "Undang Asisten Pengajar",
+    "inviteTAEmail": "Email (opsional)"
   },
   "sessions": {
     "title": "Pertemuan",
@@ -119,5 +131,27 @@
   },
   "language": {
     "label": "Bahasa"
+  },
+  "onboarding": {
+    "title": "Siapkan akun Anda",
+    "bootstrapSubtitle": "Beberapa detail lagi sebelum Anda mulai.",
+    "name": "Nama Anda",
+    "institution": "Institusi",
+    "optional": "opsional",
+    "institutionPlaceholder": "mis. SMA Lincoln",
+    "submit": "Lanjutkan",
+    "genericError": "Terjadi kesalahan. Silakan coba lagi.",
+    "inviteBanner": "{name} mengundang Anda untuk bergabung sebagai {role}",
+    "inviteError": {
+      "not_found": "Tautan undangan ini tidak valid.",
+      "expired": "Undangan ini telah kedaluwarsa. Minta yang baru.",
+      "already_accepted": "Undangan ini sudah digunakan.",
+      "email_mismatch": "Undangan ini dikirim ke alamat email lain. Masuk dengan email tersebut.",
+      "already_onboarded": "Akun Anda sudah disiapkan."
+    }
+  },
+  "invite": {
+    "title": "Anda telah diundang",
+    "subtitle": "Masuk dengan Google untuk menerima undangan ini."
   }
 }

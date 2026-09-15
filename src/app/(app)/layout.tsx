@@ -8,6 +8,7 @@ import { SignOutButton } from "@/components/SignOutButton";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/login");
+  if (!session.user.onboardingComplete) redirect("/onboarding");
 
   const t = await getTranslations();
   const isStaff = session.user.role === "TEACHER" || session.user.role === "TA";

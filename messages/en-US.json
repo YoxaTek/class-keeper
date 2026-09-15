@@ -13,7 +13,14 @@
     "date": "Date",
     "yes": "Yes",
     "no": "No",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "role": {
+      "TEACHER": "teacher",
+      "TA": "teaching assistant",
+      "STUDENT": "student"
+    }
   },
   "login": {
     "title": "Sign in",
@@ -54,7 +61,9 @@
     "weightImpression": "Impression",
     "midtermMaxScore": "Midterm max score",
     "maxExcusedAbsences": "Max excused absences",
-    "passingScore": "Passing score"
+    "passingScore": "Passing score",
+    "taPending": "You haven't been assigned to any terms yet — ask your teacher for an invite link.",
+    "inviteCoTeacher": "Invite a co-teacher"
   },
   "roster": {
     "title": "Roster",
@@ -62,7 +71,10 @@
     "bulkPastePlaceholder": "One student name per line",
     "addStudents": "Add students",
     "capReached": "This term already has 30 students, the maximum allowed.",
-    "removeStudent": "Remove from term"
+    "removeStudent": "Remove from term",
+    "invite": "Invite",
+    "inviteTA": "Invite a TA",
+    "inviteTAEmail": "Email (optional)"
   },
   "sessions": {
     "title": "Sessions",
@@ -119,5 +131,27 @@
   },
   "language": {
     "label": "Language"
+  },
+  "onboarding": {
+    "title": "Set up your account",
+    "bootstrapSubtitle": "Just a couple of details before you get started.",
+    "name": "Your name",
+    "institution": "Institution",
+    "optional": "optional",
+    "institutionPlaceholder": "e.g. Lincoln High School",
+    "submit": "Continue",
+    "genericError": "Something went wrong. Please try again.",
+    "inviteBanner": "{name} invited you to join as a {role}",
+    "inviteError": {
+      "not_found": "This invite link isn't valid.",
+      "expired": "This invite has expired. Ask for a new one.",
+      "already_accepted": "This invite has already been used.",
+      "email_mismatch": "This invite was sent to a different email address. Sign in with that email instead.",
+      "already_onboarded": "Your account is already set up."
+    }
+  },
+  "invite": {
+    "title": "You've been invited",
+    "subtitle": "Sign in with Google to accept this invite."
   }
 }

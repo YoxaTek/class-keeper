@@ -4,13 +4,14 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TermCreateForm } from "./TermCreateForm";
+import { InviteCoTeacherForm } from "./InviteCoTeacherForm";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.role === "STUDENT") redirect("/me");
 
-  const { id: userId, role } = session.user;
+  const { id: userId, role, organizationId } = session.user;
 
   const [terms, subjects] = await Promise.all([
     prisma.term.findMany({
@@ -50,11 +51,14 @@ export default async function DashboardPage() {
           </li>
         ))}
         {terms.length === 0 && (
-          <li className="px-4 py-6 text-center text-sm text-black/60 dark:text-white/60">—</li>
+          <li className="px-4 py-6 text-center text-sm text-black/60 dark:text-white/60">
+            {role === "TA" ? t("taPending") : "—"}
+          </li>
         )}
       </ul>
 
       {role === "TEACHER" && <TermCreateForm subjects={subjects} />}
+      {role === "TEACHER" && organizationId && <InviteCoTeacherForm />}
     </div>
   );
 }

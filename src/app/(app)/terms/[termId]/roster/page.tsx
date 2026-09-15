@@ -3,10 +3,11 @@ import { requireTermAccess } from "@/lib/termAccess";
 import { prisma } from "@/lib/prisma";
 import { RosterTable } from "./RosterTable";
 import { BulkAddForm } from "./BulkAddForm";
+import { InviteTAForm } from "./InviteTAForm";
 
 export default async function RosterPage({ params }: { params: Promise<{ termId: string }> }) {
   const { termId } = await params;
-  await requireTermAccess(termId);
+  const { session } = await requireTermAccess(termId);
   const t = await getTranslations("roster");
 
   const enrollments = await prisma.enrollment.findMany({
@@ -23,6 +24,7 @@ export default async function RosterPage({ params }: { params: Promise<{ termId:
       ) : (
         <BulkAddForm termId={termId} remaining={30 - enrollments.length} />
       )}
+      {session.user.role === "TEACHER" && <InviteTAForm termId={termId} />}
     </div>
   );
 }
