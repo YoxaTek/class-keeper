@@ -21,3 +21,22 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
 
+/* Drawer panels slide in from the right over a fading backdrop. */
+@keyframes drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

@@ -60,6 +60,15 @@ export async function POST(request: Request) {
   }
   const data = body.data;
 
+  const startDate = new Date(data.startDate);
+  const endDate = new Date(data.endDate);
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return NextResponse.json({ error: "Invalid startDate or endDate" }, { status: 400 });
+  }
+  if (endDate < startDate) {
+    return NextResponse.json({ error: "End date must be on or after start date" }, { status: 400 });
+  }
+
   if (!data.subjectId && !data.newSubjectName) {
     return NextResponse.json({ error: "subjectId or newSubjectName is required" }, { status: 400 });
   }
@@ -80,8 +89,8 @@ export async function POST(request: Request) {
       name: data.name,
       subjectId,
       teacherId: session.user.id,
-      startDate: new Date(data.startDate),
-      endDate: new Date(data.endDate),
+      startDate,
+      endDate,
       maxExcusedAbsences: data.maxExcusedAbsences,
       midtermMaxScore: data.midtermMaxScore,
       passingScore: data.passingScore,

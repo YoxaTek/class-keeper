@@ -14,12 +14,16 @@ export function DateInput({
   required,
   className,
   id,
+  min,
+  max,
 }: {
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
   className?: string;
   id?: string;
+  min?: string;
+  max?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -34,6 +38,8 @@ export function DateInput({
         id={id}
         type="date"
         required={required}
+        min={min}
+        max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onClick={openPicker}
