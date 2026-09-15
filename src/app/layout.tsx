@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_TC } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { AuthSessionProvider } from "@/components/AuthSessionProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,7 +46,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         style={{ fontFamily: "var(--font-inter), var(--font-noto-sans-tc), -apple-system, sans-serif" }}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <AuthSessionProvider>{children}</AuthSessionProvider>
         </NextIntlClientProvider>
         <ServiceWorkerRegister />
       </body>

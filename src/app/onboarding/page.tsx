@@ -55,7 +55,14 @@ export default async function OnboardingPage({
 }) {
   const session = await auth();
   if (!session) redirect("/login");
-  if (session.user.onboardingComplete) redirect("/");
+
+  // Same reasoning as (app)/layout.tsx: the session cookie's
+  // onboardingComplete can be stale, so check the DB directly.
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: session.user.id },
+    select: { onboardingComplete: true },
+  });
+  if (user.onboardingComplete) redirect("/");
 
   const { invite: inviteToken } = await searchParams;
   const t = await getTranslations("onboarding");

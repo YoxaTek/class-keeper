@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SessionProvider, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import type { Role } from "@prisma/client";
 
@@ -12,7 +12,7 @@ interface InviteContext {
   context: string;
 }
 
-function OnboardingFormInner({
+export function OnboardingForm({
   initialName,
   inviteToken,
   invite,
@@ -47,7 +47,11 @@ function OnboardingFormInner({
     });
 
     if (res.ok) {
-      await update(); // refresh the JWT so (app)/layout.tsx sees onboardingComplete: true
+      // (app)/layout.tsx re-checks onboarding status straight from the DB,
+      // so this isn't required for the redirect to work — it just keeps
+      // role/locale/organizationId in the session cookie fresh so the rest
+      // of the app doesn't show stale values until the next sign-in.
+      await update().catch(() => {});
       router.push("/");
       router.refresh();
       return;
@@ -105,17 +109,5 @@ function OnboardingFormInner({
         {t("submit")}
       </button>
     </form>
-  );
-}
-
-export function OnboardingForm(props: {
-  initialName: string;
-  inviteToken?: string;
-  invite: InviteContext | null;
-}) {
-  return (
-    <SessionProvider>
-      <OnboardingFormInner {...props} />
-    </SessionProvider>
   );
 }

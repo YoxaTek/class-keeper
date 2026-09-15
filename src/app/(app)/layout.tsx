@@ -2,16 +2,29 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!session.user.onboardingComplete) redirect("/onboarding");
+
+  // Role/onboardingComplete live in the JWT session cookie, which is only
+  // re-minted on sign-in or an explicit client-side session update — it does
+  // NOT reflect a role change or onboarding completion that just happened
+  // moments ago in the same visit. Read the current values straight from
+  // the DB here rather than trusting the (possibly stale) cached session,
+  // so completing onboarding or accepting an invite never leaves someone
+  // stuck bouncing back to /onboarding.
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: session.user.id },
+    select: { role: true, onboardingComplete: true },
+  });
+  if (!user.onboardingComplete) redirect("/onboarding");
 
   const t = await getTranslations();
-  const isStaff = session.user.role === "TEACHER" || session.user.role === "TA";
+  const isStaff = user.role === "TEACHER" || user.role === "TA";
 
   return (
     <div className="flex min-h-screen flex-col">
