@@ -1,0 +1,114 @@
+{
+  "common": {
+    "appName": "ClassKeeper",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "add": "Tambah",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "back": "Kembali",
+    "loading": "Memuat…",
+    "actions": "Tindakan",
+    "name": "Nama",
+    "date": "Tanggal",
+    "yes": "Ya",
+    "no": "Tidak",
+    "signOut": "Keluar"
+  },
+  "login": {
+    "title": "Masuk",
+    "email": "Email",
+    "password": "Kata sandi",
+    "submit": "Masuk",
+    "error": "Email atau kata sandi salah."
+  },
+  "nav": {
+    "terms": "Semester",
+    "belowPassing": "Di bawah nilai kelulusan"
+  },
+  "dashboard": {
+    "title": "Semester",
+    "newTerm": "Semester baru",
+    "subject": "Mata pelajaran",
+    "term": "Semester",
+    "dates": "Tanggal",
+    "students": "Siswa",
+    "createTitle": "Buat semester baru",
+    "startDate": "Tanggal mulai",
+    "endDate": "Tanggal selesai",
+    "weights": "Bobot penilaian",
+    "weightAttendance": "Kehadiran",
+    "weightAssignment": "Tugas",
+    "weightQuiz": "Kuis",
+    "weightMidterm": "Ujian tengah semester",
+    "weightFinal": "Ujian akhir",
+    "weightImpression": "Kesan",
+    "midtermMaxScore": "Nilai maksimum UTS",
+    "maxExcusedAbsences": "Batas maksimum izin",
+    "passingScore": "Nilai kelulusan"
+  },
+  "roster": {
+    "title": "Daftar siswa",
+    "bulkPaste": "Tempel nama secara massal",
+    "bulkPastePlaceholder": "Satu nama siswa per baris",
+    "addStudents": "Tambah siswa",
+    "capReached": "Semester ini sudah mencapai batas maksimum 30 siswa.",
+    "removeStudent": "Keluarkan dari semester"
+  },
+  "sessions": {
+    "title": "Pertemuan",
+    "newSession": "Pertemuan baru",
+    "label": "Label",
+    "covers": "Mencakup",
+    "attendanceTurnout": "Kehadiran",
+    "scoreAverage": "Rata-rata nilai",
+    "attendance": "Kehadiran",
+    "quiz": "Kuis",
+    "assignment": "Tugas",
+    "midterm": "UTS",
+    "final": "Ujian akhir",
+    "editTitle": "Edit pertemuan",
+    "newTitle": "Pertemuan baru"
+  },
+  "grid": {
+    "title": "Tabel nilai",
+    "student": "Siswa",
+    "retake": "ulang"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Hadir",
+    "EXCUSED": "Izin",
+    "ABSENT": "Tidak hadir",
+    "NOT_ENROLLED": "Belum terdaftar",
+    "ABROAD": "Di luar negeri"
+  },
+  "studentDetail": {
+    "title": "Catatan siswa",
+    "grade": "Rincian nilai",
+    "total": "Total",
+    "passing": "Lulus",
+    "belowPassing": "Di bawah nilai kelulusan",
+    "evaluation": "Evaluasi",
+    "narrative": "Catatan",
+    "impressionScore": "Nilai kesan",
+    "attendanceHistory": "Riwayat kehadiran",
+    "scoreHistory": "Riwayat nilai"
+  },
+  "belowPassing": {
+    "title": "Di bawah nilai kelulusan",
+    "empty": "Saat ini tidak ada siswa di bawah nilai kelulusan."
+  },
+  "studentView": {
+    "title": "Nilai saya",
+    "attendancePct": "Kehadiran",
+    "evaluation": "Evaluasi guru",
+    "feedback": "Masukan akhir semester",
+    "feedbackPlaceholder": "Bagikan masukan Anda tentang semester ini…",
+    "feedbackSubmit": "Kirim masukan",
+    "feedbackSubmitted": "Masukan dikirim pada {date}. Terima kasih!",
+    "noEvaluationYet": "Belum ditulis."
+  },
+  "language": {
+    "label": "Bahasa"
+  }
+}

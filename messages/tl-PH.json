@@ -1,0 +1,114 @@
+{
+  "common": {
+    "appName": "ClassKeeper",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "add": "Magdagdag",
+    "edit": "I-edit",
+    "delete": "Tanggalin",
+    "back": "Bumalik",
+    "loading": "Naglo-load…",
+    "actions": "Mga Aksyon",
+    "name": "Pangalan",
+    "date": "Petsa",
+    "yes": "Oo",
+    "no": "Hindi",
+    "signOut": "Mag-sign out"
+  },
+  "login": {
+    "title": "Mag-sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Mag-sign in",
+    "error": "Maling email o password."
+  },
+  "nav": {
+    "terms": "Mga Term",
+    "belowPassing": "Nasa Ibaba ng Pasang Marka"
+  },
+  "dashboard": {
+    "title": "Mga Term",
+    "newTerm": "Bagong term",
+    "subject": "Asignatura",
+    "term": "Term",
+    "dates": "Mga Petsa",
+    "students": "Mga Estudyante",
+    "createTitle": "Gumawa ng bagong term",
+    "startDate": "Petsa ng simula",
+    "endDate": "Petsa ng pagtatapos",
+    "weights": "Timbang ng Grado",
+    "weightAttendance": "Pagdalo",
+    "weightAssignment": "Takdang-Aralin",
+    "weightQuiz": "Pagsusulit",
+    "weightMidterm": "Midterm",
+    "weightFinal": "Final na Pagsusulit",
+    "weightImpression": "Impresyon",
+    "midtermMaxScore": "Pinakamataas na Marka sa Midterm",
+    "maxExcusedAbsences": "Pinakamataas na Pinapayagang Absent",
+    "passingScore": "Pasang Marka"
+  },
+  "roster": {
+    "title": "Listahan ng Estudyante",
+    "bulkPaste": "I-paste nang sabay-sabay ang mga pangalan",
+    "bulkPastePlaceholder": "Isang pangalan ng estudyante bawat linya",
+    "addStudents": "Magdagdag ng mga Estudyante",
+    "capReached": "Umabot na ang term na ito sa pinakamataas na 30 estudyante.",
+    "removeStudent": "Tanggalin sa term"
+  },
+  "sessions": {
+    "title": "Mga Sesyon",
+    "newSession": "Bagong sesyon",
+    "label": "Label",
+    "covers": "Sinasaklaw",
+    "attendanceTurnout": "Pagdalo",
+    "scoreAverage": "Average na Marka",
+    "attendance": "Pagdalo",
+    "quiz": "Pagsusulit",
+    "assignment": "Takdang-Aralin",
+    "midterm": "Midterm",
+    "final": "Final na Pagsusulit",
+    "editTitle": "I-edit ang sesyon",
+    "newTitle": "Bagong sesyon"
+  },
+  "grid": {
+    "title": "Talahanayan ng Marka",
+    "student": "Estudyante",
+    "retake": "muling pagkuha"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Present",
+    "EXCUSED": "May Paumanhin",
+    "ABSENT": "Absent",
+    "NOT_ENROLLED": "Hindi pa Naka-enroll",
+    "ABROAD": "Nasa Ibang Bansa"
+  },
+  "studentDetail": {
+    "title": "Talaan ng Estudyante",
+    "grade": "Breakdown ng Grado",
+    "total": "Kabuuan",
+    "passing": "Pasado",
+    "belowPassing": "Nasa Ibaba ng Pasang Marka",
+    "evaluation": "Ebalwasyon",
+    "narrative": "Puna",
+    "impressionScore": "Marka ng Impresyon",
+    "attendanceHistory": "Kasaysayan ng Pagdalo",
+    "scoreHistory": "Kasaysayan ng Marka"
+  },
+  "belowPassing": {
+    "title": "Nasa Ibaba ng Pasang Marka",
+    "empty": "Walang estudyanteng nasa ibaba ng pasang marka sa ngayon."
+  },
+  "studentView": {
+    "title": "Aking mga Marka",
+    "attendancePct": "Pagdalo",
+    "evaluation": "Ebalwasyon ng Guro",
+    "feedback": "Feedback sa Katapusan ng Term",
+    "feedbackPlaceholder": "Ibahagi ang iyong feedback tungkol sa term na ito…",
+    "feedbackSubmit": "Isumite ang Feedback",
+    "feedbackSubmitted": "Naisumite ang feedback noong {date}. Salamat!",
+    "noEvaluationYet": "Wala pang isinusulat."
+  },
+  "language": {
+    "label": "Wika"
+  }
+}

@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { setLocale } from "@/lib/actions/setLocale";
-import { locales } from "@/i18n/config";
+import { locales, localeNativeNames } from "@/i18n/config";
 
 export function LanguageSwitcher() {
   const t = useTranslations("language");
@@ -30,7 +30,7 @@ export function LanguageSwitcher() {
       >
         {locales.map((l) => (
           <option key={l} value={l}>
-            {t(l)}
+            {localeNativeNames[l]}
           </option>
         ))}
       </select>

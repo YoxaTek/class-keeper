@@ -109,8 +109,6 @@
     "noEvaluationYet": "尚未填寫。"
   },
   "language": {
-    "label": "語言",
-    "en": "English",
-    "zh-TW": "繁體中文"
+    "label": "語言"
   }
 }

@@ -109,8 +109,6 @@
     "noEvaluationYet": "Not written yet."
   },
   "language": {
-    "label": "Language",
-    "en": "English",
-    "zh-TW": "繁體中文"
+    "label": "Language"
   }
 }

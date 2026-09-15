@@ -65,7 +65,7 @@ model User {
   email         String    @unique
   name          String?
   role          Role
-  locale        String? // "en" | "zh-TW", user's preferred UI language
+  locale        String? // "en-US" | "zh-TW" | "id-ID" | "tl-PH" | "vi-VN", user's preferred UI language
   passwordHash  String? // for Credentials login
   emailVerified DateTime? // for magic-link / adapter compatibility
   image         String?

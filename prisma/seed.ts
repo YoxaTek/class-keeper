@@ -13,7 +13,7 @@ async function main() {
       email: "teacher@example.com",
       name: "陳老師",
       role: "TEACHER",
-      locale: "en",
+      locale: "en-US",
       passwordHash,
     },
   });

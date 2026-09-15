@@ -1,0 +1,114 @@
+{
+  "common": {
+    "appName": "ClassKeeper",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "add": "Thêm",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "back": "Quay lại",
+    "loading": "Đang tải…",
+    "actions": "Hành động",
+    "name": "Tên",
+    "date": "Ngày",
+    "yes": "Có",
+    "no": "Không",
+    "signOut": "Đăng xuất"
+  },
+  "login": {
+    "title": "Đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "error": "Email hoặc mật khẩu không đúng."
+  },
+  "nav": {
+    "terms": "Học kỳ",
+    "belowPassing": "Dưới điểm đạt"
+  },
+  "dashboard": {
+    "title": "Học kỳ",
+    "newTerm": "Học kỳ mới",
+    "subject": "Môn học",
+    "term": "Học kỳ",
+    "dates": "Ngày",
+    "students": "Học viên",
+    "createTitle": "Tạo học kỳ mới",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "weights": "Trọng số điểm",
+    "weightAttendance": "Điểm danh",
+    "weightAssignment": "Bài tập",
+    "weightQuiz": "Kiểm tra nhỏ",
+    "weightMidterm": "Giữa kỳ",
+    "weightFinal": "Thi cuối kỳ",
+    "weightImpression": "Điểm ấn tượng",
+    "midtermMaxScore": "Điểm tối đa giữa kỳ",
+    "maxExcusedAbsences": "Số lần nghỉ phép tối đa",
+    "passingScore": "Điểm đạt"
+  },
+  "roster": {
+    "title": "Danh sách học viên",
+    "bulkPaste": "Dán tên hàng loạt",
+    "bulkPastePlaceholder": "Mỗi dòng một tên học viên",
+    "addStudents": "Thêm học viên",
+    "capReached": "Học kỳ này đã đạt giới hạn tối đa 30 học viên.",
+    "removeStudent": "Xóa khỏi học kỳ"
+  },
+  "sessions": {
+    "title": "Buổi học",
+    "newSession": "Buổi học mới",
+    "label": "Nhãn",
+    "covers": "Nội dung",
+    "attendanceTurnout": "Điểm danh",
+    "scoreAverage": "Điểm trung bình",
+    "attendance": "Điểm danh",
+    "quiz": "Kiểm tra nhỏ",
+    "assignment": "Bài tập",
+    "midterm": "Giữa kỳ",
+    "final": "Thi cuối kỳ",
+    "editTitle": "Sửa buổi học",
+    "newTitle": "Buổi học mới"
+  },
+  "grid": {
+    "title": "Bảng điểm",
+    "student": "Học viên",
+    "retake": "thi lại"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Có mặt",
+    "EXCUSED": "Nghỉ phép",
+    "ABSENT": "Vắng mặt",
+    "NOT_ENROLLED": "Chưa ghi danh",
+    "ABROAD": "Về nước"
+  },
+  "studentDetail": {
+    "title": "Hồ sơ học viên",
+    "grade": "Chi tiết điểm",
+    "total": "Tổng điểm",
+    "passing": "Đạt",
+    "belowPassing": "Dưới điểm đạt",
+    "evaluation": "Nhận xét",
+    "narrative": "Nội dung nhận xét",
+    "impressionScore": "Điểm ấn tượng",
+    "attendanceHistory": "Lịch sử điểm danh",
+    "scoreHistory": "Lịch sử điểm"
+  },
+  "belowPassing": {
+    "title": "Dưới điểm đạt",
+    "empty": "Hiện không có học viên nào dưới điểm đạt."
+  },
+  "studentView": {
+    "title": "Điểm của tôi",
+    "attendancePct": "Điểm danh",
+    "evaluation": "Nhận xét của giáo viên",
+    "feedback": "Phản hồi cuối kỳ",
+    "feedbackPlaceholder": "Chia sẻ phản hồi của bạn về học kỳ này…",
+    "feedbackSubmit": "Gửi phản hồi",
+    "feedbackSubmitted": "Đã gửi phản hồi vào {date}. Cảm ơn bạn!",
+    "noEvaluationYet": "Chưa được viết."
+  },
+  "language": {
+    "label": "Ngôn ngữ"
+  }
+}
