@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
@@ -10,7 +9,6 @@ import type { AuthProviderId } from "@/lib/authProviders";
 
 export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
   const t = useTranslations("login");
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -28,8 +26,10 @@ export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
       setError(true);
       return;
     }
-    router.push("/");
-    router.refresh();
+    // Hard navigation: router.push()+refresh() back-to-back can race (see
+    // SessionForm for the full explanation) — a full reload guarantees the
+    // dashboard renders with the fresh session.
+    window.location.href = "/";
   }
 
   return (

@@ -68,7 +68,12 @@
     "maxExcusedAbsences": "Batas maksimum izin",
     "passingScore": "Nilai kelulusan",
     "taPending": "Anda belum ditugaskan ke semester mana pun — minta tautan undangan dari guru Anda.",
-    "inviteCoTeacher": "Undang rekan guru"
+    "inviteCoTeacher": "Undang rekan guru",
+    "deleteTerm": "Hapus semester",
+    "deleteTermConfirm": "Hapus {term}? Ini akan menghapus daftar siswa, pertemuan, kehadiran, dan nilai secara permanen. Tindakan ini tidak dapat dibatalkan.",
+    "deleteTermError": "Gagal menghapus semester. Silakan coba lagi.",
+    "addStudentsWhileCreating": "Tambah siswa",
+    "addStudentsPlaceholder": "Satu nama siswa per baris (opsional — Anda juga bisa menambahkannya nanti dari tab Daftar siswa)"
   },
   "roster": {
     "title": "Daftar siswa",

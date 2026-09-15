@@ -68,7 +68,12 @@
     "maxExcusedAbsences": "Số lần nghỉ phép tối đa",
     "passingScore": "Điểm đạt",
     "taPending": "Bạn chưa được phân công vào học kỳ nào — hãy xin liên kết mời từ giáo viên của bạn.",
-    "inviteCoTeacher": "Mời đồng giáo viên"
+    "inviteCoTeacher": "Mời đồng giáo viên",
+    "deleteTerm": "Xóa học kỳ",
+    "deleteTermConfirm": "Xóa {term}? Thao tác này sẽ xóa vĩnh viễn danh sách học viên, buổi học, điểm danh và điểm số của học kỳ này. Không thể hoàn tác.",
+    "deleteTermError": "Không thể xóa học kỳ. Vui lòng thử lại.",
+    "addStudentsWhileCreating": "Thêm học viên",
+    "addStudentsPlaceholder": "Mỗi dòng một tên học viên (không bắt buộc — bạn cũng có thể thêm sau ở tab Danh sách học viên)"
   },
   "roster": {
     "title": "Danh sách học viên",

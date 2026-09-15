@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import type { Role } from "@prisma/client";
@@ -23,7 +22,6 @@ export function OnboardingForm({
 }) {
   const t = useTranslations("onboarding");
   const tRole = useTranslations("common.role");
-  const router = useRouter();
   const { update } = useSession();
 
   const [name, setName] = useState(initialName);
@@ -48,12 +46,14 @@ export function OnboardingForm({
 
     if (res.ok) {
       // (app)/layout.tsx re-checks onboarding status straight from the DB,
-      // so this isn't required for the redirect to work — it just keeps
+      // so update() isn't required for the redirect itself — it keeps
       // role/locale/organizationId in the session cookie fresh so the rest
-      // of the app doesn't show stale values until the next sign-in.
+      // of the app doesn't show stale values until the next sign-in. The
+      // hard navigation (not router.push()+refresh()) avoids a race where
+      // the two calls back-to-back can end up refreshing the page we're
+      // leaving instead of the one we're going to.
       await update().catch(() => {});
-      router.push("/");
-      router.refresh();
+      window.location.href = "/";
       return;
     }
 

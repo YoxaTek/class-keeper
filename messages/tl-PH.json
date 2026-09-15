@@ -68,7 +68,12 @@
     "maxExcusedAbsences": "Pinakamataas na Pinapayagang Absent",
     "passingScore": "Pasang Marka",
     "taPending": "Wala ka pang na-assign na term — humingi ng invite link sa iyong guro.",
-    "inviteCoTeacher": "Mag-imbita ng kapwa guro"
+    "inviteCoTeacher": "Mag-imbita ng kapwa guro",
+    "deleteTerm": "Tanggalin ang term",
+    "deleteTermConfirm": "Tanggalin ang {term}? Permanenteng matatanggal ang listahan ng estudyante, mga sesyon, pagdalo, at mga marka nito. Hindi ito maaaring bawiin.",
+    "deleteTermError": "Hindi matanggal ang term. Subukan muli.",
+    "addStudentsWhileCreating": "Magdagdag ng mga estudyante",
+    "addStudentsPlaceholder": "Isang pangalan ng estudyante bawat linya (opsyonal — maaari mo ring idagdag mamaya sa tab na Listahan ng Estudyante)"
   },
   "roster": {
     "title": "Listahan ng Estudyante",

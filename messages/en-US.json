@@ -68,7 +68,12 @@
     "maxExcusedAbsences": "Max excused absences",
     "passingScore": "Passing score",
     "taPending": "You haven't been assigned to any terms yet — ask your teacher for an invite link.",
-    "inviteCoTeacher": "Invite a co-teacher"
+    "inviteCoTeacher": "Invite a co-teacher",
+    "deleteTerm": "Delete term",
+    "deleteTermConfirm": "Delete {term}? This permanently removes its roster, sessions, attendance, and grades. This cannot be undone.",
+    "deleteTermError": "Could not delete the term. Please try again.",
+    "addStudentsWhileCreating": "Add students",
+    "addStudentsPlaceholder": "One student name per line (optional — you can also add students later from the Roster tab)"
   },
   "roster": {
     "title": "Roster",

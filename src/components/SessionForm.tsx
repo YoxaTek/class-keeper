@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 export interface SessionFormValues {
@@ -32,7 +31,6 @@ export function SessionForm({
   initial?: SessionFormValues;
 }) {
   const t = useTranslations();
-  const router = useRouter();
   const [values, setValues] = useState<SessionFormValues>(
     initial ?? {
       date: "",
@@ -63,8 +61,13 @@ export function SessionForm({
 
     setSubmitting(false);
     if (res.ok) {
-      router.push(`/terms/${termId}`);
-      router.refresh();
+      // A hard navigation, not router.push()+refresh(): the two called
+      // back-to-back can race (push's transition may still be pending when
+      // refresh fires, refreshing the page we're leaving instead of the one
+      // we're going to), which can land on the sessions list before it's
+      // picked up the just-created session. A full reload always renders
+      // the fresh server state.
+      window.location.href = `/terms/${termId}`;
     }
   }
 
@@ -72,8 +75,7 @@ export function SessionForm({
     if (!sessionId) return;
     if (!confirm(t("common.delete") + "?")) return;
     await fetch(`/api/terms/${termId}/sessions/${sessionId}`, { method: "DELETE" });
-    router.push(`/terms/${termId}`);
-    router.refresh();
+    window.location.href = `/terms/${termId}`;
   }
 
   return (

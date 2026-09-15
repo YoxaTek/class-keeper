@@ -68,7 +68,12 @@
     "maxExcusedAbsences": "請假上限",
     "passingScore": "及格分數",
     "taPending": "您尚未被指派至任何學期，請向老師索取邀請連結。",
-    "inviteCoTeacher": "邀請共同授課老師"
+    "inviteCoTeacher": "邀請共同授課老師",
+    "deleteTerm": "刪除學期",
+    "deleteTermConfirm": "確定要刪除「{term}」嗎？這將永久移除其名冊、課堂、出席與成績紀錄，且無法復原。",
+    "deleteTermError": "無法刪除學期，請再試一次。",
+    "addStudentsWhileCreating": "新增學生",
+    "addStudentsPlaceholder": "每行輸入一位學生姓名（選填，之後也可以在「學生名冊」頁籤新增）"
   },
   "roster": {
     "title": "學生名冊",

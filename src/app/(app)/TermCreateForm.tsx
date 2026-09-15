@@ -28,6 +28,8 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
   const [midtermMaxScore, setMidtermMaxScore] = useState(100);
   const [maxExcusedAbsences, setMaxExcusedAbsences] = useState(3);
   const [passingScore, setPassingScore] = useState(70);
+  const [studentNames, setStudentNames] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   function updateWeight(key: keyof typeof weights, value: number) {
     setWeights((w) => ({ ...w, [key]: value }));
@@ -36,6 +38,7 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
 
     const res = await fetch("/api/terms", {
       method: "POST",
@@ -52,10 +55,41 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
       }),
     });
 
+    if (!res.ok) {
+      setSubmitting(false);
+      const body = await res.json().catch(() => null);
+      setError(typeof body?.error === "string" ? body.error : "Could not create the term.");
+      return;
+    }
+
+    const term = await res.json();
+    const names = studentNames
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    let studentsError: string | null = null;
+    if (names.length > 0) {
+      const studentsRes = await fetch(`/api/terms/${term.id}/students`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ names }),
+      });
+      if (!studentsRes.ok) {
+        const body = await studentsRes.json().catch(() => null);
+        // The term itself was created successfully — surface the roster
+        // issue but don't roll back or block; they can add students from
+        // the Roster tab instead.
+        studentsError = typeof body?.error === "string" ? body.error : "Term created, but couldn't add students.";
+      }
+    }
+
     setSubmitting(false);
-    if (res.ok) {
+    router.refresh();
+    if (studentsError) {
+      setError(studentsError);
+    } else {
       setOpen(false);
-      router.refresh();
     }
   }
 
@@ -177,6 +211,19 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
           ))}
         </div>
       </fieldset>
+
+      <div className="space-y-1">
+        <label className="block text-sm">{t("addStudentsWhileCreating")}</label>
+        <textarea
+          value={studentNames}
+          onChange={(e) => setStudentNames(e.target.value)}
+          placeholder={t("addStudentsPlaceholder")}
+          rows={4}
+          className="w-full rounded border border-black/10 px-2 py-1 font-mono text-sm dark:border-white/20"
+        />
+      </div>
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       <div className="flex gap-2">
         <button
