@@ -20,7 +20,16 @@
     "email": "Email",
     "password": "Kata sandi",
     "submit": "Masuk",
-    "error": "Email atau kata sandi salah."
+    "error": "Email atau kata sandi salah.",
+    "continueWithGoogle": "Lanjutkan dengan Google",
+    "or": "atau",
+    "noAccount": "Belum punya akun?",
+    "createOne": "Buat akun"
+  },
+  "signup": {
+    "title": "Buat akun Anda",
+    "subtitle": "Daftar untuk mulai mengelola kelas Anda.",
+    "haveAccount": "Sudah punya akun?"
   },
   "nav": {
     "terms": "Semester",

@@ -13,7 +13,4 @@ loadEnv({ path: path.join(__dirname, ".env.local"), quiet: true });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
-  migrations: {
-    seed: "tsx prisma/seed.ts",
-  },
 });

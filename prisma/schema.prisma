@@ -77,7 +77,7 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String?
-  role          Role
+  role          Role      @default(TEACHER) // the Google sign-up flow creates users via the adapter with no role of its own — TA/student accounts are provisioned by a teacher, never self-service
   locale        String? // "en-US" | "zh-TW" | "id-ID" | "tl-PH" | "vi-VN", user's preferred UI language
   passwordHash  String? // for Credentials login
   emailVerified DateTime? // for magic-link / adapter compatibility

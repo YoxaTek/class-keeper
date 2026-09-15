@@ -20,7 +20,16 @@
     "email": "電子郵件",
     "password": "密碼",
     "submit": "登入",
-    "error": "電子郵件或密碼錯誤。"
+    "error": "電子郵件或密碼錯誤。",
+    "continueWithGoogle": "使用 Google 繼續",
+    "or": "或",
+    "noAccount": "還沒有帳號？",
+    "createOne": "建立帳號"
+  },
+  "signup": {
+    "title": "建立帳號",
+    "subtitle": "註冊以開始管理您的班級。",
+    "haveAccount": "已經有帳號了嗎？"
   },
   "nav": {
     "terms": "學期",

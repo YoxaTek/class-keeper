@@ -20,7 +20,16 @@
     "email": "Email",
     "password": "Password",
     "submit": "Sign in",
-    "error": "Incorrect email or password."
+    "error": "Incorrect email or password.",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "createOne": "Create one"
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "Sign up to start managing your classes.",
+    "haveAccount": "Already have an account?"
   },
   "nav": {
     "terms": "Terms",

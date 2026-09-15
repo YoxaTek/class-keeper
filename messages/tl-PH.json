@@ -20,7 +20,16 @@
     "email": "Email",
     "password": "Password",
     "submit": "Mag-sign in",
-    "error": "Maling email o password."
+    "error": "Maling email o password.",
+    "continueWithGoogle": "Magpatuloy gamit ang Google",
+    "or": "o",
+    "noAccount": "Wala ka pang account?",
+    "createOne": "Gumawa ng account"
+  },
+  "signup": {
+    "title": "Gumawa ng iyong account",
+    "subtitle": "Mag-sign up para simulan ang pamamahala ng iyong mga klase.",
+    "haveAccount": "May account ka na ba?"
   },
   "nav": {
     "terms": "Mga Term",
