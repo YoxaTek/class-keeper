@@ -1,0 +1,116 @@
+{
+  "common": {
+    "appName": "ClassKeeper",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "loading": "Loading…",
+    "actions": "Actions",
+    "name": "Name",
+    "date": "Date",
+    "yes": "Yes",
+    "no": "No",
+    "signOut": "Sign out"
+  },
+  "login": {
+    "title": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "error": "Incorrect email or password."
+  },
+  "nav": {
+    "terms": "Terms",
+    "belowPassing": "Below passing"
+  },
+  "dashboard": {
+    "title": "Terms",
+    "newTerm": "New term",
+    "subject": "Subject",
+    "term": "Term",
+    "dates": "Dates",
+    "students": "Students",
+    "createTitle": "Create a new term",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "weights": "Grading weights",
+    "weightAttendance": "Attendance",
+    "weightAssignment": "Assignment",
+    "weightQuiz": "Quiz",
+    "weightMidterm": "Midterm",
+    "weightFinal": "Final exam",
+    "weightImpression": "Impression",
+    "midtermMaxScore": "Midterm max score",
+    "maxExcusedAbsences": "Max excused absences",
+    "passingScore": "Passing score"
+  },
+  "roster": {
+    "title": "Roster",
+    "bulkPaste": "Bulk-paste names",
+    "bulkPastePlaceholder": "One student name per line",
+    "addStudents": "Add students",
+    "capReached": "This term already has 30 students, the maximum allowed.",
+    "removeStudent": "Remove from term"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "newSession": "New session",
+    "label": "Label",
+    "covers": "Covers",
+    "attendanceTurnout": "Attendance",
+    "scoreAverage": "Score avg.",
+    "attendance": "Attendance",
+    "quiz": "Quiz",
+    "assignment": "Assignment",
+    "midterm": "Midterm",
+    "final": "Final exam",
+    "editTitle": "Edit session",
+    "newTitle": "New session"
+  },
+  "grid": {
+    "title": "Session grid",
+    "student": "Student",
+    "retake": "retake"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Present",
+    "EXCUSED": "Excused",
+    "ABSENT": "Absent",
+    "NOT_ENROLLED": "Not enrolled",
+    "ABROAD": "Abroad"
+  },
+  "studentDetail": {
+    "title": "Student record",
+    "grade": "Grade breakdown",
+    "total": "Total",
+    "passing": "Passing",
+    "belowPassing": "Below passing",
+    "evaluation": "Evaluation",
+    "narrative": "Narrative",
+    "impressionScore": "Impression score",
+    "attendanceHistory": "Attendance history",
+    "scoreHistory": "Scores"
+  },
+  "belowPassing": {
+    "title": "Below passing",
+    "empty": "No students currently below the passing threshold."
+  },
+  "studentView": {
+    "title": "My grades",
+    "attendancePct": "Attendance",
+    "evaluation": "Teacher's evaluation",
+    "feedback": "End-of-term feedback",
+    "feedbackPlaceholder": "Share your feedback about this term…",
+    "feedbackSubmit": "Submit feedback",
+    "feedbackSubmitted": "Feedback submitted on {date}. Thank you!",
+    "noEvaluationYet": "Not written yet."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "zh-TW": "繁體中文"
+  }
+}

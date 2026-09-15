@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TEACHER
+  TA
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  EXCUSED // 請假 — pre-approved leave
+  ABSENT // unexcused
+  NOT_ENROLLED // hadn't joined the term yet on this date
+  ABROAD // 回國 — returned to home country, excluded like NOT_ENROLLED
+}
+
+enum ScoreCategory {
+  QUIZ
+  ASSIGNMENT
+  MIDTERM_READING
+  MIDTERM_LISTENING
+  FINAL // dedicated final-exam score; ignored when Term.finalExamSessionId overrides it
+}
+
+// --- NextAuth (Auth.js) models ---
+// Session strategy is JWT (see src/lib/auth.ts), so NextAuth's own
+// "Session" table is never used — the Session model below is the
+// domain concept (one class meeting), not an auth session.
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          Role
+  locale        String? // "en" | "zh-TW", user's preferred UI language
+  passwordHash  String? // for Credentials login
+  emailVerified DateTime? // for magic-link / adapter compatibility
+  image         String?
+  accounts      Account[]
+  student       Student? // if role = STUDENT, link to their profile
+  termsTaught   Term[]   @relation("TeacherTerms")
+  taAssignments TermAssistant[]
+}
+
+model Subject {
+  id    String @id @default(cuid())
+  name  String // e.g. "Chinese — Basic", "Chinese — Intermediate"
+  terms Term[]
+}
+
+model Term {
+  id                 String   @id @default(cuid())
+  name               String // e.g. "114-2"
+  subjectId          String
+  subject            Subject  @relation(fields: [subjectId], references: [id])
+  teacherId          String
+  teacher            User     @relation("TeacherTerms", fields: [teacherId], references: [id])
+  startDate          DateTime
+  endDate            DateTime
+  maxExcusedAbsences Int      @default(3) // beyond this, EXCUSED counts as ABSENT
+  midtermMaxScore    Int      @default(100) // 100 for Basic, 200 for Intermediate (divide by 2)
+  passingScore       Float    @default(70) // grade threshold for the below-passing report
+  weightAttendance   Float    @default(15)
+  weightAssignment   Float    @default(15)
+  weightQuiz         Float    @default(30)
+  weightMidterm      Float    @default(15)
+  weightFinal        Float    @default(15)
+  weightImpression    Float    @default(10)
+  finalExamSessionId String? // optional override: which session's score counts as the final exam
+
+  assistants  TermAssistant[]
+  enrollments Enrollment[]
+  sessions    Session[]
+}
+
+model TermAssistant {
+  id     String @id @default(cuid())
+  termId String
+  term   Term   @relation(fields: [termId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([termId, userId])
+}
+
+model Student {
+  id          String       @id @default(cuid())
+  name        String
+  userId      String?      @unique
+  user        User?        @relation(fields: [userId], references: [id])
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  termId    String
+  term      Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime @default(now()) // sessions before this date are NOT_ENROLLED for this student
+
+  attendance Attendance[]
+  scores     ScoreRecord[]
+  evaluation Evaluation?
+  feedback   Feedback?
+
+  @@unique([termId, studentId])
+  // Max 30 enrollments per term is enforced by a DB trigger, see migration
+  // 20260101000000_enrollment_cap_trigger — Prisma's schema DSL has no way
+  // to express a per-group row-count constraint directly.
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  termId        String
+  term          Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
+  date          DateTime
+  label         String? // e.g. "L1 生詞"
+  hasAttendance Boolean  @default(false)
+  hasQuiz       Boolean  @default(false)
+  hasAssignment Boolean  @default(false)
+  hasMidterm    Boolean  @default(false)
+  hasFinal      Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Term.finalExamSessionId is set
+
+  attendance Attendance[]
+  scores     ScoreRecord[]
+}
+
+model Attendance {
+  id           String            @id @default(cuid())
+  sessionId    String
+  session      Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  enrollmentId String
+  enrollment   Enrollment        @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  status       AttendanceStatus
+
+  @@unique([sessionId, enrollmentId])
+}
+
+model ScoreRecord {
+  id            String        @id @default(cuid())
+  sessionId     String
+  session       Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  enrollmentId  String
+  enrollment    Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  category      ScoreCategory
+  originalScore Float? // null = missed / not yet entered
+  retakeScore   Float? // 補考 — if present, use this instead of originalScore
+  note          String?
+
+  @@unique([sessionId, enrollmentId, category])
+}
+
+model Evaluation {
+  id              String     @id @default(cuid())
+  enrollmentId    String     @unique
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  narrative       String? // teacher's written evaluation, shown as-written, never auto-translated
+  impressionScore Float? // out of the term's weightImpression (default 10)
+}
+
+model Feedback {
+  id           String     @id @default(cuid())
+  enrollmentId String     @unique // unique enforces one feedback per student per term
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  comment      String
+  submittedAt  DateTime   @default(now())
+}

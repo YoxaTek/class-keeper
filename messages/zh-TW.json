@@ -1,0 +1,116 @@
+{
+  "common": {
+    "appName": "班級管家",
+    "save": "儲存",
+    "cancel": "取消",
+    "add": "新增",
+    "edit": "編輯",
+    "delete": "刪除",
+    "back": "返回",
+    "loading": "載入中…",
+    "actions": "操作",
+    "name": "姓名",
+    "date": "日期",
+    "yes": "是",
+    "no": "否",
+    "signOut": "登出"
+  },
+  "login": {
+    "title": "登入",
+    "email": "電子郵件",
+    "password": "密碼",
+    "submit": "登入",
+    "error": "電子郵件或密碼錯誤。"
+  },
+  "nav": {
+    "terms": "學期",
+    "belowPassing": "未達及格"
+  },
+  "dashboard": {
+    "title": "學期",
+    "newTerm": "新增學期",
+    "subject": "科目",
+    "term": "學期",
+    "dates": "日期",
+    "students": "學生人數",
+    "createTitle": "建立新學期",
+    "startDate": "開始日期",
+    "endDate": "結束日期",
+    "weights": "評分權重",
+    "weightAttendance": "出席",
+    "weightAssignment": "作業",
+    "weightQuiz": "小考",
+    "weightMidterm": "期中考",
+    "weightFinal": "期末考",
+    "weightImpression": "平時印象",
+    "midtermMaxScore": "期中考滿分",
+    "maxExcusedAbsences": "請假上限",
+    "passingScore": "及格分數"
+  },
+  "roster": {
+    "title": "學生名冊",
+    "bulkPaste": "批次貼上姓名",
+    "bulkPastePlaceholder": "每行輸入一位學生姓名",
+    "addStudents": "新增學生",
+    "capReached": "此學期已達 30 人上限。",
+    "removeStudent": "自學期移除"
+  },
+  "sessions": {
+    "title": "課堂",
+    "newSession": "新增課堂",
+    "label": "課堂名稱",
+    "covers": "內容",
+    "attendanceTurnout": "出席率",
+    "scoreAverage": "平均分數",
+    "attendance": "出席",
+    "quiz": "小考",
+    "assignment": "作業",
+    "midterm": "期中考",
+    "final": "期末考",
+    "editTitle": "編輯課堂",
+    "newTitle": "新增課堂"
+  },
+  "grid": {
+    "title": "成績總表",
+    "student": "學生",
+    "retake": "補考"
+  },
+  "attendanceStatus": {
+    "PRESENT": "出席",
+    "EXCUSED": "請假",
+    "ABSENT": "缺席",
+    "NOT_ENROLLED": "尚未加入",
+    "ABROAD": "回國"
+  },
+  "studentDetail": {
+    "title": "學生紀錄",
+    "grade": "成績明細",
+    "total": "總分",
+    "passing": "及格",
+    "belowPassing": "未達及格",
+    "evaluation": "評語",
+    "narrative": "評語內容",
+    "impressionScore": "平時印象分數",
+    "attendanceHistory": "出席紀錄",
+    "scoreHistory": "成績紀錄"
+  },
+  "belowPassing": {
+    "title": "未達及格",
+    "empty": "目前沒有學生低於及格分數。"
+  },
+  "studentView": {
+    "title": "我的成績",
+    "attendancePct": "出席率",
+    "evaluation": "老師評語",
+    "feedback": "期末回饋",
+    "feedbackPlaceholder": "請分享您對本學期的回饋…",
+    "feedbackSubmit": "送出回饋",
+    "feedbackSubmitted": "已於 {date} 送出回饋，謝謝！",
+    "noEvaluationYet": "尚未填寫。"
+  },
+  "language": {
+    "label": "語言",
+    "en": "English",
+    "zh-TW": "繁體中文"
+  }
+}
