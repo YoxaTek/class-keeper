@@ -28,7 +28,12 @@
     "password": "Kata sandi",
     "submit": "Masuk",
     "error": "Email atau kata sandi salah.",
-    "continueWithGoogle": "Lanjutkan dengan Google",
+    "continueWith": {
+      "google": "Lanjutkan dengan Google",
+      "facebook": "Lanjutkan dengan Facebook",
+      "line": "Lanjutkan dengan LINE"
+    },
+    "noProvidersConfigured": "Belum ada metode masuk yang dikonfigurasi.",
     "or": "atau",
     "noAccount": "Belum punya akun?",
     "createOne": "Buat akun"

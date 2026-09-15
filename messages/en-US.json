@@ -28,7 +28,12 @@
     "password": "Password",
     "submit": "Sign in",
     "error": "Incorrect email or password.",
-    "continueWithGoogle": "Continue with Google",
+    "continueWith": {
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook",
+      "line": "Continue with LINE"
+    },
+    "noProvidersConfigured": "No sign-in method is configured yet.",
     "or": "or",
     "noAccount": "Don't have an account?",
     "createOne": "Create one"

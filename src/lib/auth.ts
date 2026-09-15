@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import Facebook, { type FacebookProfile } from "next-auth/providers/facebook";
+import Line, { type LineProfile } from "next-auth/providers/line";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
@@ -17,6 +19,49 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    Facebook({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      // A small fraction of Facebook accounts (phone-only signup) have no
+      // email on file — User.email is required, so synthesize a stable
+      // fallback rather than let account creation fail outright. The
+      // role/locale/onboardingComplete/organizationId fields only matter for
+      // first-time account creation (an existing user's real DB row is what
+      // gets used on every later sign-in) — they mirror the schema's own
+      // defaults, just made explicit to satisfy the augmented User type.
+      profile(profile: FacebookProfile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email ?? `facebook-${profile.id}@users.noreply.classkeeper`,
+          image: profile.picture?.data?.url,
+          role: "TEACHER" as const,
+          locale: null,
+          onboardingComplete: false,
+          organizationId: null,
+        };
+      },
+    }),
+    Line({
+      clientId: process.env.LINE_CLIENT_ID,
+      clientSecret: process.env.LINE_CLIENT_SECRET,
+      // LINE only returns an email once the channel has separately applied
+      // for and been granted "Email address permission" in the LINE
+      // Developers console — until then (or if the user declines it),
+      // there's no email at all. Same fallback as Facebook above.
+      profile(profile: LineProfile & { email?: string }) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email ?? `line-${profile.sub}@users.noreply.classkeeper`,
+          image: profile.picture,
+          role: "TEACHER" as const,
+          locale: null,
+          onboardingComplete: false,
+          organizationId: null,
+        };
+      },
     }),
     Credentials({
       name: "Email and password",

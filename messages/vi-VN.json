@@ -28,7 +28,12 @@
     "password": "Mật khẩu",
     "submit": "Đăng nhập",
     "error": "Email hoặc mật khẩu không đúng.",
-    "continueWithGoogle": "Tiếp tục với Google",
+    "continueWith": {
+      "google": "Tiếp tục với Google",
+      "facebook": "Tiếp tục với Facebook",
+      "line": "Tiếp tục với LINE"
+    },
+    "noProvidersConfigured": "Chưa có phương thức đăng nhập nào được thiết lập.",
     "or": "hoặc",
     "noAccount": "Chưa có tài khoản?",
     "createOne": "Tạo tài khoản"

@@ -28,7 +28,12 @@
     "password": "Password",
     "submit": "Mag-sign in",
     "error": "Maling email o password.",
-    "continueWithGoogle": "Magpatuloy gamit ang Google",
+    "continueWith": {
+      "google": "Magpatuloy gamit ang Google",
+      "facebook": "Magpatuloy gamit ang Facebook",
+      "line": "Magpatuloy gamit ang LINE"
+    },
+    "noProvidersConfigured": "Wala pang naka-configure na paraan ng pag-sign in.",
     "or": "o",
     "noAccount": "Wala ka pang account?",
     "createOne": "Gumawa ng account"

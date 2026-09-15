@@ -28,7 +28,12 @@
     "password": "密碼",
     "submit": "登入",
     "error": "電子郵件或密碼錯誤。",
-    "continueWithGoogle": "使用 Google 繼續",
+    "continueWith": {
+      "google": "使用 Google 繼續",
+      "facebook": "使用 Facebook 繼續",
+      "line": "使用 LINE 繼續"
+    },
+    "noProvidersConfigured": "尚未設定任何登入方式。",
     "or": "或",
     "noAccount": "還沒有帳號？",
     "createOne": "建立帳號"

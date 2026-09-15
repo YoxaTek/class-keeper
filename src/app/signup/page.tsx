@@ -1,12 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { getTranslations } from "next-intl/server";
+import { getEnabledProviders } from "@/lib/authProviders";
+import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
 
-export default function SignupPage() {
-  const t = useTranslations("signup");
-  const tLogin = useTranslations("login");
+export default async function SignupPage() {
+  const t = await getTranslations("signup");
+  const tLogin = await getTranslations("login");
+  const providers = getEnabledProviders();
 
   return (
     <div className="flex flex-1 items-center justify-center p-6">
@@ -16,7 +16,7 @@ export default function SignupPage() {
           <p className="text-sm text-black/60 dark:text-white/60">{t("subtitle")}</p>
         </div>
 
-        <GoogleSignInButton />
+        <ProviderSignInButtons providers={providers} />
 
         <p className="text-center text-sm text-black/60 dark:text-white/60">
           {t("haveAccount")} <Link href="/login" className="underline">{tLogin("submit")}</Link>
