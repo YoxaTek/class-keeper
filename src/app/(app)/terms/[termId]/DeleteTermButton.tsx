@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Trash2 } from "lucide-react";
+import { buttonClass } from "@/components/ui/styles";
 
 export function DeleteTermButton({ termId, termLabel }: { termId: string; termLabel: string }) {
   const t = useTranslations("dashboard");
@@ -20,7 +22,8 @@ export function DeleteTermButton({ termId, termLabel }: { termId: string; termLa
   }
 
   return (
-    <button onClick={onDelete} disabled={deleting} className="text-sm text-red-600 underline disabled:opacity-50">
+    <button onClick={onDelete} disabled={deleting} className={buttonClass("danger", "sm")}>
+      <Trash2 className="h-3.5 w-3.5" aria-hidden />
       {t("deleteTerm")}
     </button>
   );

@@ -1,5 +1,5 @@
-const CACHE_NAME = "classkeeper-shell-v1";
-const APP_SHELL = ["/", "/manifest.json", "/icon.svg"];
+const CACHE_NAME = "classkeeper-shell-v2";
+const APP_SHELL = ["/", "/manifest.json", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

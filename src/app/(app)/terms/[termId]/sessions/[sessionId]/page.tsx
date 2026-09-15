@@ -18,7 +18,7 @@ export default async function EditSessionPage({
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium">{t("editTitle")}</h2>
+      <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("editTitle")}</h2>
       <SessionForm
         termId={termId}
         sessionId={sessionId}

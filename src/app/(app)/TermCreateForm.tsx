@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Plus } from "lucide-react";
 import type { Subject } from "@prisma/client";
+import { Button } from "@/components/ui/Button";
+import { DateInput } from "@/components/ui/DateInput";
+import { inputClass, inputClassSm, labelClass, cardClass } from "@/components/ui/styles";
 
 const NEW_SUBJECT = "__new__";
 
 export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
   const t = useTranslations("dashboard");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -95,24 +100,21 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="rounded bg-slate-900 px-3 py-2 text-sm text-white">
+      <Button variant="primary" onClick={() => setOpen(true)}>
+        <Plus className="h-4 w-4" aria-hidden />
         {t("newTerm")}
-      </button>
+      </Button>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded border border-black/10 p-4 dark:border-white/10">
-      <h2 className="font-medium">{t("createTitle")}</h2>
+    <form onSubmit={onSubmit} className={`${cardClass} space-y-4 p-4`}>
+      <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("createTitle")}</h2>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="block text-sm">{t("subject")}</label>
-          <select
-            value={subjectId}
-            onChange={(e) => setSubjectId(e.target.value)}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
-          >
+          <label className={labelClass}>{t("subject")}</label>
+          <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className={inputClass}>
             {subjects.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -126,116 +128,100 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
               value={newSubjectName}
               onChange={(e) => setNewSubjectName(e.target.value)}
               placeholder="e.g. Chinese — Basic"
-              className="mt-1 w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+              className={`${inputClass} mt-1`}
             />
           )}
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("term")}</label>
+          <label className={labelClass}>{t("term")}</label>
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. 114-2"
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+            className={inputClass}
           />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("startDate")}</label>
-          <input
-            type="date"
-            required
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
-          />
+          <label className={labelClass}>{t("startDate")}</label>
+          <DateInput value={startDate} onChange={setStartDate} required />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("endDate")}</label>
-          <input
-            type="date"
-            required
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
-          />
+          <label className={labelClass}>{t("endDate")}</label>
+          <DateInput value={endDate} onChange={setEndDate} required />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("midtermMaxScore")}</label>
+          <label className={labelClass}>{t("midtermMaxScore")}</label>
           <input
             type="number"
             value={midtermMaxScore}
             onChange={(e) => setMidtermMaxScore(Number(e.target.value))}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+            className={inputClass}
           />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("maxExcusedAbsences")}</label>
+          <label className={labelClass}>{t("maxExcusedAbsences")}</label>
           <input
             type="number"
             value={maxExcusedAbsences}
             onChange={(e) => setMaxExcusedAbsences(Number(e.target.value))}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+            className={inputClass}
           />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm">{t("passingScore")}</label>
+          <label className={labelClass}>{t("passingScore")}</label>
           <input
             type="number"
             value={passingScore}
             onChange={(e) => setPassingScore(Number(e.target.value))}
-            className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+            className={inputClass}
           />
         </div>
       </div>
 
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium">{t("weights")}</legend>
-        <div className="grid grid-cols-3 gap-3">
+      <fieldset className="space-y-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <legend className={`${labelClass} mb-1`}>{t("weights")}</legend>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
           {(Object.keys(weights) as (keyof typeof weights)[]).map((key) => (
             <div key={key} className="space-y-1">
-              <label className="block text-xs">{t(key)}</label>
+              <label className={labelClass}>{t(key)}</label>
               <input
                 type="number"
                 value={weights[key]}
                 onChange={(e) => updateWeight(key, Number(e.target.value))}
-                className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+                className={inputClassSm}
               />
             </div>
           ))}
         </div>
       </fieldset>
 
-      <div className="space-y-1">
-        <label className="block text-sm">{t("addStudentsWhileCreating")}</label>
+      <div className="space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <label className={labelClass}>{t("addStudentsWhileCreating")}</label>
         <textarea
           value={studentNames}
           onChange={(e) => setStudentNames(e.target.value)}
           placeholder={t("addStudentsPlaceholder")}
           rows={4}
-          className="w-full rounded border border-black/10 px-2 py-1 font-mono text-sm dark:border-white/20"
+          className={`${inputClass} font-mono`}
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
-        >
-          Save
-        </button>
-        <button type="button" onClick={() => setOpen(false)} className="rounded border px-3 py-2 text-sm">
-          Cancel
-        </button>
+        <Button type="submit" variant="primary" disabled={submitting}>
+          {tc("save")}
+        </Button>
+        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+          {tc("cancel")}
+        </Button>
       </div>
     </form>
   );

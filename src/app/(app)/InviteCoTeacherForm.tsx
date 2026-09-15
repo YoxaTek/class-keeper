@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { UserRoundPlus } from "lucide-react";
 import { InviteLinkBox } from "@/components/InviteLinkBox";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass, cardClass } from "@/components/ui/styles";
 
 export function InviteCoTeacherForm() {
   const t = useTranslations();
@@ -32,11 +35,11 @@ export function InviteCoTeacherForm() {
   }
 
   return (
-    <div className="space-y-2 rounded border border-black/10 p-4 dark:border-white/10">
-      <h3 className="text-sm font-medium">{t("dashboard.inviteCoTeacher")}</h3>
+    <div className={`${cardClass} max-w-sm space-y-2 p-4`}>
+      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("dashboard.inviteCoTeacher")}</h3>
       <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
-        <div className="space-y-1">
-          <label htmlFor="co-teacher-email" className="block text-xs">
+        <div className="min-w-48 flex-1 space-y-1">
+          <label htmlFor="co-teacher-email" className={labelClass}>
             {t("roster.inviteTAEmail")}
           </label>
           <input
@@ -44,23 +47,16 @@ export function InviteCoTeacherForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded border border-black/10 px-2 py-1 text-sm dark:border-white/20"
+            className={inputClass}
           />
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
-        >
+        <Button type="submit" variant="primary" disabled={submitting}>
+          <UserRoundPlus className="h-4 w-4" aria-hidden />
           {t("dashboard.inviteCoTeacher")}
-        </button>
+        </Button>
       </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {token && (
-        <div className="max-w-sm">
-          <InviteLinkBox token={token} />
-        </div>
-      )}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {token && <InviteLinkBox token={token} />}
     </div>
   );
 }

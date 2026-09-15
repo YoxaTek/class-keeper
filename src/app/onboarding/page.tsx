@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { validateInvite } from "@/lib/invites";
+import { AuthShell } from "@/components/AuthShell";
 import { OnboardingForm } from "./OnboardingForm";
 
 async function loadInviteContext(token: string, acceptingEmail: string) {
@@ -66,6 +67,7 @@ export default async function OnboardingPage({
 
   const { invite: inviteToken } = await searchParams;
   const t = await getTranslations("onboarding");
+  const tCommon = await getTranslations("common");
 
   let inviteContext: Awaited<ReturnType<typeof loadInviteContext>>["invite"] = null;
   let inviteError: string | null = null;
@@ -77,15 +79,15 @@ export default async function OnboardingPage({
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-4">
+    <AuthShell appName={tCommon("appName")}>
+      <div className="space-y-5">
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold">{t("title")}</h1>
-          {!inviteToken && <p className="text-sm text-black/60 dark:text-white/60">{t("bootstrapSubtitle")}</p>}
+          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
+          {!inviteToken && <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("bootstrapSubtitle")}</p>}
         </div>
 
         {inviteError && (
-          <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
             {t(`inviteError.${inviteError}`)}
           </p>
         )}
@@ -98,6 +100,6 @@ export default async function OnboardingPage({
           />
         )}
       </div>
-    </div>
+    </AuthShell>
   );
 }

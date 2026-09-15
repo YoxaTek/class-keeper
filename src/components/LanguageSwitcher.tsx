@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Globe } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { setLocale } from "@/lib/actions/setLocale";
 import { locales, localeNativeNames } from "@/i18n/config";
@@ -20,16 +21,17 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <label className="flex items-center gap-2 text-sm">
+    <label className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
+      <Globe className="h-4 w-4" aria-hidden />
       <span className="sr-only">{t("label")}</span>
       <select
         value={locale}
         disabled={isPending}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-black/10 bg-transparent px-2 py-1 dark:border-white/20"
+        className="cursor-pointer bg-transparent focus:outline-none"
       >
         {locales.map((l) => (
-          <option key={l} value={l}>
+          <option key={l} value={l} className="text-zinc-900">
             {localeNativeNames[l]}
           </option>
         ))}

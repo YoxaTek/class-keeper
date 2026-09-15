@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import type { Role } from "@prisma/client";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass } from "@/components/ui/styles";
 
 interface InviteContext {
   role: Role;
@@ -65,49 +67,39 @@ export function OnboardingForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       {invite && (
-        <div className="rounded border border-black/10 bg-black/[.02] p-3 text-sm dark:border-white/10 dark:bg-white/[.03]">
+        <div className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
           {t("inviteBanner", { name: invite.invitedByName, role: tRole(invite.role) })}
-          {invite.context && <div className="mt-1 font-medium">{invite.context}</div>}
+          {invite.context && <div className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">{invite.context}</div>}
         </div>
       )}
 
       <div className="space-y-1">
-        <label htmlFor="name" className="block text-sm font-medium">
+        <label htmlFor="name" className={labelClass}>
           {t("name")}
         </label>
-        <input
-          id="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded border border-black/10 px-3 py-2 dark:border-white/20"
-        />
+        <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       </div>
 
       {!inviteToken && (
         <div className="space-y-1">
-          <label htmlFor="institution" className="block text-sm font-medium">
-            {t("institution")} <span className="text-black/40 dark:text-white/40">({t("optional")})</span>
+          <label htmlFor="institution" className={labelClass}>
+            {t("institution")} <span className="text-zinc-400 dark:text-zinc-600">({t("optional")})</span>
           </label>
           <input
             id="institution"
             value={institutionName}
             onChange={(e) => setInstitutionName(e.target.value)}
             placeholder={t("institutionPlaceholder")}
-            className="w-full rounded border border-black/10 px-3 py-2 dark:border-white/20"
+            className={inputClass}
           />
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full rounded bg-slate-900 px-3 py-2 text-white disabled:opacity-50"
-      >
+      <Button type="submit" variant="primary" disabled={submitting} className="w-full">
         {t("submit")}
-      </button>
+      </Button>
     </form>
   );
 }

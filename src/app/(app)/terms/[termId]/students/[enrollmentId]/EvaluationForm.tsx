@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass } from "@/components/ui/styles";
 
 export function EvaluationForm({
   enrollmentId,
@@ -40,32 +42,28 @@ export function EvaluationForm({
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <label className="block text-sm">{t("narrative")}</label>
+        <label className={labelClass}>{t("narrative")}</label>
         <textarea
           value={narrative}
           onChange={(e) => setNarrative(e.target.value)}
           rows={4}
-          className="w-full rounded border border-black/10 px-2 py-1 dark:border-white/20"
+          className={inputClass}
         />
       </div>
       <div className="space-y-1">
-        <label className="block text-sm">
-          {t("impressionScore")} <span className="text-black/50 dark:text-white/50">/ {maxImpressionScore}</span>
+        <label className={labelClass}>
+          {t("impressionScore")} <span className="text-zinc-400 dark:text-zinc-600">/ {maxImpressionScore}</span>
         </label>
         <input
           type="number"
           value={impressionScore}
           onChange={(e) => setImpressionScore(e.target.value)}
-          className="w-24 rounded border border-black/10 px-2 py-1 dark:border-white/20"
+          className={`${inputClass} w-24`}
         />
       </div>
-      <button
-        onClick={save}
-        disabled={saving}
-        className="rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
-      >
+      <Button variant="primary" size="sm" onClick={save} disabled={saving}>
         {tc("save")}
-      </button>
+      </Button>
     </div>
   );
 }

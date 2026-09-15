@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 import type { AuthProviderId } from "@/lib/authProviders";
 
 const BUTTON_STYLES: Record<AuthProviderId, string> = {
-  google: "border border-black/10 dark:border-white/20",
-  facebook: "bg-[#1877F2] text-white",
-  line: "bg-[#06C755] text-white",
+  google: "border border-zinc-300 text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800",
+  facebook: "bg-[#1877F2] text-white hover:brightness-95",
+  line: "bg-[#06C755] text-white hover:brightness-95",
 };
 
 function ProviderIcon({ provider }: { provider: AuthProviderId }) {
@@ -59,7 +59,7 @@ export function ProviderSignInButtons({
   const t = useTranslations("login");
 
   if (providers.length === 0) {
-    return <p className="text-sm text-red-600">{t("noProvidersConfigured")}</p>;
+    return <p className="text-sm text-red-600 dark:text-red-400">{t("noProvidersConfigured")}</p>;
   }
 
   return (
@@ -69,7 +69,7 @@ export function ProviderSignInButtons({
           key={provider}
           type="button"
           onClick={() => signIn(provider, { callbackUrl })}
-          className={`flex w-full items-center justify-center gap-2 rounded px-3 py-2 text-sm font-medium ${BUTTON_STYLES[provider]}`}
+          className={`flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${BUTTON_STYLES[provider]}`}
         >
           <ProviderIcon provider={provider} />
           {t(`continueWith.${provider}`)}

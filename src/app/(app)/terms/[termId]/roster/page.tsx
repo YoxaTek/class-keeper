@@ -17,14 +17,23 @@ export default async function RosterPage({ params }: { params: Promise<{ termId:
   });
 
   return (
-    <div className="space-y-6">
-      <RosterTable termId={termId} enrollments={enrollments} />
-      {enrollments.length >= 30 ? (
-        <p className="text-sm text-amber-600">{t("capReached")}</p>
-      ) : (
-        <BulkAddForm termId={termId} remaining={30 - enrollments.length} />
-      )}
-      {session.user.role === "TEACHER" && <InviteTAForm termId={termId} />}
+    <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
+      <div className="space-y-2">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h2>
+          <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{enrollments.length} / 30</span>
+        </div>
+        <RosterTable termId={termId} enrollments={enrollments} />
+      </div>
+
+      <div className="space-y-4">
+        {enrollments.length >= 30 ? (
+          <p className="text-sm text-amber-700 dark:text-amber-500">{t("capReached")}</p>
+        ) : (
+          <BulkAddForm termId={termId} remaining={30 - enrollments.length} />
+        )}
+        {session.user.role === "TEACHER" && <InviteTAForm termId={termId} />}
+      </div>
     </div>
   );
 }

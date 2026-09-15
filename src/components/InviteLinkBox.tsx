@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Copy, Check } from "lucide-react";
 
 export function InviteLinkBox({ token }: { token: string }) {
   const t = useTranslations("common");
@@ -20,15 +21,20 @@ export function InviteLinkBox({ token }: { token: string }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <input
         readOnly
         value={url}
         onFocus={(e) => e.currentTarget.select()}
-        className="w-full rounded border border-black/10 px-2 py-1 text-xs dark:border-white/20"
+        className="w-full rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
       />
-      <button type="button" onClick={copy} className="shrink-0 rounded border px-2 py-1 text-xs">
-        {copied ? t("copied") : t("copy")}
+      <button
+        type="button"
+        onClick={copy}
+        title={copied ? t("copied") : t("copy")}
+        className="flex shrink-0 items-center gap-1 rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+      >
+        {copied ? <Check className="h-3.5 w-3.5 text-[#0f6e56] dark:text-teal-400" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
     </div>
   );

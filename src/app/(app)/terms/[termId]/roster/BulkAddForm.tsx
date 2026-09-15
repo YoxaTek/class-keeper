@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass, cardClass } from "@/components/ui/styles";
 
 export function BulkAddForm({ termId, remaining }: { termId: string; remaining: number }) {
   const t = useTranslations("roster");
@@ -38,25 +41,22 @@ export function BulkAddForm({ termId, remaining }: { termId: string; remaining: 
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-2">
-      <label className="block text-sm font-medium">
-        {t("bulkPaste")} <span className="text-black/50 dark:text-white/50">({remaining} left)</span>
+    <form onSubmit={onSubmit} className={`${cardClass} space-y-2 p-4`}>
+      <label className={labelClass}>
+        {t("bulkPaste")} <span className="tabular text-zinc-400 dark:text-zinc-600">({remaining} left)</span>
       </label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t("bulkPastePlaceholder")}
         rows={6}
-        className="w-full rounded border border-black/10 px-2 py-1 font-mono text-sm dark:border-white/20"
+        className={`${inputClass} font-mono`}
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button
-        type="submit"
-        disabled={submitting || !text.trim()}
-        className="rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
-      >
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      <Button type="submit" variant="primary" size="sm" disabled={submitting || !text.trim()}>
+        <UserPlus className="h-3.5 w-3.5" aria-hidden />
         {t("addStudents")}
-      </button>
+      </Button>
     </form>
   );
 }

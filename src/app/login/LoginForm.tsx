@@ -5,6 +5,8 @@ import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass, linkClass } from "@/components/ui/styles";
 import type { AuthProviderId } from "@/lib/authProviders";
 
 export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
@@ -33,20 +35,20 @@ export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
   }
 
   return (
-    <div className="w-full max-w-sm space-y-4">
-      <h1 className="text-xl font-semibold">{t("title")}</h1>
+    <div className="space-y-5">
+      <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
 
       <ProviderSignInButtons providers={providers} />
 
-      <div className="flex items-center gap-3 text-xs text-black/40 dark:text-white/40">
-        <div className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+      <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-600">
+        <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
         {t("or")}
-        <div className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+        <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium">
+          <label htmlFor="email" className={labelClass}>
             {t("email")}
           </label>
           <input
@@ -55,12 +57,12 @@ export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded border border-black/10 px-3 py-2 dark:border-white/20"
+            className={inputClass}
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="block text-sm font-medium">
+          <label htmlFor="password" className={labelClass}>
             {t("password")}
           </label>
           <input
@@ -69,23 +71,19 @@ export function LoginForm({ providers }: { providers: AuthProviderId[] }) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded border border-black/10 px-3 py-2 dark:border-white/20"
+            className={inputClass}
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{t("error")}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{t("error")}</p>}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded bg-slate-900 px-3 py-2 text-white disabled:opacity-50"
-        >
+        <Button type="submit" variant="primary" disabled={submitting} className="w-full">
           {t("submit")}
-        </button>
+        </Button>
       </form>
 
-      <p className="text-center text-sm text-black/60 dark:text-white/60">
-        {t("noAccount")} <Link href="/signup" className="underline">{t("createOne")}</Link>
+      <p className="text-sm text-zinc-500 dark:text-zinc-500">
+        {t("noAccount")} <Link href="/signup" className={linkClass}>{t("createOne")}</Link>
       </p>
     </div>
   );

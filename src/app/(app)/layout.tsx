@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import Image from "next/image";
+import { BookOpenCheck } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -28,17 +30,26 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
-        <Link href="/" className="font-semibold">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <Image src="/icon-512.png" alt="" width={20} height={20} className="rounded-sm" />
           {t("common.appName")}
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          {isStaff && <Link href="/">{t("nav.terms")}</Link>}
+        <nav className="flex items-center gap-1 text-sm">
+          {isStaff && (
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            >
+              <BookOpenCheck className="h-4 w-4" aria-hidden />
+              {t("nav.terms")}
+            </Link>
+          )}
           <LanguageSwitcher />
           <SignOutButton label={t("common.signOut")} />
         </nav>
       </header>
-      <main className="flex-1 p-4">{children}</main>
+      <main className="flex-1 px-4 py-4">{children}</main>
     </div>
   );
 }

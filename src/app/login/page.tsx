@@ -1,12 +1,15 @@
+import { getTranslations } from "next-intl/server";
 import { getEnabledProviders } from "@/lib/authProviders";
+import { AuthShell } from "@/components/AuthShell";
 import { LoginForm } from "./LoginForm";
 
-export default function LoginPage() {
+export default async function LoginPage() {
   const providers = getEnabledProviders();
+  const t = await getTranslations("common");
 
   return (
-    <div className="flex flex-1 items-center justify-center p-6">
+    <AuthShell appName={t("appName")}>
       <LoginForm providers={providers} />
-    </div>
+    </AuthShell>
   );
 }
