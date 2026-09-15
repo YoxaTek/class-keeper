@@ -29,6 +29,19 @@ enum ScoreCategory {
   FINAL // dedicated final-exam score; ignored when Term.finalExamSessionId overrides it
 }
 
+enum PlanTier {
+  FREE
+  PRO
+  INSTITUTION
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
 // --- NextAuth (Auth.js) models ---
 // Session strategy is JWT (see src/lib/auth.ts), so NextAuth's own
 // "Session" table is never used — the Session model below is the
@@ -73,6 +86,36 @@ model User {
   student       Student? // if role = STUDENT, link to their profile
   termsTaught   Term[]   @relation("TeacherTerms")
   taAssignments TermAssistant[]
+
+  // Billing: a teacher's plan comes from their own Subscription, or — if
+  // they belong to an Organization — from that org's shared Subscription.
+  // Always resolve through getEffectiveSubscription(), never read these
+  // fields directly.
+  organizationId String?
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+  subscription   Subscription?
+}
+
+model Organization {
+  id           String        @id @default(cuid())
+  name         String
+  members      User[]
+  subscription Subscription?
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  tier                 PlanTier
+  status               SubscriptionStatus
+  stripeCustomerId     String             @unique
+  stripeSubscriptionId String?            @unique
+  currentPeriodEnd     DateTime?
+  userId               String?            @unique
+  user                 User?              @relation(fields: [userId], references: [id])
+  organizationId       String?            @unique
+  organization         Organization?      @relation(fields: [organizationId], references: [id])
+  // Exactly one of userId / organizationId must be set — enforced in
+  // application logic (see src/lib/subscriptions/gate.ts), not the schema.
 }
 
 model Subject {

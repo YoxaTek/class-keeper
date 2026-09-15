@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { assertCanCreateTerm, PlanLimitError } from "@/lib/subscriptions/gate";
 
 export async function GET() {
   const session = await auth();
@@ -61,6 +62,13 @@ export async function POST(request: Request) {
 
   if (!data.subjectId && !data.newSubjectName) {
     return NextResponse.json({ error: "subjectId or newSubjectName is required" }, { status: 400 });
+  }
+
+  try {
+    await assertCanCreateTerm(session.user.id);
+  } catch (e) {
+    if (e instanceof PlanLimitError) return NextResponse.json({ error: e.message }, { status: 402 });
+    throw e;
   }
 
   const subjectId = data.subjectId

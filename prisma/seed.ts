@@ -1,9 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { config as loadEnv } from "dotenv";
+import path from "node:path";
+import { isProductionEnvironment } from "../src/lib/env";
+
+// This script can run two ways — `npx prisma db seed` (which goes through
+// prisma.config.ts's env loading) or directly via `npm run db:seed` /
+// `tsx prisma/seed.ts` (which doesn't). Load .env.local here too so it
+// works standalone either way.
+loadEnv({ path: path.join(__dirname, "..", ".env.local"), quiet: true });
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Seed data (a known password, demo term) must never land in production.
+  if (isProductionEnvironment()) {
+    throw new Error(
+      "Refusing to run prisma/seed.ts: this looks like a production environment. " +
+        "Seeding is for dev/staging only."
+    );
+  }
+
   const passwordHash = await bcrypt.hash("password123", 10);
 
   const teacher = await prisma.user.upsert({
