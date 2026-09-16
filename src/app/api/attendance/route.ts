@@ -7,7 +7,7 @@ import { canWriteTerm } from "@/lib/permissions";
 const schema = z.object({
   sessionId: z.string(),
   enrollmentId: z.string(),
-  status: z.enum(["PRESENT", "EXCUSED", "ABSENT", "NOT_ENROLLED", "ABROAD"]),
+  status: z.enum(["PRESENT", "EXCUSED", "ABSENT", "NOT_ENROLLED"]),
 });
 
 export async function PUT(request: Request) {

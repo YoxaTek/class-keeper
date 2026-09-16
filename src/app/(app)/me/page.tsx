@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { CircleCheck, TriangleAlert, MessageSquareText } from "lucide-react";
+import { MessageSquareText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculateGrade } from "@/lib/grading/calculateGrade";
 import { cardClass } from "@/components/ui/styles";
+import { GradeBreakdownCard } from "@/components/GradeBreakdownCard";
 import { FeedbackForm } from "./FeedbackForm";
 
 export default async function MePage() {
@@ -14,6 +15,7 @@ export default async function MePage() {
 
   const t = await getTranslations("studentView");
   const tDashboard = await getTranslations("dashboard");
+  const tGrade = await getTranslations("studentDetail");
 
   const student = await prisma.student.findUnique({
     where: { userId: session.user.id },
@@ -41,17 +43,27 @@ export default async function MePage() {
         const { term } = enrollment;
         const grade = calculateGrade({
           attendance: enrollment.attendance.map((a) => ({ status: a.status })),
-          sessions: term.sessions.map((s) => ({ id: s.id, hasQuiz: s.hasQuiz, hasAssignment: s.hasAssignment })),
+          sessions: term.sessions.map((s) => ({
+            id: s.id,
+            hasQuiz: s.hasQuiz,
+            quizMaxScore: s.quizMaxScore,
+            hasAssignment: s.hasAssignment,
+            assignmentMaxScore: s.assignmentMaxScore,
+            hasMidterm: s.hasMidterm,
+            midtermMaxScore: s.midtermMaxScore,
+            hasFinal: s.hasFinal,
+            finalMaxScore: s.finalMaxScore,
+          })),
           scores: enrollment.scores.map((s) => ({
             sessionId: s.sessionId,
             category: s.category,
             originalScore: s.originalScore,
             retakeScore: s.retakeScore,
+            retakeMaxScore: s.retakeMaxScore,
           })),
           impressionScore: enrollment.evaluation?.impressionScore ?? null,
           settings: {
             maxExcusedAbsences: term.maxExcusedAbsences,
-            midtermMaxScore: term.midtermMaxScore,
             weightAttendance: term.weightAttendance,
             weightAssignment: term.weightAssignment,
             weightQuiz: term.weightQuiz,
@@ -64,73 +76,35 @@ export default async function MePage() {
         });
 
         return (
-          <section key={enrollment.id} className={`${cardClass} space-y-4 p-4`}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                {term.subject.name} <span className="text-zinc-400 dark:text-zinc-600">·</span> {term.name}
-              </h2>
-              <span
-                className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-                  grade.passing
-                    ? "bg-[#0f6e56]/10 text-[#0f6e56] dark:text-teal-400"
-                    : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
-                }`}
-              >
-                {grade.passing ? <CircleCheck className="h-3.5 w-3.5" /> : <TriangleAlert className="h-3.5 w-3.5" />}
-                {grade.total.toFixed(1)}
-              </span>
-            </div>
+          <section key={enrollment.id} className="space-y-4">
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+              {term.subject.name} <span className="text-zinc-400 dark:text-zinc-600">·</span> {term.name}
+            </h2>
 
-            <div className="grid grid-cols-2 gap-x-6 sm:grid-cols-3">
-              <table className="text-sm">
-                <tbody>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{t("attendancePct")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">
-                      {Math.round(grade.attendance.pct * 100)}%
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightAttendance")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.attendance.score.toFixed(1)}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightAssignment")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.assignment.score.toFixed(1)}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <table className="text-sm">
-                <tbody>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightQuiz")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.quiz.score.toFixed(1)}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightMidterm")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.midterm.score.toFixed(1)}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightFinal")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.final.score.toFixed(1)}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <table className="text-sm">
-                <tbody>
-                  <tr>
-                    <td className="py-1 pr-4 text-zinc-600 dark:text-zinc-400">{tDashboard("weightImpression")}</td>
-                    <td className="tabular py-1 text-right text-zinc-900 dark:text-zinc-100">{grade.impression.score.toFixed(1)}</td>
-                  </tr>
-                  <tr className="border-t border-zinc-200 font-semibold text-zinc-900 dark:border-zinc-800 dark:text-zinc-100">
-                    <td className="py-1 pr-4">{t("title")}</td>
-                    <td className="tabular py-1 text-right">{grade.total.toFixed(1)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <GradeBreakdownCard
+              grade={grade}
+              weights={{
+                attendance: term.weightAttendance,
+                assignment: term.weightAssignment,
+                quiz: term.weightQuiz,
+                midterm: term.weightMidterm,
+                final: term.weightFinal,
+                impression: term.weightImpression,
+              }}
+              labels={{
+                title: t("title"),
+                passing: tGrade("passing"),
+                belowPassing: tGrade("belowPassing"),
+                attendance: tDashboard("weightAttendance"),
+                assignment: tDashboard("weightAssignment"),
+                quiz: tDashboard("weightQuiz"),
+                midterm: tDashboard("weightMidterm"),
+                final: tDashboard("weightFinal"),
+                impression: tDashboard("weightImpression"),
+              }}
+            />
 
-            <div className="space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+            <div className={`${cardClass} space-y-1 p-4`}>
               <h3 className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 <MessageSquareText className="h-4 w-4 text-zinc-400" aria-hidden />
                 {t("evaluation")}

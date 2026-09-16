@@ -11,7 +11,6 @@ export async function computeGradesForTerm(termId: string) {
 
   const settings = {
     maxExcusedAbsences: term.maxExcusedAbsences,
-    midtermMaxScore: term.midtermMaxScore,
     weightAttendance: term.weightAttendance,
     weightAssignment: term.weightAssignment,
     weightQuiz: term.weightQuiz,
@@ -25,12 +24,23 @@ export async function computeGradesForTerm(termId: string) {
   const results = enrollments.map((enrollment) => {
     const grade = calculateGrade({
       attendance: enrollment.attendance.map((a) => ({ status: a.status })),
-      sessions: sessions.map((s) => ({ id: s.id, hasQuiz: s.hasQuiz, hasAssignment: s.hasAssignment })),
+      sessions: sessions.map((s) => ({
+        id: s.id,
+        hasQuiz: s.hasQuiz,
+        quizMaxScore: s.quizMaxScore,
+        hasAssignment: s.hasAssignment,
+        assignmentMaxScore: s.assignmentMaxScore,
+        hasMidterm: s.hasMidterm,
+        midtermMaxScore: s.midtermMaxScore,
+        hasFinal: s.hasFinal,
+        finalMaxScore: s.finalMaxScore,
+      })),
       scores: enrollment.scores.map((s) => ({
         sessionId: s.sessionId,
         category: s.category,
         originalScore: s.originalScore,
         retakeScore: s.retakeScore,
+        retakeMaxScore: s.retakeMaxScore,
       })),
       impressionScore: enrollment.evaluation?.impressionScore ?? null,
       settings,

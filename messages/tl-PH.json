@@ -16,11 +16,13 @@
     "signOut": "Mag-sign out",
     "copy": "Kopyahin",
     "copied": "Nakopya!",
+    "selectTermFirst": "Pumili muna ng term",
     "role": {
       "TEACHER": "guro",
       "TA": "teaching assistant",
       "STUDENT": "estudyante"
-    }
+    },
+    "saving": "Sine-save…"
   },
   "login": {
     "title": "Mag-sign in",
@@ -49,6 +51,7 @@
   },
   "dashboard": {
     "title": "Mga Term",
+    "subtitle": "Pamahalaan ang mga term at klaseng itinuturo mo.",
     "newTerm": "Bagong term",
     "subject": "Asignatura",
     "term": "Term",
@@ -73,7 +76,8 @@
     "deleteTermConfirm": "Tanggalin ang {term}? Permanenteng matatanggal ang listahan ng estudyante, mga sesyon, pagdalo, at mga marka nito. Hindi ito maaaring bawiin.",
     "deleteTermError": "Hindi matanggal ang term. Subukan muli.",
     "addStudentsWhileCreating": "Magdagdag ng mga estudyante",
-    "addStudentsPlaceholder": "Isang pangalan ng estudyante bawat linya (opsyonal — maaari mo ring idagdag mamaya sa tab na Listahan ng Estudyante)"
+    "addStudentsPlaceholder": "Isang pangalan ng estudyante bawat linya (opsyonal — maaari mo ring idagdag mamaya sa tab na Listahan ng Estudyante)",
+    "editTitle": "I-edit ang term"
   },
   "roster": {
     "title": "Listahan ng Estudyante",
@@ -84,11 +88,17 @@
     "removeStudent": "Tanggalin sa term",
     "invite": "Mag-imbita",
     "inviteTA": "Mag-imbita ng TA",
-    "inviteTAEmail": "Email (opsyonal)"
+    "inviteTAEmail": "Email (opsyonal)",
+    "linked": "Naka-link",
+    "notLinked": "Hindi pa naka-link",
+    "status": "Katayuan"
   },
   "sessions": {
-    "title": "Mga Sesyon",
-    "newSession": "Bagong sesyon",
+    "title": "Mga Klase",
+    "newSession": "Magdagdag ng klase",
+    "filterAll": "Lahat",
+    "filterUpcoming": "Paparating",
+    "filterPast": "Nakaraan",
     "label": "Label",
     "covers": "Sinasaklaw",
     "attendanceTurnout": "Pagdalo",
@@ -98,8 +108,14 @@
     "assignment": "Takdang-Aralin",
     "midterm": "Midterm",
     "final": "Final na Pagsusulit",
-    "editTitle": "I-edit ang sesyon",
-    "newTitle": "Bagong sesyon"
+    "editTitle": "I-edit ang klase",
+    "newTitle": "Magdagdag ng klase",
+    "deleteConfirm": "Tanggalin ang klase na ito? Aalisin nito ang mga tala ng pagdalo at marka. Hindi na ito maibabalik.",
+    "quizMaxScore": "Kabuuang marka ng pagsusulit",
+    "assignmentMaxScore": "Kabuuang marka ng takdang-aralin",
+    "midtermMaxScore": "Kabuuang marka ng midterm (pagbasa + pakikinig)",
+    "finalMaxScore": "Kabuuang marka ng final na pagsusulit",
+    "unsavedChanges": "May hindi pa na-save na pagbabago"
   },
   "grid": {
     "title": "Talahanayan ng Marka",
@@ -110,8 +126,7 @@
     "PRESENT": "Present",
     "EXCUSED": "May Paumanhin",
     "ABSENT": "Absent",
-    "NOT_ENROLLED": "Hindi pa Naka-enroll",
-    "ABROAD": "Nasa Ibang Bansa"
+    "NOT_ENROLLED": "Hindi pa Naka-enroll"
   },
   "studentDetail": {
     "title": "Talaan ng Estudyante",
@@ -127,7 +142,8 @@
   },
   "belowPassing": {
     "title": "Nasa Ibaba ng Pasang Marka",
-    "empty": "Walang estudyanteng nasa ibaba ng pasang marka sa ngayon."
+    "empty": "Walang estudyanteng nasa ibaba ng pasang marka sa ngayon.",
+    "needsAttention": "Kailangan ng pansin"
   },
   "studentView": {
     "title": "Aking mga Marka",

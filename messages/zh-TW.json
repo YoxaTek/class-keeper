@@ -16,11 +16,13 @@
     "signOut": "登出",
     "copy": "複製",
     "copied": "已複製！",
+    "selectTermFirst": "請先選擇學期",
     "role": {
       "TEACHER": "老師",
       "TA": "助教",
       "STUDENT": "學生"
-    }
+    },
+    "saving": "儲存中…"
   },
   "login": {
     "title": "登入",
@@ -48,7 +50,8 @@
     "belowPassing": "未達及格"
   },
   "dashboard": {
-    "title": "學期",
+    "title": "學期管理",
+    "subtitle": "管理您授課的學期與課程。",
     "newTerm": "新增學期",
     "subject": "科目",
     "term": "學期",
@@ -73,7 +76,8 @@
     "deleteTermConfirm": "確定要刪除「{term}」嗎？這將永久移除其名冊、課堂、出席與成績紀錄，且無法復原。",
     "deleteTermError": "無法刪除學期，請再試一次。",
     "addStudentsWhileCreating": "新增學生",
-    "addStudentsPlaceholder": "每行輸入一位學生姓名（選填，之後也可以在「學生名冊」頁籤新增）"
+    "addStudentsPlaceholder": "每行輸入一位學生姓名（選填，之後也可以在「學生名冊」頁籤新增）",
+    "editTitle": "編輯學期"
   },
   "roster": {
     "title": "學生名冊",
@@ -84,11 +88,17 @@
     "removeStudent": "自學期移除",
     "invite": "邀請",
     "inviteTA": "邀請助教",
-    "inviteTAEmail": "電子郵件（選填）"
+    "inviteTAEmail": "電子郵件（選填）",
+    "linked": "已加入",
+    "notLinked": "尚未加入",
+    "status": "狀態"
   },
   "sessions": {
     "title": "課堂",
     "newSession": "新增課堂",
+    "filterAll": "全部",
+    "filterUpcoming": "未來",
+    "filterPast": "已到來",
     "label": "課堂名稱",
     "covers": "內容",
     "attendanceTurnout": "出席率",
@@ -99,7 +109,13 @@
     "midterm": "期中考",
     "final": "期末考",
     "editTitle": "編輯課堂",
-    "newTitle": "新增課堂"
+    "newTitle": "新增課堂",
+    "deleteConfirm": "刪除此課堂？將會移除其出席與成績紀錄，此動作無法復原。",
+    "quizMaxScore": "小考總分",
+    "assignmentMaxScore": "作業總分",
+    "midtermMaxScore": "期中考總分（閱讀＋聽力）",
+    "finalMaxScore": "期末考總分",
+    "unsavedChanges": "有未儲存的變更"
   },
   "grid": {
     "title": "成績總表",
@@ -110,8 +126,7 @@
     "PRESENT": "出席",
     "EXCUSED": "請假",
     "ABSENT": "缺席",
-    "NOT_ENROLLED": "尚未加入",
-    "ABROAD": "回國"
+    "NOT_ENROLLED": "尚未加入"
   },
   "studentDetail": {
     "title": "學生紀錄",
@@ -127,7 +142,8 @@
   },
   "belowPassing": {
     "title": "未達及格",
-    "empty": "目前沒有學生低於及格分數。"
+    "empty": "目前沒有學生低於及格分數。",
+    "needsAttention": "需注意"
   },
   "studentView": {
     "title": "我的成績",

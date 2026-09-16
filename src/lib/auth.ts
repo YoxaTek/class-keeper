@@ -15,6 +15,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
+  // No NEXTAUTH_URL is set (see .env.local), so OAuth redirect_uris are
+  // built from the actual request's Host header — required to work both
+  // from localhost and from another device on the LAN.
+  trustHost: true,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

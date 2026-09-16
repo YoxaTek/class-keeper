@@ -3,15 +3,20 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canWriteTerm } from "@/lib/permissions";
+import { ensureAttendanceForSession } from "@/lib/attendanceDefaults";
 
 const sessionSchema = z.object({
   date: z.string(),
   label: z.string().nullable().optional(),
   hasAttendance: z.boolean(),
   hasQuiz: z.boolean(),
+  quizMaxScore: z.number().int().min(1).default(100),
   hasAssignment: z.boolean(),
+  assignmentMaxScore: z.number().int().min(1).default(100),
   hasMidterm: z.boolean(),
+  midtermMaxScore: z.number().int().min(1).default(100),
   hasFinal: z.boolean(),
+  finalMaxScore: z.number().int().min(1).default(100),
 });
 
 async function checkAccess(termId: string) {
@@ -38,6 +43,7 @@ export async function PATCH(
     where: { id: sessionId, termId },
     data: { ...body.data, date: new Date(body.data.date) },
   });
+  await ensureAttendanceForSession(updated.id);
 
   return NextResponse.json(updated);
 }

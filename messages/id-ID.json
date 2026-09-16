@@ -16,11 +16,13 @@
     "signOut": "Keluar",
     "copy": "Salin",
     "copied": "Tersalin!",
+    "selectTermFirst": "Pilih semester terlebih dahulu",
     "role": {
       "TEACHER": "guru",
       "TA": "asisten pengajar",
       "STUDENT": "siswa"
-    }
+    },
+    "saving": "Menyimpan…"
   },
   "login": {
     "title": "Masuk",
@@ -49,6 +51,7 @@
   },
   "dashboard": {
     "title": "Semester",
+    "subtitle": "Kelola semester dan kelas yang Anda ajar.",
     "newTerm": "Semester baru",
     "subject": "Mata pelajaran",
     "term": "Semester",
@@ -73,7 +76,8 @@
     "deleteTermConfirm": "Hapus {term}? Ini akan menghapus daftar siswa, pertemuan, kehadiran, dan nilai secara permanen. Tindakan ini tidak dapat dibatalkan.",
     "deleteTermError": "Gagal menghapus semester. Silakan coba lagi.",
     "addStudentsWhileCreating": "Tambah siswa",
-    "addStudentsPlaceholder": "Satu nama siswa per baris (opsional — Anda juga bisa menambahkannya nanti dari tab Daftar siswa)"
+    "addStudentsPlaceholder": "Satu nama siswa per baris (opsional — Anda juga bisa menambahkannya nanti dari tab Daftar siswa)",
+    "editTitle": "Edit semester"
   },
   "roster": {
     "title": "Daftar siswa",
@@ -84,11 +88,17 @@
     "removeStudent": "Keluarkan dari semester",
     "invite": "Undang",
     "inviteTA": "Undang Asisten Pengajar",
-    "inviteTAEmail": "Email (opsional)"
+    "inviteTAEmail": "Email (opsional)",
+    "linked": "Terhubung",
+    "notLinked": "Belum terhubung",
+    "status": "Status"
   },
   "sessions": {
-    "title": "Pertemuan",
-    "newSession": "Pertemuan baru",
+    "title": "Kelas",
+    "newSession": "Tambah kelas",
+    "filterAll": "Semua",
+    "filterUpcoming": "Mendatang",
+    "filterPast": "Lampau",
     "label": "Label",
     "covers": "Mencakup",
     "attendanceTurnout": "Kehadiran",
@@ -98,8 +108,14 @@
     "assignment": "Tugas",
     "midterm": "UTS",
     "final": "Ujian akhir",
-    "editTitle": "Edit pertemuan",
-    "newTitle": "Pertemuan baru"
+    "editTitle": "Edit kelas",
+    "newTitle": "Tambah kelas",
+    "deleteConfirm": "Hapus kelas ini? Ini akan menghapus data kehadiran dan nilainya. Tindakan ini tidak dapat dibatalkan.",
+    "quizMaxScore": "Total nilai kuis",
+    "assignmentMaxScore": "Total nilai tugas",
+    "midtermMaxScore": "Total nilai UTS (membaca + mendengar)",
+    "finalMaxScore": "Total nilai ujian akhir",
+    "unsavedChanges": "Perubahan belum disimpan"
   },
   "grid": {
     "title": "Tabel nilai",
@@ -110,8 +126,7 @@
     "PRESENT": "Hadir",
     "EXCUSED": "Izin",
     "ABSENT": "Tidak hadir",
-    "NOT_ENROLLED": "Belum terdaftar",
-    "ABROAD": "Di luar negeri"
+    "NOT_ENROLLED": "Belum terdaftar"
   },
   "studentDetail": {
     "title": "Catatan siswa",
@@ -127,7 +142,8 @@
   },
   "belowPassing": {
     "title": "Di bawah nilai kelulusan",
-    "empty": "Saat ini tidak ada siswa di bawah nilai kelulusan."
+    "empty": "Saat ini tidak ada siswa di bawah nilai kelulusan.",
+    "needsAttention": "Perlu perhatian"
   },
   "studentView": {
     "title": "Nilai saya",

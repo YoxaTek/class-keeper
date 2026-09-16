@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { CircleCheck, TriangleAlert } from "lucide-react";
 import { requireTermAccess } from "@/lib/termAccess";
 import { prisma } from "@/lib/prisma";
 import { calculateGrade } from "@/lib/grading/calculateGrade";
 import { attendanceIcon, attendanceColor } from "@/lib/attendanceIcons";
 import { cardClass } from "@/components/ui/styles";
+import { GradeBreakdownCard } from "@/components/GradeBreakdownCard";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { EvaluationForm } from "./EvaluationForm";
 
 export default async function StudentDetailPage({
@@ -18,6 +19,7 @@ export default async function StudentDetailPage({
   const t = await getTranslations("studentDetail");
   const tStatus = await getTranslations("attendanceStatus");
   const tDashboard = await getTranslations("dashboard");
+  const tRoster = await getTranslations("roster");
   const dateFmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 
   const [enrollment, sessions] = await Promise.all([
@@ -36,17 +38,27 @@ export default async function StudentDetailPage({
 
   const grade = calculateGrade({
     attendance: enrollment.attendance.map((a) => ({ status: a.status })),
-    sessions: sessions.map((s) => ({ id: s.id, hasQuiz: s.hasQuiz, hasAssignment: s.hasAssignment })),
+    sessions: sessions.map((s) => ({
+      id: s.id,
+      hasQuiz: s.hasQuiz,
+      quizMaxScore: s.quizMaxScore,
+      hasAssignment: s.hasAssignment,
+      assignmentMaxScore: s.assignmentMaxScore,
+      hasMidterm: s.hasMidterm,
+      midtermMaxScore: s.midtermMaxScore,
+      hasFinal: s.hasFinal,
+      finalMaxScore: s.finalMaxScore,
+    })),
     scores: enrollment.scores.map((s) => ({
       sessionId: s.sessionId,
       category: s.category,
       originalScore: s.originalScore,
       retakeScore: s.retakeScore,
+      retakeMaxScore: s.retakeMaxScore,
     })),
     impressionScore: enrollment.evaluation?.impressionScore ?? null,
     settings: {
       maxExcusedAbsences: term.maxExcusedAbsences,
-      midtermMaxScore: term.midtermMaxScore,
       weightAttendance: term.weightAttendance,
       weightAssignment: term.weightAssignment,
       weightQuiz: term.weightQuiz,
@@ -60,38 +72,38 @@ export default async function StudentDetailPage({
 
   return (
     <div className="space-y-4">
+      <Breadcrumb
+        items={[
+          { label: term.name, href: `/terms/${termId}/roster` },
+          { label: tRoster("title"), href: `/terms/${termId}/roster` },
+          { label: enrollment.student.name },
+        ]}
+      />
       <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{enrollment.student.name}</h2>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <section className={`${cardClass} space-y-3 p-4`}>
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("grade")}</h3>
-            <span
-              className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-                grade.passing
-                  ? "bg-[#0f6e56]/10 text-[#0f6e56] dark:text-teal-400"
-                  : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
-              }`}
-            >
-              {grade.passing ? <CircleCheck className="h-3.5 w-3.5" /> : <TriangleAlert className="h-3.5 w-3.5" />}
-              {grade.passing ? t("passing") : t("belowPassing")}
-            </span>
-          </div>
-          <table className="w-full text-sm">
-            <tbody>
-              <Row label={tDashboard("weightAttendance")} value={grade.attendance.score} />
-              <Row label={tDashboard("weightAssignment")} value={grade.assignment.score} />
-              <Row label={tDashboard("weightQuiz")} value={grade.quiz.score} />
-              <Row label={tDashboard("weightMidterm")} value={grade.midterm.score} />
-              <Row label={tDashboard("weightFinal")} value={grade.final.score} />
-              <Row label={tDashboard("weightImpression")} value={grade.impression.score} />
-              <tr className="border-t border-zinc-200 font-semibold text-zinc-900 dark:border-zinc-800 dark:text-zinc-100">
-                <td className="py-1.5">{t("total")}</td>
-                <td className="tabular py-1.5 text-right">{grade.total.toFixed(1)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        <GradeBreakdownCard
+          grade={grade}
+          weights={{
+            attendance: term.weightAttendance,
+            assignment: term.weightAssignment,
+            quiz: term.weightQuiz,
+            midterm: term.weightMidterm,
+            final: term.weightFinal,
+            impression: term.weightImpression,
+          }}
+          labels={{
+            title: t("grade"),
+            passing: t("passing"),
+            belowPassing: t("belowPassing"),
+            attendance: tDashboard("weightAttendance"),
+            assignment: tDashboard("weightAssignment"),
+            quiz: tDashboard("weightQuiz"),
+            midterm: tDashboard("weightMidterm"),
+            final: tDashboard("weightFinal"),
+            impression: tDashboard("weightImpression"),
+          }}
+        />
 
         <section className={`${cardClass} space-y-3 p-4`}>
           <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("evaluation")}</h3>
@@ -163,14 +175,5 @@ export default async function StudentDetailPage({
         </section>
       </div>
     </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: number }) {
-  return (
-    <tr className="border-b border-zinc-100 last:border-0 dark:border-zinc-900">
-      <td className="py-1.5 text-zinc-600 dark:text-zinc-400">{label}</td>
-      <td className="tabular py-1.5 text-right text-zinc-900 dark:text-zinc-100">{value.toFixed(1)}</td>
-    </tr>
   );
 }

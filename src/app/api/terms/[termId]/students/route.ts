@@ -3,6 +3,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canWriteTerm } from "@/lib/permissions";
+import { ensureAttendanceForEnrollment } from "@/lib/attendanceDefaults";
 
 const MAX_PER_TERM = 30;
 
@@ -40,6 +41,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ter
       data: { termId, studentId: student.id },
       include: { student: true },
     });
+    await ensureAttendanceForEnrollment(enrollment.id, termId, enrollment.joinedAt);
     created.push(enrollment);
   }
 

@@ -16,11 +16,13 @@
     "signOut": "Sign out",
     "copy": "Copy",
     "copied": "Copied!",
+    "selectTermFirst": "Select a term first",
     "role": {
       "TEACHER": "teacher",
       "TA": "teaching assistant",
       "STUDENT": "student"
-    }
+    },
+    "saving": "Saving…"
   },
   "login": {
     "title": "Sign in",
@@ -49,6 +51,7 @@
   },
   "dashboard": {
     "title": "Terms",
+    "subtitle": "Manage the terms and classes you teach.",
     "newTerm": "New term",
     "subject": "Subject",
     "term": "Term",
@@ -73,10 +76,11 @@
     "deleteTermConfirm": "Delete {term}? This permanently removes its roster, sessions, attendance, and grades. This cannot be undone.",
     "deleteTermError": "Could not delete the term. Please try again.",
     "addStudentsWhileCreating": "Add students",
-    "addStudentsPlaceholder": "One student name per line (optional — you can also add students later from the Roster tab)"
+    "addStudentsPlaceholder": "One student name per line (optional — you can also add students later from the Roster tab)",
+    "editTitle": "Edit term"
   },
   "roster": {
-    "title": "Roster",
+    "title": "Students",
     "bulkPaste": "Bulk-paste names",
     "bulkPastePlaceholder": "One student name per line",
     "addStudents": "Add students",
@@ -84,11 +88,17 @@
     "removeStudent": "Remove from term",
     "invite": "Invite",
     "inviteTA": "Invite a TA",
-    "inviteTAEmail": "Email (optional)"
+    "inviteTAEmail": "Email (optional)",
+    "linked": "Linked",
+    "notLinked": "Not linked",
+    "status": "Status"
   },
   "sessions": {
-    "title": "Sessions",
-    "newSession": "New session",
+    "title": "Classes",
+    "newSession": "Add class",
+    "filterAll": "All",
+    "filterUpcoming": "Upcoming",
+    "filterPast": "Past",
     "label": "Label",
     "covers": "Covers",
     "attendanceTurnout": "Attendance",
@@ -98,8 +108,14 @@
     "assignment": "Assignment",
     "midterm": "Midterm",
     "final": "Final exam",
-    "editTitle": "Edit session",
-    "newTitle": "New session"
+    "editTitle": "Edit class",
+    "newTitle": "Add a class",
+    "deleteConfirm": "Delete this class? This removes its attendance and scores. This cannot be undone.",
+    "quizMaxScore": "Quiz total score",
+    "assignmentMaxScore": "Assignment total score",
+    "midtermMaxScore": "Midterm total score (reading + listening)",
+    "finalMaxScore": "Final exam total score",
+    "unsavedChanges": "Unsaved changes"
   },
   "grid": {
     "title": "Session grid",
@@ -110,8 +126,7 @@
     "PRESENT": "Present",
     "EXCUSED": "Excused",
     "ABSENT": "Absent",
-    "NOT_ENROLLED": "Not enrolled",
-    "ABROAD": "Abroad"
+    "NOT_ENROLLED": "Not enrolled"
   },
   "studentDetail": {
     "title": "Student record",
@@ -127,7 +142,8 @@
   },
   "belowPassing": {
     "title": "Below passing",
-    "empty": "No students currently below the passing threshold."
+    "empty": "No students currently below the passing threshold.",
+    "needsAttention": "Needs attention"
   },
   "studentView": {
     "title": "My grades",

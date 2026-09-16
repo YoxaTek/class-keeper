@@ -3,15 +3,20 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canWriteTerm } from "@/lib/permissions";
+import { ensureAttendanceForSession } from "@/lib/attendanceDefaults";
 
 const sessionSchema = z.object({
   date: z.string(),
   label: z.string().nullable().optional(),
   hasAttendance: z.boolean().default(false),
   hasQuiz: z.boolean().default(false),
+  quizMaxScore: z.number().int().min(1).default(100),
   hasAssignment: z.boolean().default(false),
+  assignmentMaxScore: z.number().int().min(1).default(100),
   hasMidterm: z.boolean().default(false),
+  midtermMaxScore: z.number().int().min(1).default(100),
   hasFinal: z.boolean().default(false),
+  finalMaxScore: z.number().int().min(1).default(100),
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ termId: string }> }) {
@@ -28,6 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ter
   const created = await prisma.session.create({
     data: { termId, ...body.data, date: new Date(body.data.date) },
   });
+  await ensureAttendanceForSession(created.id);
 
   return NextResponse.json(created, { status: 201 });
 }

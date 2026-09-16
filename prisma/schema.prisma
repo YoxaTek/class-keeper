@@ -18,7 +18,6 @@ enum AttendanceStatus {
   EXCUSED // 請假 — pre-approved leave
   ABSENT // unexcused
   NOT_ENROLLED // hadn't joined the term yet on this date
-  ABROAD // 回國 — returned to home country, excluded like NOT_ENROLLED
 }
 
 enum ScoreCategory {
@@ -74,17 +73,17 @@ model VerificationToken {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String          @id @default(cuid())
+  email         String          @unique
   name          String?
-  role          Role      @default(TEACHER) // the Google sign-up flow creates users via the adapter with no role of its own — a fresh signup with no invite is always a teacher; TA/student roles only ever come from an accepted Invite
+  role          Role            @default(TEACHER) // the Google sign-up flow creates users via the adapter with no role of its own — a fresh signup with no invite is always a teacher; TA/student roles only ever come from an accepted Invite
   locale        String? // "en-US" | "zh-TW" | "id-ID" | "tl-PH" | "vi-VN", user's preferred UI language
   passwordHash  String? // for Credentials login
   emailVerified DateTime? // for magic-link / adapter compatibility
   image         String?
   accounts      Account[]
   student       Student? // if role = STUDENT, link to their profile
-  termsTaught   Term[]   @relation("TeacherTerms")
+  termsTaught   Term[]          @relation("TeacherTerms")
   taAssignments TermAssistant[]
 
   // Set once /onboarding is completed (role/org/student-link finalized).
@@ -97,7 +96,7 @@ model User {
   // Always resolve through getEffectiveSubscription(), never read these
   // fields directly.
   organizationId String?
-  organization   Organization?  @relation(fields: [organizationId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   subscription   Subscription?
 
   invitesSent    Invite[] @relation("InvitesSent")
@@ -120,10 +119,10 @@ model Organization {
  * account exactly once.
  */
 model Invite {
-  id     String @id @default(cuid())
-  token  String @unique @default(cuid())
-  role   Role
-  email  String? // if set, only this exact email may accept
+  id    String  @id @default(cuid())
+  token String  @unique @default(cuid())
+  role  Role
+  email String? // if set, only this exact email may accept
 
   // Exactly one of these is set, matching `role`:
   //   TEACHER -> organizationId (join this org)
@@ -178,14 +177,13 @@ model Term {
   startDate          DateTime
   endDate            DateTime
   maxExcusedAbsences Int      @default(3) // beyond this, EXCUSED counts as ABSENT
-  midtermMaxScore    Int      @default(100) // 100 for Basic, 200 for Intermediate (divide by 2)
   passingScore       Float    @default(70) // grade threshold for the below-passing report
   weightAttendance   Float    @default(15)
   weightAssignment   Float    @default(15)
   weightQuiz         Float    @default(30)
   weightMidterm      Float    @default(15)
   weightFinal        Float    @default(15)
-  weightImpression    Float    @default(10)
+  weightImpression   Float    @default(10)
   finalExamSessionId String? // optional override: which session's score counts as the final exam
 
   assistants  TermAssistant[]
@@ -225,50 +223,55 @@ model Enrollment {
   scores     ScoreRecord[]
   evaluation Evaluation?
   feedback   Feedback?
-
-  @@unique([termId, studentId])
   // Max 30 enrollments per term is enforced by a DB trigger, see migration
   // 20260101000000_enrollment_cap_trigger — Prisma's schema DSL has no way
   // to express a per-group row-count constraint directly.
+
+  @@unique([termId, studentId])
 }
 
 model Session {
-  id            String   @id @default(cuid())
-  termId        String
-  term          Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
-  date          DateTime
-  label         String? // e.g. "L1 生詞"
-  hasAttendance Boolean  @default(false)
-  hasQuiz       Boolean  @default(false)
-  hasAssignment Boolean  @default(false)
-  hasMidterm    Boolean  @default(false)
-  hasFinal      Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Term.finalExamSessionId is set
+  id                 String   @id @default(cuid())
+  termId             String
+  term               Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
+  date               DateTime
+  label              String? // e.g. "L1 生詞"
+  hasAttendance      Boolean  @default(false)
+  hasQuiz            Boolean  @default(false)
+  quizMaxScore       Int      @default(100) // the quiz's total possible points — same for every student in this class
+  hasAssignment      Boolean  @default(false)
+  assignmentMaxScore Int      @default(100)
+  hasMidterm         Boolean  @default(false)
+  midtermMaxScore    Int      @default(100) // combined reading + listening total for this class's midterm
+  hasFinal           Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Term.finalExamSessionId is set
+  finalMaxScore      Int      @default(100)
 
   attendance Attendance[]
   scores     ScoreRecord[]
 }
 
 model Attendance {
-  id           String            @id @default(cuid())
+  id           String           @id @default(cuid())
   sessionId    String
-  session      Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session      Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   enrollmentId String
-  enrollment   Enrollment        @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   status       AttendanceStatus
 
   @@unique([sessionId, enrollmentId])
 }
 
 model ScoreRecord {
-  id            String        @id @default(cuid())
-  sessionId     String
-  session       Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  enrollmentId  String
-  enrollment    Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  category      ScoreCategory
-  originalScore Float? // null = missed / not yet entered
-  retakeScore   Float? // 補考 — if present, use this instead of originalScore
-  note          String?
+  id             String        @id @default(cuid())
+  sessionId      String
+  session        Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  enrollmentId   String
+  enrollment     Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  category       ScoreCategory
+  originalScore  Float? // null = missed / not yet entered
+  retakeScore    Float? // 補考 — if present, use this instead of originalScore
+  retakeMaxScore Float? // the retake's own total possible points — can differ per student, unlike the main quiz's total
+  note           String?
 
   @@unique([sessionId, enrollmentId, category])
 }

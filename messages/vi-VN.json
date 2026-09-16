@@ -16,11 +16,13 @@
     "signOut": "Đăng xuất",
     "copy": "Sao chép",
     "copied": "Đã sao chép!",
+    "selectTermFirst": "Vui lòng chọn học kỳ trước",
     "role": {
       "TEACHER": "giáo viên",
       "TA": "trợ giảng",
       "STUDENT": "học viên"
-    }
+    },
+    "saving": "Đang lưu…"
   },
   "login": {
     "title": "Đăng nhập",
@@ -49,6 +51,7 @@
   },
   "dashboard": {
     "title": "Học kỳ",
+    "subtitle": "Quản lý các học kỳ và lớp học bạn giảng dạy.",
     "newTerm": "Học kỳ mới",
     "subject": "Môn học",
     "term": "Học kỳ",
@@ -73,7 +76,8 @@
     "deleteTermConfirm": "Xóa {term}? Thao tác này sẽ xóa vĩnh viễn danh sách học viên, buổi học, điểm danh và điểm số của học kỳ này. Không thể hoàn tác.",
     "deleteTermError": "Không thể xóa học kỳ. Vui lòng thử lại.",
     "addStudentsWhileCreating": "Thêm học viên",
-    "addStudentsPlaceholder": "Mỗi dòng một tên học viên (không bắt buộc — bạn cũng có thể thêm sau ở tab Danh sách học viên)"
+    "addStudentsPlaceholder": "Mỗi dòng một tên học viên (không bắt buộc — bạn cũng có thể thêm sau ở tab Danh sách học viên)",
+    "editTitle": "Chỉnh sửa học kỳ"
   },
   "roster": {
     "title": "Danh sách học viên",
@@ -84,11 +88,17 @@
     "removeStudent": "Xóa khỏi học kỳ",
     "invite": "Mời",
     "inviteTA": "Mời trợ giảng",
-    "inviteTAEmail": "Email (không bắt buộc)"
+    "inviteTAEmail": "Email (không bắt buộc)",
+    "linked": "Đã liên kết",
+    "notLinked": "Chưa liên kết",
+    "status": "Trạng thái"
   },
   "sessions": {
     "title": "Buổi học",
-    "newSession": "Buổi học mới",
+    "newSession": "Thêm buổi học",
+    "filterAll": "Tất cả",
+    "filterUpcoming": "Sắp tới",
+    "filterPast": "Đã qua",
     "label": "Nhãn",
     "covers": "Nội dung",
     "attendanceTurnout": "Điểm danh",
@@ -99,7 +109,13 @@
     "midterm": "Giữa kỳ",
     "final": "Thi cuối kỳ",
     "editTitle": "Sửa buổi học",
-    "newTitle": "Buổi học mới"
+    "newTitle": "Thêm buổi học",
+    "deleteConfirm": "Xóa buổi học này? Thao tác này sẽ xóa điểm danh và điểm số liên quan, không thể hoàn tác.",
+    "quizMaxScore": "Tổng điểm bài kiểm tra",
+    "assignmentMaxScore": "Tổng điểm bài tập",
+    "midtermMaxScore": "Tổng điểm giữa kỳ (đọc + nghe)",
+    "finalMaxScore": "Tổng điểm thi cuối kỳ",
+    "unsavedChanges": "Có thay đổi chưa lưu"
   },
   "grid": {
     "title": "Bảng điểm",
@@ -110,8 +126,7 @@
     "PRESENT": "Có mặt",
     "EXCUSED": "Nghỉ phép",
     "ABSENT": "Vắng mặt",
-    "NOT_ENROLLED": "Chưa ghi danh",
-    "ABROAD": "Về nước"
+    "NOT_ENROLLED": "Chưa ghi danh"
   },
   "studentDetail": {
     "title": "Hồ sơ học viên",
@@ -127,7 +142,8 @@
   },
   "belowPassing": {
     "title": "Dưới điểm đạt",
-    "empty": "Hiện không có học viên nào dưới điểm đạt."
+    "empty": "Hiện không có học viên nào dưới điểm đạt.",
+    "needsAttention": "Cần chú ý"
   },
   "studentView": {
     "title": "Điểm của tôi",

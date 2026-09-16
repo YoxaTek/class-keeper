@@ -3,38 +3,68 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
-import type { Subject } from "@prisma/client";
+import { Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DateInput } from "@/components/ui/DateInput";
 import { Drawer } from "@/components/ui/Drawer";
 import { inputClass, inputClassSm, labelClass } from "@/components/ui/styles";
 
-const NEW_SUBJECT = "__new__";
+interface TermFields {
+  subjectName: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  weightAttendance: number;
+  weightAssignment: number;
+  weightQuiz: number;
+  weightMidterm: number;
+  weightFinal: number;
+  weightImpression: number;
+  maxExcusedAbsences: number;
+  passingScore: number;
+}
 
-export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
+type Props = { mode: "create" } | { mode: "edit"; termId: string; initial: TermFields };
+
+export function TermFormDrawer(props: Props) {
   const t = useTranslations("dashboard");
   const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [subjectId, setSubjectId] = useState(subjects[0]?.id ?? NEW_SUBJECT);
-  const [newSubjectName, setNewSubjectName] = useState("");
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+
+  const initial: TermFields =
+    props.mode === "edit"
+      ? props.initial
+      : {
+          subjectName: "",
+          name: "",
+          startDate: "",
+          endDate: "",
+          weightAttendance: 15,
+          weightAssignment: 15,
+          weightQuiz: 30,
+          weightMidterm: 15,
+          weightFinal: 15,
+          weightImpression: 10,
+          maxExcusedAbsences: 3,
+          passingScore: 70,
+        };
+
+  const [subjectName, setSubjectName] = useState(initial.subjectName);
+  const [name, setName] = useState(initial.name);
+  const [startDate, setStartDate] = useState(initial.startDate);
+  const [endDate, setEndDate] = useState(initial.endDate);
   const [weights, setWeights] = useState({
-    weightAttendance: 15,
-    weightAssignment: 15,
-    weightQuiz: 30,
-    weightMidterm: 15,
-    weightFinal: 15,
-    weightImpression: 10,
+    weightAttendance: initial.weightAttendance,
+    weightAssignment: initial.weightAssignment,
+    weightQuiz: initial.weightQuiz,
+    weightMidterm: initial.weightMidterm,
+    weightFinal: initial.weightFinal,
+    weightImpression: initial.weightImpression,
   });
-  const [midtermMaxScore, setMidtermMaxScore] = useState(100);
-  const [maxExcusedAbsences, setMaxExcusedAbsences] = useState(3);
-  const [passingScore, setPassingScore] = useState(70);
-  const [studentNames, setStudentNames] = useState("");
+  const [maxExcusedAbsences, setMaxExcusedAbsences] = useState(initial.maxExcusedAbsences);
+  const [passingScore, setPassingScore] = useState(initial.passingScore);
   const [error, setError] = useState<string | null>(null);
   const dateRangeError =
     startDate && endDate && endDate < startDate ? "End date must be on or after start date." : null;
@@ -54,60 +84,44 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
       return;
     }
 
-    const res = await fetch("/api/terms", {
-      method: "POST",
+    const url = props.mode === "edit" ? `/api/terms/${props.termId}` : "/api/terms";
+    const res = await fetch(url, {
+      method: props.mode === "edit" ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
-        ...(subjectId === NEW_SUBJECT ? { newSubjectName } : { subjectId }),
+        subjectName,
         startDate,
         endDate,
-        midtermMaxScore,
         maxExcusedAbsences,
         passingScore,
         ...weights,
       }),
     });
 
+    setSubmitting(false);
     if (!res.ok) {
-      setSubmitting(false);
       const body = await res.json().catch(() => null);
-      setError(typeof body?.error === "string" ? body.error : "Could not create the term.");
+      setError(typeof body?.error === "string" ? body.error : "Could not save the term.");
       return;
     }
 
-    const term = await res.json();
-    const names = studentNames
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    let studentsError: string | null = null;
-    if (names.length > 0) {
-      const studentsRes = await fetch(`/api/terms/${term.id}/students`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ names }),
-      });
-      if (!studentsRes.ok) {
-        const body = await studentsRes.json().catch(() => null);
-        // The term itself was created successfully — surface the roster
-        // issue but don't roll back or block; they can add students from
-        // the Roster tab instead.
-        studentsError = typeof body?.error === "string" ? body.error : "Term created, but couldn't add students.";
-      }
-    }
-
-    setSubmitting(false);
+    setOpen(false);
     router.refresh();
-    if (studentsError) {
-      setError(studentsError);
-    } else {
-      setOpen(false);
-    }
   }
 
   if (!open) {
+    if (props.mode === "edit") {
+      return (
+        <button
+          onClick={() => setOpen(true)}
+          title={tc("edit")}
+          className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        >
+          <Pencil className="h-3.5 w-3.5" aria-hidden />
+        </button>
+      );
+    }
     return (
       <Button variant="primary" onClick={() => setOpen(true)}>
         <Plus className="h-4 w-4" aria-hidden />
@@ -117,29 +131,19 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
   }
 
   return (
-    <Drawer title={t("createTitle")} onClose={() => setOpen(false)}>
+    <Drawer title={props.mode === "edit" ? t("editTitle") : t("createTitle")} onClose={() => setOpen(false)}>
       <form onSubmit={onSubmit} className="flex h-full flex-col">
         <div className="flex-1 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className={labelClass}>{t("subject")}</label>
-              <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className={inputClass}>
-                {subjects.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-                <option value={NEW_SUBJECT}>+ New subject…</option>
-              </select>
-              {subjectId === NEW_SUBJECT && (
-                <input
-                  required
-                  value={newSubjectName}
-                  onChange={(e) => setNewSubjectName(e.target.value)}
-                  placeholder="e.g. Chinese — Basic"
-                  className={`${inputClass} mt-1`}
-                />
-              )}
+              <input
+                required
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+                placeholder="e.g. Chinese — Basic"
+                className={inputClass}
+              />
             </div>
 
             <div className="space-y-1">
@@ -161,16 +165,6 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
             <div className="space-y-1">
               <label className={labelClass}>{t("endDate")}</label>
               <DateInput value={endDate} onChange={setEndDate} min={startDate || undefined} required />
-            </div>
-
-            <div className="space-y-1">
-              <label className={labelClass}>{t("midtermMaxScore")}</label>
-              <input
-                type="number"
-                value={midtermMaxScore}
-                onChange={(e) => setMidtermMaxScore(Number(e.target.value))}
-                className={inputClass}
-              />
             </div>
 
             <div className="space-y-1">
@@ -210,17 +204,6 @@ export function TermCreateForm({ subjects }: { subjects: Subject[] }) {
               ))}
             </div>
           </fieldset>
-
-          <div className="space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-            <label className={labelClass}>{t("addStudentsWhileCreating")}</label>
-            <textarea
-              value={studentNames}
-              onChange={(e) => setStudentNames(e.target.value)}
-              placeholder={t("addStudentsPlaceholder")}
-              rows={4}
-              className={`${inputClass} font-mono`}
-            />
-          </div>
 
           {(dateRangeError ?? error) && (
             <p className="text-sm text-red-600 dark:text-red-400">{dateRangeError ?? error}</p>

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assertCanCreateTerm, PlanLimitError } from "@/lib/subscriptions/gate";
+import { getOrCreateSubjectId } from "@/lib/getOrCreateSubject";
+import { termInputSchema, validateTermDateRange } from "@/lib/validation/term";
 
 export async function GET() {
   const session = await auth();
@@ -27,23 +28,6 @@ export async function GET() {
   return NextResponse.json(terms);
 }
 
-const createTermSchema = z.object({
-  name: z.string().min(1),
-  subjectId: z.string().optional(),
-  newSubjectName: z.string().min(1).optional(),
-  startDate: z.string(),
-  endDate: z.string(),
-  maxExcusedAbsences: z.number().int().min(0).default(3),
-  midtermMaxScore: z.number().int().min(1).default(100),
-  passingScore: z.number().min(0).max(100).default(70),
-  weightAttendance: z.number().min(0).default(15),
-  weightAssignment: z.number().min(0).default(15),
-  weightQuiz: z.number().min(0).default(30),
-  weightMidterm: z.number().min(0).default(15),
-  weightFinal: z.number().min(0).default(15),
-  weightImpression: z.number().min(0).default(10),
-});
-
 export async function POST(request: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -54,7 +38,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const body = createTermSchema.safeParse(await request.json());
+  const body = termInputSchema.safeParse(await request.json());
   if (!body.success) {
     return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
   }
@@ -62,15 +46,9 @@ export async function POST(request: Request) {
 
   const startDate = new Date(data.startDate);
   const endDate = new Date(data.endDate);
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return NextResponse.json({ error: "Invalid startDate or endDate" }, { status: 400 });
-  }
-  if (endDate < startDate) {
-    return NextResponse.json({ error: "End date must be on or after start date" }, { status: 400 });
-  }
-
-  if (!data.subjectId && !data.newSubjectName) {
-    return NextResponse.json({ error: "subjectId or newSubjectName is required" }, { status: 400 });
+  const dateError = validateTermDateRange(startDate, endDate);
+  if (dateError) {
+    return NextResponse.json({ error: dateError }, { status: 400 });
   }
 
   try {
@@ -80,9 +58,7 @@ export async function POST(request: Request) {
     throw e;
   }
 
-  const subjectId = data.subjectId
-    ? data.subjectId
-    : (await prisma.subject.create({ data: { name: data.newSubjectName! } })).id;
+  const subjectId = await getOrCreateSubjectId(data.subjectName);
 
   const term = await prisma.term.create({
     data: {
@@ -92,7 +68,6 @@ export async function POST(request: Request) {
       startDate,
       endDate,
       maxExcusedAbsences: data.maxExcusedAbsences,
-      midtermMaxScore: data.midtermMaxScore,
       passingScore: data.passingScore,
       weightAttendance: data.weightAttendance,
       weightAssignment: data.weightAssignment,
