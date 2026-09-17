@@ -4,12 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { BookOpenCheck } from "lucide-react";
 import type { Role } from "@prisma/client";
 import { AppSidebar } from "@/components/AppSidebar";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ProfileMenu } from "@/components/ProfileMenu";
-import { TermSelector } from "@/components/TermSelector";
 import { AdSlot } from "@/components/AdSlot";
+import { MobileFooterNav } from "@/components/MobileFooterNav";
 
 export function AppShell({
   name,
@@ -29,6 +29,8 @@ export function AppShell({
   const t = useTranslations();
   const pathname = usePathname();
   const termId = pathname.match(/^\/terms\/([^/]+)/)?.[1];
+  const currentTerm = termId ? terms.find((term) => term.id === termId) : undefined;
+  const isTermsList = pathname === "/";
 
   return (
     <div className="flex h-screen flex-col">
@@ -38,23 +40,27 @@ export function AppShell({
             <Image src="/icon-512.png" alt="" width={20} height={20} className="rounded-sm" />
             {t("common.appName")}
           </Link>
-          {termId && (
-            <>
-              <span className="text-zinc-300 dark:text-zinc-700">/</span>
-              <TermSelector terms={terms} currentTermId={termId} />
-            </>
-          )}
         </div>
-        <div className="flex items-center gap-1">
-          <LanguageSwitcher />
-          <ProfileMenu name={name} email={email} image={image} role={role} />
+        <div className="flex min-w-0 items-center gap-3">
+          {currentTerm && (
+            <span className="flex min-w-0 max-w-[45vw] items-center gap-1.5 truncate text-sm font-bold text-[#0f6e56] lg:max-w-none dark:text-teal-400">
+              <BookOpenCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="truncate">{currentTerm.label}</span>
+            </span>
+          )}
+          {/* On mobile, other pages have the footer's Settings tab for this — only the
+              Terms list hides the footer, so it needs profile access in the header. */}
+          <div className={isTermsList ? "" : "hidden lg:block"}>
+            <ProfileMenu name={name} email={email} image={image} role={role} />
+          </div>
         </div>
       </header>
       <AdSlot />
       <div className="flex min-h-0 flex-1">
         <AppSidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto px-6 py-5">{children}</main>
+        <main className="min-w-0 flex-1 overflow-y-auto px-6 py-5 pb-24 lg:pb-5">{children}</main>
       </div>
+      <MobileFooterNav terms={terms} />
     </div>
   );
 }

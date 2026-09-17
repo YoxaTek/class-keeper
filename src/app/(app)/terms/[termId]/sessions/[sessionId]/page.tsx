@@ -11,7 +11,7 @@ export default async function ClassDetailPage({
   params: Promise<{ termId: string; sessionId: string }>;
 }) {
   const { termId, sessionId } = await params;
-  const { term } = await requireTermAccess(termId);
+  await requireTermAccess(termId);
   const t = await getTranslations();
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
 
@@ -34,13 +34,7 @@ export default async function ClassDetailPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumb
-        items={[
-          { label: term.name, href: `/terms/${termId}` },
-          { label: t("sessions.title"), href: `/terms/${termId}` },
-          { label: sessionLabel },
-        ]}
-      />
+      <Breadcrumb items={[{ label: t("sessions.title"), href: `/terms/${termId}` }, { label: sessionLabel }]} />
 
       <div>
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{sessionLabel}</h2>

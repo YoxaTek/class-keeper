@@ -20,7 +20,7 @@ export function AuthShell({ children, appName }: { children: React.ReactNode; ap
         </div>
         <div />
       </div>
-      <div className="flex flex-1 items-center px-6 py-12 sm:px-12">
+      <div className="flex flex-1 items-center justify-center px-6 py-12 sm:justify-start sm:px-12">
         <div className="w-full max-w-sm">{children}</div>
       </div>
     </div>

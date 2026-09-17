@@ -58,3 +58,22 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Left-anchored drawer (mobile nav) — same idea, mirrored direction. */
+@keyframes drawer-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+

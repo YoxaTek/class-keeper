@@ -2,9 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
-import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/currentUser";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getCurrentUser, getStaffTerms } from "@/lib/currentUser";
 import { SignOutButton } from "@/components/SignOutButton";
 import { AppShell } from "@/components/AppShell";
 import { AdSlot } from "@/components/AdSlot";
@@ -27,7 +25,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {t("common.appName")}
           </Link>
           <nav className="flex items-center gap-1 text-sm">
-            <LanguageSwitcher />
             <Link
               href="/account"
               className="rounded-md px-2.5 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
@@ -43,23 +40,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const terms = await prisma.term.findMany({
-    where:
-      user.role === "TEACHER"
-        ? { teacherId: user.id }
-        : { assistants: { some: { userId: user.id } } },
-    include: { subject: true },
-    orderBy: { startDate: "desc" },
-  });
+  const terms = await getStaffTerms();
 
   return (
-    <AppShell
-      name={user.name}
-      email={user.email}
-      image={user.image}
-      role={user.role}
-      terms={terms.map((term) => ({ id: term.id, label: `${term.subject.name} · ${term.name}` }))}
-    >
+    <AppShell name={user.name} email={user.email} image={user.image} role={user.role} terms={terms}>
       {children}
     </AppShell>
   );

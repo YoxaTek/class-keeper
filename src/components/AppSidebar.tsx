@@ -27,8 +27,8 @@ export function AppSidebar() {
     { href: `/terms/${termId}/below-passing`, label: t("belowPassing.title"), icon: TriangleAlert },
   ];
 
-  return (
-    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+  function nav() {
+    return (
       <nav className="flex-1 space-y-0.5 p-2">
         {items.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname === href;
@@ -48,6 +48,14 @@ export function AppSidebar() {
           );
         })}
       </nav>
+    );
+  }
+
+  // Mobile now uses a native-style bottom tab bar.
+  // Keep this component desktop-only for term-scoped sidebar navigation.
+  return (
+    <aside className="hidden h-full w-56 shrink-0 flex-col border-r border-zinc-200 bg-white lg:flex dark:border-zinc-800 dark:bg-zinc-950">
+      {nav()}
     </aside>
   );
 }

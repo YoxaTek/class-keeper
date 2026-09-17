@@ -8,7 +8,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default async function BelowPassingPage({ params }: { params: Promise<{ termId: string }> }) {
   const { termId } = await params;
-  const { term } = await requireTermAccess(termId);
+  await requireTermAccess(termId);
   const t = await getTranslations("belowPassing");
   const tCommon = await getTranslations("common");
   const tDetail = await getTranslations("studentDetail");
@@ -20,7 +20,7 @@ export default async function BelowPassingPage({ params }: { params: Promise<{ t
 
   return (
     <div className="space-y-4">
-      <Breadcrumb items={[{ label: term.name, href: `/terms/${termId}` }, { label: t("title") }]} />
+      <Breadcrumb items={[{ label: t("title") }]} />
 
       {belowPassing.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("empty")}</p>

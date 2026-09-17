@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server";
 import { ChevronRight } from "lucide-react";
 import { requireTermAccess } from "@/lib/termAccess";
 import { prisma } from "@/lib/prisma";
-import { cardClass } from "@/components/ui/styles";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ClassFormDrawer } from "./ClassFormDrawer";
 import { ClassDeleteButton } from "./ClassDeleteButton";
@@ -19,7 +18,7 @@ export default async function SessionsListPage({
   searchParams: Promise<{ filter?: string }>;
 }) {
   const { termId } = await params;
-  const { term } = await requireTermAccess(termId);
+  await requireTermAccess(termId);
   const { filter: rawFilter } = await searchParams;
   const filter: Filter = rawFilter === "upcoming" || rawFilter === "past" ? rawFilter : "all";
   const t = await getTranslations();
@@ -56,8 +55,8 @@ export default async function SessionsListPage({
   ];
 
   return (
-    <div>
-      <Breadcrumb items={[{ label: term.name, href: `/terms/${termId}` }, { label: t("sessions.title") }]} />
+    <div className="flex flex-1 flex-col">
+      <Breadcrumb items={[{ label: t("sessions.title") }]} />
 
       <div className="mb-3 flex items-center justify-between">
         <div className="flex gap-1">
@@ -78,102 +77,82 @@ export default async function SessionsListPage({
         <ClassFormDrawer mode="create" termId={termId} />
       </div>
 
-      <div className={`overflow-hidden ${cardClass}`}>
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-              <th className="px-4 py-2">{t("common.date")}</th>
-              <th className="px-4 py-2">{t("sessions.label")}</th>
-              <th className="px-4 py-2">{t("sessions.covers")}</th>
-              <th className="px-4 py-2 text-right">{t("sessions.attendanceTurnout")}</th>
-              <th className="px-4 py-2 text-right">{t("sessions.scoreAverage")}</th>
-              <th className="w-24 px-2 py-2" />
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-zinc-950">
-            {sessions.map((s) => {
-              const countable = s.attendance.filter((a) => a.status !== "NOT_ENROLLED");
-              const present = countable.filter((a) => a.status === "PRESENT").length;
-              const turnout = countable.length ? `${Math.round((present / countable.length) * 100)}%` : "—";
-              const scoreAvg = s.scores.length
-                ? `${(
-                    s.scores.reduce((sum, r) => sum + pctFor(r, categorySessionMax(s, r.category)), 0) /
-                    s.scores.length
-                  ).toFixed(1)}%`
-                : "—";
+      {sessions.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {sessions.map((s) => {
+            const countable = s.attendance.filter((a) => a.status !== "NOT_ENROLLED");
+            const present = countable.filter((a) => a.status === "PRESENT").length;
+            const turnout = countable.length ? `${Math.round((present / countable.length) * 100)}%` : "—";
+            const scoreAvg = s.scores.length
+              ? `${(
+                  s.scores.reduce((sum, r) => sum + pctFor(r, categorySessionMax(s, r.category)), 0) /
+                  s.scores.length
+                ).toFixed(1)}%`
+              : "—";
 
-              const href = `/terms/${termId}/sessions/${s.id}`;
+            const href = `/terms/${termId}/sessions/${s.id}`;
 
-              return (
-                <tr key={s.id} className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50 dark:border-zinc-900 dark:hover:bg-zinc-900">
-                  <td className="p-0">
-                    <Link href={href} className="tabular block px-4 py-2.5 font-medium text-zinc-900 dark:text-zinc-100">
-                      {dateFmt.format(s.date)}
-                    </Link>
-                  </td>
-                  <td className="p-0">
-                    <Link href={href} className="block px-4 py-2.5 text-zinc-700 dark:text-zinc-300">
-                      {s.label ?? "—"}
-                    </Link>
-                  </td>
-                  <td className="p-0">
-                    <Link href={href} className="block px-4 py-2.5 text-zinc-500 dark:text-zinc-500">
-                      {covers(s) || "—"}
-                    </Link>
-                  </td>
-                  <td className="p-0">
-                    <Link href={href} className="tabular block px-4 py-2.5 text-right text-zinc-500 dark:text-zinc-500">
-                      {s.hasAttendance ? turnout : "—"}
-                    </Link>
-                  </td>
-                  <td className="p-0">
-                    <Link href={href} className="tabular block px-4 py-2.5 text-right text-zinc-500 dark:text-zinc-500">
-                      {scoreAvg}
-                    </Link>
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <div className="flex items-center justify-end gap-1">
-                      <ClassFormDrawer
-                        mode="edit"
-                        termId={termId}
-                        sessionId={s.id}
-                        initial={{
-                          date: s.date.toISOString().slice(0, 10),
-                          label: s.label ?? "",
-                          hasAttendance: s.hasAttendance,
-                          hasQuiz: s.hasQuiz,
-                          quizMaxScore: s.quizMaxScore,
-                          hasAssignment: s.hasAssignment,
-                          assignmentMaxScore: s.assignmentMaxScore,
-                          hasMidterm: s.hasMidterm,
-                          midtermMaxScore: s.midtermMaxScore,
-                          hasFinal: s.hasFinal,
-                          finalMaxScore: s.finalMaxScore,
-                          hasFeedback: s.hasFeedback,
-                        }}
-                      />
-                      <ClassDeleteButton termId={termId} sessionId={s.id} />
-                      <Link
-                        href={href}
-                        className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                      >
-                        <ChevronRight className="h-4 w-4" aria-hidden />
-                      </Link>
+            return (
+              <article
+                key={s.id}
+                className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+              >
+                <Link href={href} className="block space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="tabular text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                        {dateFmt.format(s.date)}
+                      </p>
+                      {s.label && <p className="text-sm text-zinc-700 dark:text-zinc-300">{s.label}</p>}
                     </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {sessions.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-500">
-                  —
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                    <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+                  </div>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-500">{covers(s) || "—"}</p>
+                  <div className="flex gap-4 text-sm">
+                    <p>
+                      <span className="text-zinc-500 dark:text-zinc-500">{t("sessions.attendanceTurnout")}: </span>
+                      <span className="tabular text-zinc-700 dark:text-zinc-300">
+                        {s.hasAttendance ? turnout : "—"}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="text-zinc-500 dark:text-zinc-500">{t("sessions.scoreAverage")}: </span>
+                      <span className="tabular text-zinc-700 dark:text-zinc-300">{scoreAvg}</span>
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="mt-3 flex items-center justify-end gap-1 border-t border-zinc-100 pt-3 dark:border-zinc-900">
+                  <ClassFormDrawer
+                    mode="edit"
+                    termId={termId}
+                    sessionId={s.id}
+                    initial={{
+                      date: s.date.toISOString().slice(0, 10),
+                      label: s.label ?? "",
+                      hasAttendance: s.hasAttendance,
+                      hasQuiz: s.hasQuiz,
+                      quizMaxScore: s.quizMaxScore,
+                      hasAssignment: s.hasAssignment,
+                      assignmentMaxScore: s.assignmentMaxScore,
+                      hasMidterm: s.hasMidterm,
+                      midtermMaxScore: s.midtermMaxScore,
+                      hasFinal: s.hasFinal,
+                      finalMaxScore: s.finalMaxScore,
+                      hasFeedback: s.hasFeedback,
+                    }}
+                  />
+                  <ClassDeleteButton termId={termId} sessionId={s.id} />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-1 items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-500">
+          {t("sessions.empty", { button: t("sessions.newSession") })}
+        </div>
+      )}
     </div>
   );
 }

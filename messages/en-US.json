@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "ClassKeeper",
+    "home": "Home",
+    "profile": "Profile",
     "save": "Save",
     "cancel": "Cancel",
     "add": "Add",
@@ -22,7 +24,8 @@
       "TA": "teaching assistant",
       "STUDENT": "student"
     },
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "language": "Language"
   },
   "login": {
     "title": "Sign in",
@@ -98,13 +101,9 @@
     "notLinked": "Not linked",
     "status": "Status",
     "joinLink": "Join link",
-    "joinLinkHelp": "Share this link or QR code so students can request to join this term.",
+    "joinLinkHelp": "Share this link or QR code so students can join this term instantly.",
     "showQr": "Show QR code",
-    "hideQr": "Hide QR code",
-    "pendingJoinRequests": "Pending join requests",
-    "approve": "Approve",
-    "reject": "Reject",
-    "joinRequestError": "Could not approve this request. Please try again."
+    "hideQr": "Hide QR code"
   },
   "sessions": {
     "title": "Classes",
@@ -129,7 +128,8 @@
     "midtermMaxScore": "Midterm total score",
     "finalMaxScore": "Final exam total score",
     "unsavedChanges": "Unsaved changes",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "empty": "No classes yet — use the \"{button}\" button to add one."
   },
   "grid": {
     "title": "Session grid",
@@ -170,9 +170,6 @@
     "noEvaluationYet": "Not written yet.",
     "sessionScores": "Class scores"
   },
-  "language": {
-    "label": "Language"
-  },
   "onboarding": {
     "title": "Set up your account",
     "bootstrapSubtitle": "Just a couple of details before you get started.",
@@ -196,7 +193,7 @@
     "subtitle": "Sign in to accept this invite."
   },
   "account": {
-    "title": "Account",
+    "title": "Settings",
     "deleteAccount": "Delete account",
     "deleteWarning": "Permanently deletes your account. If you teach any terms, everything in them — rosters, attendance, and grades — is deleted too. This cannot be undone.",
     "confirmEmailLabel": "Type {email} to confirm",
@@ -229,10 +226,9 @@
     "title": "Join this class",
     "name": "Name",
     "studentId": "Student ID",
-    "email": "Email",
-    "submit": "Request to join",
-    "submitting": "Submitting…",
-    "submitted": "Request sent! Your teacher will review it before you're added to the roster.",
-    "error": "Couldn't submit your request. Please try again."
+    "submit": "Join class",
+    "submitting": "Joining…",
+    "error": "Couldn't join this class. Please try again.",
+    "alreadyTeaching": "This account already teaches a class — sign in with a different account to join as a student."
   }
 }

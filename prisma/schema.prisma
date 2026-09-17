@@ -189,11 +189,10 @@ model Term {
   finalExamSessionId String? // optional override: which session's score counts as the final exam
   institute          String? // shown on the public join page; one value for the whole term, not per student
 
-  assistants   TermAssistant[]
-  enrollments  Enrollment[]
-  sessions     Session[]
-  invites      Invite[]
-  joinRequests JoinRequest[]
+  assistants  TermAssistant[]
+  enrollments Enrollment[]
+  sessions    Session[]
+  invites     Invite[]
 }
 
 model TermAssistant {
@@ -215,19 +214,6 @@ model Student {
   user        User?        @relation(fields: [userId], references: [id])
   enrollments Enrollment[]
   invite      Invite?
-}
-
-// A self-submitted request to join a term via its public join link/QR code,
-// pending the teacher's approval. Approving one creates the real Student +
-// Enrollment rows and removes this row; rejecting just removes it.
-model JoinRequest {
-  id        String   @id @default(cuid())
-  termId    String
-  term      Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
-  name      String
-  studentId String
-  email     String
-  createdAt DateTime @default(now())
 }
 
 model Enrollment {

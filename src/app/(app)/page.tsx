@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { BookMarked, BookOpenText, CalendarDays, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
 import { TermFormDrawer } from "./TermFormDrawer";
@@ -33,78 +34,78 @@ export default async function DashboardPage() {
         {role === "TEACHER" && <TermFormDrawer mode="create" />}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-              <th className="px-4 py-2">{t("term")}</th>
-              <th className="px-4 py-2">{t("subject")}</th>
-              <th className="px-4 py-2">{t("dates")}</th>
-              <th className="px-4 py-2 text-right">{t("students")}</th>
-              <th className="w-20 px-2 py-2" />
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-zinc-950">
-            {terms.map((term) => (
-              <tr key={term.id} className="group border-b border-zinc-100 last:border-0 hover:bg-zinc-50 dark:border-zinc-900 dark:hover:bg-zinc-900">
-                <td className="p-0">
-                  <Link href={`/terms/${term.id}`} className="block px-4 py-2.5 font-medium text-zinc-900 dark:text-zinc-100">
-                    {term.name}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={`/terms/${term.id}`} className="block px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
-                    {term.subject.name}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={`/terms/${term.id}`} className="tabular block px-4 py-2.5 text-zinc-500 dark:text-zinc-500">
+      {terms.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {terms.map((term) => (
+            <article
+              key={term.id}
+              className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+            >
+              <Link href={`/terms/${term.id}`} className="block space-y-3">
+                <div>
+                  <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
+                    <BookMarked className="h-3 w-3" aria-hidden />
+                    {t("term")}
+                  </p>
+                  <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{term.name}</p>
+                </div>
+                <div>
+                  <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
+                    <BookOpenText className="h-3 w-3" aria-hidden />
+                    {t("subject")}
+                  </p>
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{term.subject.name}</p>
+                </div>
+                <div>
+                  <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
+                    <CalendarDays className="h-3 w-3" aria-hidden />
+                    {t("dates")}
+                  </p>
+                  <p className="tabular text-sm text-zinc-600 dark:text-zinc-400">
                     {dateFmt.format(term.startDate)} – {dateFmt.format(term.endDate)}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={`/terms/${term.id}`} className="tabular block px-4 py-2.5 text-right text-zinc-500 dark:text-zinc-500">
-                    {term._count.enrollments}
-                  </Link>
-                </td>
-                <td className="px-2 py-2.5 text-right">
-                  {term.teacherId === userId && (
-                    <div className="flex items-center justify-end gap-1">
-                      <TermFormDrawer
-                        mode="edit"
-                        termId={term.id}
-                        initial={{
-                          subjectName: term.subject.name,
-                          name: term.name,
-                          startDate: term.startDate.toISOString().slice(0, 10),
-                          endDate: term.endDate.toISOString().slice(0, 10),
-                          weightAttendance: term.weightAttendance,
-                          weightAssignment: term.weightAssignment,
-                          weightQuiz: term.weightQuiz,
-                          weightMidterm: term.weightMidterm,
-                          weightFinal: term.weightFinal,
-                          weightImpression: term.weightImpression,
-                          maxExcusedAbsences: term.maxExcusedAbsences,
-                          passingScore: term.passingScore,
-                          institute: term.institute ?? "",
-                        }}
-                      />
-                      <TermDeleteButton termId={term.id} termLabel={`${term.subject.name} · ${term.name}`} />
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {terms.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-500">
-                  {role === "TA" ? t("taPending") : "—"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  </p>
+                </div>
+              </Link>
+
+              <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-900">
+                <p className="tabular flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                  <Users className="h-3.5 w-3.5" aria-hidden />
+                  {t("students")}: {term._count.enrollments}
+                </p>
+
+                {term.teacherId === userId && (
+                  <div className="flex items-center gap-1">
+                    <TermFormDrawer
+                      mode="edit"
+                      termId={term.id}
+                      initial={{
+                        subjectName: term.subject.name,
+                        name: term.name,
+                        startDate: term.startDate.toISOString().slice(0, 10),
+                        endDate: term.endDate.toISOString().slice(0, 10),
+                        weightAttendance: term.weightAttendance,
+                        weightAssignment: term.weightAssignment,
+                        weightQuiz: term.weightQuiz,
+                        weightMidterm: term.weightMidterm,
+                        weightFinal: term.weightFinal,
+                        weightImpression: term.weightImpression,
+                        maxExcusedAbsences: term.maxExcusedAbsences,
+                        passingScore: term.passingScore,
+                        institute: term.institute ?? "",
+                      }}
+                    />
+                    <TermDeleteButton termId={term.id} termLabel={`${term.subject.name} · ${term.name}`} />
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-lg border border-zinc-200 bg-white px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-500">
+          {role === "TA" ? t("taPending") : "—"}
+        </div>
+      )}
 
       {role === "TEACHER" && organizationId && <InviteCoTeacherForm />}
     </div>

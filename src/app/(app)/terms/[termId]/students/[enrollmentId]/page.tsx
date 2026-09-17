@@ -74,7 +74,6 @@ export default async function StudentDetailPage({
     <div className="space-y-4">
       <Breadcrumb
         items={[
-          { label: term.name, href: `/terms/${termId}/roster` },
           { label: tRoster("title"), href: `/terms/${termId}/roster` },
           { label: enrollment.student.name },
         ]}

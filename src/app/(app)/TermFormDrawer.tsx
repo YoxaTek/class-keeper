@@ -71,6 +71,8 @@ export function TermFormDrawer(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const dateRangeError =
     startDate && endDate && endDate < startDate ? "End date must be on or after start date." : null;
+  const weightTotal = Object.values(weights).reduce((sum, w) => sum + w, 0);
+  const weightError = weightTotal !== 100 ? `Grading weights must add up to 100 (currently ${weightTotal}).` : null;
 
   function updateWeight(key: keyof typeof weights, value: number) {
     setWeights((w) => ({ ...w, [key]: value }));
@@ -81,9 +83,9 @@ export function TermFormDrawer(props: Props) {
     setSubmitting(true);
     setError(null);
 
-    if (dateRangeError) {
+    if (dateRangeError || weightError) {
       setSubmitting(false);
-      setError(dateRangeError);
+      setError(dateRangeError ?? weightError);
       return;
     }
 
@@ -135,9 +137,22 @@ export function TermFormDrawer(props: Props) {
   }
 
   return (
-    <Drawer title={props.mode === "edit" ? t("editTitle") : t("createTitle")} onClose={() => setOpen(false)}>
-      <form onSubmit={onSubmit} className="flex h-full flex-col">
-        <div className="flex-1 space-y-4">
+    <Drawer
+      title={props.mode === "edit" ? t("editTitle") : t("createTitle")}
+      onClose={() => setOpen(false)}
+      footer={
+        <div className="flex gap-2">
+          <Button type="submit" form="term-form" variant="primary" disabled={submitting || !!dateRangeError || !!weightError}>
+            {tc("save")}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            {tc("cancel")}
+          </Button>
+        </div>
+      }
+    >
+      <form id="term-form" onSubmit={onSubmit}>
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className={labelClass}>{t("subject")}</label>
@@ -203,7 +218,12 @@ export function TermFormDrawer(props: Props) {
           </div>
 
           <fieldset className="space-y-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-            <legend className={`${labelClass} mb-1`}>{t("weights")}</legend>
+            <legend className={`${labelClass} mb-1 flex items-center gap-2`}>
+              {t("weights")}
+              <span className={weightError ? "text-red-600 dark:text-red-400" : "text-zinc-400 dark:text-zinc-500"}>
+                ({weightTotal}/100)
+              </span>
+            </legend>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
               {(Object.keys(weights) as (keyof typeof weights)[]).map((key) => (
                 <div key={key} className="space-y-1">
@@ -219,18 +239,9 @@ export function TermFormDrawer(props: Props) {
             </div>
           </fieldset>
 
-          {(dateRangeError ?? error) && (
-            <p className="text-sm text-red-600 dark:text-red-400">{dateRangeError ?? error}</p>
+          {(dateRangeError ?? weightError ?? error) && (
+            <p className="text-sm text-red-600 dark:text-red-400">{dateRangeError ?? weightError ?? error}</p>
           )}
-        </div>
-
-        <div className="flex gap-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-          <Button type="submit" variant="primary" disabled={submitting || !!dateRangeError}>
-            {tc("save")}
-          </Button>
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-            {tc("cancel")}
-          </Button>
         </div>
       </form>
     </Drawer>

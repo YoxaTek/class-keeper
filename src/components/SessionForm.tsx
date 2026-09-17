@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award, MessageSquareText } from "lucide-react";
 import { DateInput } from "@/components/ui/DateInput";
-import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
 
 export interface SessionFormValues {
@@ -47,13 +46,16 @@ export function SessionForm({
   sessionId,
   initial,
   onSaved,
-  onCancel,
+  onSubmittingChange,
 }: {
   termId: string;
   sessionId?: string;
   initial?: SessionFormValues;
   onSaved: () => void;
-  onCancel: () => void;
+  // The Save button lives in the parent Drawer's pinned footer (not here —
+  // see ClassFormDrawer), so its disabled-while-submitting state has to be
+  // reported upward instead of just tracked locally.
+  onSubmittingChange?: (submitting: boolean) => void;
 }) {
   const t = useTranslations();
   const [values, setValues] = useState<SessionFormValues>(
@@ -72,11 +74,9 @@ export function SessionForm({
       finalMaxScore: 100,
     }
   );
-  const [submitting, setSubmitting] = useState(false);
-
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
+    onSubmittingChange?.(true);
 
     const url = sessionId
       ? `/api/terms/${termId}/sessions/${sessionId}`
@@ -96,13 +96,13 @@ export function SessionForm({
       body: JSON.stringify(payload),
     });
 
-    setSubmitting(false);
+    onSubmittingChange?.(false);
     if (res.ok) onSaved();
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex h-full flex-col">
-      <div className="flex-1 space-y-5">
+    <form id="session-form" onSubmit={onSubmit}>
+      <div className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className={labelClass}>{t("common.date")}</label>
@@ -163,15 +163,6 @@ export function SessionForm({
             ))}
           </div>
         )}
-      </div>
-
-      <div className="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-        <Button type="submit" variant="primary" disabled={submitting}>
-          {t("common.save")}
-        </Button>
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          {t("common.cancel")}
-        </Button>
       </div>
     </form>
   );

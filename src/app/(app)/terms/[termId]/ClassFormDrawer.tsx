@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { buttonClass } from "@/components/ui/styles";
 import { SessionForm, type SessionFormValues } from "@/components/SessionForm";
@@ -17,6 +18,7 @@ export function ClassFormDrawer(props: Props) {
   const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   function onSaved() {
     setOpen(false);
@@ -44,13 +46,26 @@ export function ClassFormDrawer(props: Props) {
   }
 
   return (
-    <Drawer title={props.mode === "edit" ? t("editTitle") : t("newTitle")} onClose={() => setOpen(false)}>
+    <Drawer
+      title={props.mode === "edit" ? t("editTitle") : t("newTitle")}
+      onClose={() => setOpen(false)}
+      footer={
+        <div className="flex gap-2">
+          <Button type="submit" form="session-form" variant="primary" disabled={submitting}>
+            {tc("save")}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            {tc("cancel")}
+          </Button>
+        </div>
+      }
+    >
       <SessionForm
         termId={props.termId}
         sessionId={props.mode === "edit" ? props.sessionId : undefined}
         initial={props.mode === "edit" ? props.initial : undefined}
         onSaved={onSaved}
-        onCancel={() => setOpen(false)}
+        onSubmittingChange={setSubmitting}
       />
     </Drawer>
   );

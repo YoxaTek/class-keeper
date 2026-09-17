@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "ClassKeeper",
+    "home": "Home",
+    "profile": "Profile",
     "save": "I-save",
     "cancel": "Kanselahin",
     "add": "Magdagdag",
@@ -22,7 +24,8 @@
       "TA": "teaching assistant",
       "STUDENT": "estudyante"
     },
-    "saving": "Sine-save…"
+    "saving": "Sine-save…",
+    "language": "Wika"
   },
   "login": {
     "title": "Mag-sign in",
@@ -98,13 +101,9 @@
     "notLinked": "Hindi pa naka-link",
     "status": "Katayuan",
     "joinLink": "Link para sumali",
-    "joinLinkHelp": "Ibahagi ang link o QR code na ito para makapag-request ang mga estudyante na sumali sa term na ito.",
+    "joinLinkHelp": "Ibahagi ang link o QR code na ito para agad makasali ang mga estudyante sa term na ito.",
     "showQr": "Ipakita ang QR code",
-    "hideQr": "Itago ang QR code",
-    "pendingJoinRequests": "Mga nakabinbing request na sumali",
-    "approve": "Aprubahan",
-    "reject": "Tanggihan",
-    "joinRequestError": "Hindi ma-aprubahan ang request na ito. Pakisubukang muli."
+    "hideQr": "Itago ang QR code"
   },
   "sessions": {
     "title": "Mga Klase",
@@ -129,7 +128,8 @@
     "midtermMaxScore": "Kabuuang marka ng midterm",
     "finalMaxScore": "Kabuuang marka ng final na pagsusulit",
     "unsavedChanges": "May hindi pa na-save na pagbabago",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "empty": "Wala pang klase. Gamitin ang button na \"{button}\" para magdagdag."
   },
   "grid": {
     "title": "Talahanayan ng Marka",
@@ -170,9 +170,6 @@
     "noEvaluationYet": "Wala pang isinusulat.",
     "sessionScores": "Marka bawat klase"
   },
-  "language": {
-    "label": "Wika"
-  },
   "onboarding": {
     "title": "I-set up ang iyong account",
     "bootstrapSubtitle": "Ilang detalye na lang bago ka magsimula.",
@@ -196,7 +193,7 @@
     "subtitle": "Mag-sign in para tanggapin ang invite na ito."
   },
   "account": {
-    "title": "Account",
+    "title": "Mga Setting",
     "deleteAccount": "Burahin ang account",
     "deleteWarning": "Permanenteng bubura ang iyong account. Kung may term kang tinuturuan, mabubura rin ang lahat dito — roster, attendance, at grades. Hindi na ito mababawi.",
     "confirmEmailLabel": "I-type ang {email} para kumpirmahin",
@@ -229,10 +226,9 @@
     "title": "Sumali sa klaseng ito",
     "name": "Pangalan",
     "studentId": "Student ID",
-    "email": "Email",
-    "submit": "I-request ang pagsali",
-    "submitting": "Isinusumite…",
-    "submitted": "Naipadala ang request! Susuriin muna ito ng iyong guro bago ka idagdag sa listahan ng estudyante.",
-    "error": "Hindi maisumite ang iyong request. Pakisubukang muli."
+    "submit": "Sumali sa klase",
+    "submitting": "Sumasali…",
+    "error": "Hindi makasali sa klaseng ito. Pakisubukang muli.",
+    "alreadyTeaching": "Nagtuturo na ang account na ito — gumamit ng ibang account para sumali bilang estudyante."
   }
 }

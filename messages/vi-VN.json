@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "ClassKeeper",
+    "home": "Trang chủ",
+    "profile": "Hồ sơ",
     "save": "Lưu",
     "cancel": "Hủy",
     "add": "Thêm",
@@ -22,7 +24,8 @@
       "TA": "trợ giảng",
       "STUDENT": "học viên"
     },
-    "saving": "Đang lưu…"
+    "saving": "Đang lưu…",
+    "language": "Ngôn ngữ"
   },
   "login": {
     "title": "Đăng nhập",
@@ -98,13 +101,9 @@
     "notLinked": "Chưa liên kết",
     "status": "Trạng thái",
     "joinLink": "Liên kết tham gia",
-    "joinLinkHelp": "Chia sẻ liên kết hoặc mã QR này để sinh viên có thể yêu cầu tham gia học kỳ này.",
+    "joinLinkHelp": "Chia sẻ liên kết hoặc mã QR này để sinh viên có thể tham gia học kỳ này ngay lập tức.",
     "showQr": "Hiện mã QR",
-    "hideQr": "Ẩn mã QR",
-    "pendingJoinRequests": "Yêu cầu tham gia đang chờ",
-    "approve": "Chấp nhận",
-    "reject": "Từ chối",
-    "joinRequestError": "Không thể chấp nhận yêu cầu này. Vui lòng thử lại."
+    "hideQr": "Ẩn mã QR"
   },
   "sessions": {
     "title": "Buổi học",
@@ -129,7 +128,8 @@
     "midtermMaxScore": "Tổng điểm giữa kỳ",
     "finalMaxScore": "Tổng điểm thi cuối kỳ",
     "unsavedChanges": "Có thay đổi chưa lưu",
-    "feedback": "Nhận xét"
+    "feedback": "Nhận xét",
+    "empty": "Chưa có buổi học nào. Hãy dùng nút \"{button}\" để thêm."
   },
   "grid": {
     "title": "Bảng điểm",
@@ -170,9 +170,6 @@
     "noEvaluationYet": "Chưa được viết.",
     "sessionScores": "Điểm các buổi học"
   },
-  "language": {
-    "label": "Ngôn ngữ"
-  },
   "onboarding": {
     "title": "Thiết lập tài khoản của bạn",
     "bootstrapSubtitle": "Chỉ còn vài thông tin nữa trước khi bạn bắt đầu.",
@@ -196,7 +193,7 @@
     "subtitle": "Đăng nhập để chấp nhận lời mời này."
   },
   "account": {
-    "title": "Tài khoản",
+    "title": "Cài đặt",
     "deleteAccount": "Xóa tài khoản",
     "deleteWarning": "Xóa vĩnh viễn tài khoản của bạn. Nếu bạn dạy bất kỳ học kỳ nào, mọi thứ trong đó — danh sách lớp, điểm danh và điểm số — cũng sẽ bị xóa. Không thể hoàn tác.",
     "confirmEmailLabel": "Nhập {email} để xác nhận",
@@ -229,10 +226,9 @@
     "title": "Tham gia lớp học này",
     "name": "Họ tên",
     "studentId": "Mã số sinh viên",
-    "email": "Email",
-    "submit": "Yêu cầu tham gia",
-    "submitting": "Đang gửi…",
-    "submitted": "Đã gửi yêu cầu! Giáo viên sẽ xem xét trước khi thêm bạn vào danh sách lớp.",
-    "error": "Không thể gửi yêu cầu. Vui lòng thử lại."
+    "submit": "Tham gia lớp",
+    "submitting": "Đang tham gia…",
+    "error": "Không thể tham gia lớp học này. Vui lòng thử lại.",
+    "alreadyTeaching": "Tài khoản này đang là giáo viên — vui lòng dùng tài khoản khác để tham gia với vai trò học sinh."
   }
 }

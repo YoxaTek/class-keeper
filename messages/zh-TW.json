@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "課程管家",
+    "home": "首頁",
+    "profile": "個人資料",
     "save": "儲存",
     "cancel": "取消",
     "add": "新增",
@@ -22,7 +24,8 @@
       "TA": "助教",
       "STUDENT": "學生"
     },
-    "saving": "儲存中…"
+    "saving": "儲存中…",
+    "language": "語言"
   },
   "login": {
     "title": "登入",
@@ -98,13 +101,9 @@
     "notLinked": "尚未加入",
     "status": "狀態",
     "joinLink": "加入連結",
-    "joinLinkHelp": "分享此連結或 QR code，讓學生可以申請加入此班期。",
+    "joinLinkHelp": "分享此連結或 QR code，學生即可立即加入此班期。",
     "showQr": "顯示 QR code",
-    "hideQr": "隱藏 QR code",
-    "pendingJoinRequests": "待審核的加入申請",
-    "approve": "核准",
-    "reject": "拒絕",
-    "joinRequestError": "無法核准此申請，請再試一次。"
+    "hideQr": "隱藏 QR code"
   },
   "sessions": {
     "title": "課堂",
@@ -129,7 +128,8 @@
     "midtermMaxScore": "期中考總分",
     "finalMaxScore": "期末考總分",
     "unsavedChanges": "有未儲存的變更",
-    "feedback": "回饋"
+    "feedback": "回饋",
+    "empty": "目前沒有課堂，請使用「{button}」按鈕新增。"
   },
   "grid": {
     "title": "成績總表",
@@ -170,9 +170,6 @@
     "noEvaluationYet": "尚未填寫。",
     "sessionScores": "各堂課成績"
   },
-  "language": {
-    "label": "語言"
-  },
   "onboarding": {
     "title": "設定您的帳號",
     "bootstrapSubtitle": "開始使用前，還需要填寫幾項資料。",
@@ -196,7 +193,7 @@
     "subtitle": "請登入以接受此邀請。"
   },
   "account": {
-    "title": "帳號",
+    "title": "設定",
     "deleteAccount": "刪除帳號",
     "deleteWarning": "將永久刪除您的帳號。如果您有任教的班期，其中的名單、出席與成績也會一併刪除，此動作無法復原。",
     "confirmEmailLabel": "輸入 {email} 以確認",
@@ -229,10 +226,9 @@
     "title": "加入此班期",
     "name": "姓名",
     "studentId": "學號",
-    "email": "電子郵件",
-    "submit": "申請加入",
-    "submitting": "送出中…",
-    "submitted": "申請已送出！老師審核後才會將您加入名單。",
-    "error": "無法送出申請，請再試一次。"
+    "submit": "加入班期",
+    "submitting": "加入中…",
+    "error": "無法加入此班期，請再試一次。",
+    "alreadyTeaching": "此帳號已經是教師身分，請使用其他帳號以學生身分加入。"
   }
 }

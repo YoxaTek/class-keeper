@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "ClassKeeper",
+    "home": "Beranda",
+    "profile": "Profil",
     "save": "Simpan",
     "cancel": "Batal",
     "add": "Tambah",
@@ -22,7 +24,8 @@
       "TA": "asisten pengajar",
       "STUDENT": "siswa"
     },
-    "saving": "Menyimpan…"
+    "saving": "Menyimpan…",
+    "language": "Bahasa"
   },
   "login": {
     "title": "Masuk",
@@ -98,13 +101,9 @@
     "notLinked": "Belum terhubung",
     "status": "Status",
     "joinLink": "Tautan gabung",
-    "joinLinkHelp": "Bagikan tautan atau kode QR ini agar siswa dapat meminta untuk bergabung dengan semester ini.",
+    "joinLinkHelp": "Bagikan tautan atau kode QR ini agar siswa dapat langsung bergabung dengan semester ini.",
     "showQr": "Tampilkan kode QR",
-    "hideQr": "Sembunyikan kode QR",
-    "pendingJoinRequests": "Permintaan gabung tertunda",
-    "approve": "Setujui",
-    "reject": "Tolak",
-    "joinRequestError": "Tidak dapat menyetujui permintaan ini. Silakan coba lagi."
+    "hideQr": "Sembunyikan kode QR"
   },
   "sessions": {
     "title": "Kelas",
@@ -129,7 +128,8 @@
     "midtermMaxScore": "Total nilai UTS",
     "finalMaxScore": "Total nilai ujian akhir",
     "unsavedChanges": "Perubahan belum disimpan",
-    "feedback": "Umpan balik"
+    "feedback": "Umpan balik",
+    "empty": "Belum ada kelas. Gunakan tombol \"{button}\" untuk menambahkannya."
   },
   "grid": {
     "title": "Tabel nilai",
@@ -170,9 +170,6 @@
     "noEvaluationYet": "Belum ditulis.",
     "sessionScores": "Nilai per kelas"
   },
-  "language": {
-    "label": "Bahasa"
-  },
   "onboarding": {
     "title": "Siapkan akun Anda",
     "bootstrapSubtitle": "Beberapa detail lagi sebelum Anda mulai.",
@@ -196,7 +193,7 @@
     "subtitle": "Masuk untuk menerima undangan ini."
   },
   "account": {
-    "title": "Akun",
+    "title": "Pengaturan",
     "deleteAccount": "Hapus akun",
     "deleteWarning": "Menghapus akun Anda secara permanen. Jika Anda mengajar suatu term, semua isinya — daftar siswa, kehadiran, dan nilai — juga akan dihapus. Tindakan ini tidak dapat dibatalkan.",
     "confirmEmailLabel": "Ketik {email} untuk konfirmasi",
@@ -229,10 +226,9 @@
     "title": "Gabung ke kelas ini",
     "name": "Nama",
     "studentId": "NIM/NIS",
-    "email": "Email",
-    "submit": "Minta untuk bergabung",
-    "submitting": "Mengirim…",
-    "submitted": "Permintaan terkirim! Guru Anda akan meninjaunya sebelum Anda ditambahkan ke daftar siswa.",
-    "error": "Tidak dapat mengirim permintaan Anda. Silakan coba lagi."
+    "submit": "Gabung kelas",
+    "submitting": "Bergabung…",
+    "error": "Tidak dapat bergabung dengan kelas ini. Silakan coba lagi.",
+    "alreadyTeaching": "Akun ini sudah mengajar kelas — gunakan akun lain untuk bergabung sebagai siswa."
   }
 }
