@@ -43,7 +43,10 @@
   "signup": {
     "title": "Tạo tài khoản của bạn",
     "subtitle": "Đăng ký để bắt đầu quản lý lớp học của bạn.",
-    "haveAccount": "Đã có tài khoản?"
+    "haveAccount": "Đã có tài khoản?",
+    "name": "Tên",
+    "submit": "Tạo tài khoản",
+    "error": "Không thể tạo tài khoản. Vui lòng thử lại."
   },
   "nav": {
     "terms": "Học kỳ",
@@ -77,7 +80,9 @@
     "deleteTermError": "Không thể xóa học kỳ. Vui lòng thử lại.",
     "addStudentsWhileCreating": "Thêm học viên",
     "addStudentsPlaceholder": "Mỗi dòng một tên học viên (không bắt buộc — bạn cũng có thể thêm sau ở tab Danh sách học viên)",
-    "editTitle": "Chỉnh sửa học kỳ"
+    "editTitle": "Chỉnh sửa học kỳ",
+    "institute": "Cơ sở đào tạo",
+    "institutePlaceholder": "vd. Trường THPT Lincoln"
   },
   "roster": {
     "title": "Danh sách học viên",
@@ -91,7 +96,15 @@
     "inviteTAEmail": "Email (không bắt buộc)",
     "linked": "Đã liên kết",
     "notLinked": "Chưa liên kết",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "joinLink": "Liên kết tham gia",
+    "joinLinkHelp": "Chia sẻ liên kết hoặc mã QR này để sinh viên có thể yêu cầu tham gia học kỳ này.",
+    "showQr": "Hiện mã QR",
+    "hideQr": "Ẩn mã QR",
+    "pendingJoinRequests": "Yêu cầu tham gia đang chờ",
+    "approve": "Chấp nhận",
+    "reject": "Từ chối",
+    "joinRequestError": "Không thể chấp nhận yêu cầu này. Vui lòng thử lại."
   },
   "sessions": {
     "title": "Buổi học",
@@ -113,9 +126,10 @@
     "deleteConfirm": "Xóa buổi học này? Thao tác này sẽ xóa điểm danh và điểm số liên quan, không thể hoàn tác.",
     "quizMaxScore": "Tổng điểm bài kiểm tra",
     "assignmentMaxScore": "Tổng điểm bài tập",
-    "midtermMaxScore": "Tổng điểm giữa kỳ (đọc + nghe)",
+    "midtermMaxScore": "Tổng điểm giữa kỳ",
     "finalMaxScore": "Tổng điểm thi cuối kỳ",
-    "unsavedChanges": "Có thay đổi chưa lưu"
+    "unsavedChanges": "Có thay đổi chưa lưu",
+    "feedback": "Nhận xét"
   },
   "grid": {
     "title": "Bảng điểm",
@@ -153,7 +167,8 @@
     "feedbackPlaceholder": "Chia sẻ phản hồi của bạn về học kỳ này…",
     "feedbackSubmit": "Gửi phản hồi",
     "feedbackSubmitted": "Đã gửi phản hồi vào {date}. Cảm ơn bạn!",
-    "noEvaluationYet": "Chưa được viết."
+    "noEvaluationYet": "Chưa được viết.",
+    "sessionScores": "Điểm các buổi học"
   },
   "language": {
     "label": "Ngôn ngữ"
@@ -178,6 +193,46 @@
   },
   "invite": {
     "title": "Bạn đã được mời",
-    "subtitle": "Đăng nhập bằng Google để chấp nhận lời mời này."
+    "subtitle": "Đăng nhập để chấp nhận lời mời này."
+  },
+  "account": {
+    "title": "Tài khoản",
+    "deleteAccount": "Xóa tài khoản",
+    "deleteWarning": "Xóa vĩnh viễn tài khoản của bạn. Nếu bạn dạy bất kỳ học kỳ nào, mọi thứ trong đó — danh sách lớp, điểm danh và điểm số — cũng sẽ bị xóa. Không thể hoàn tác.",
+    "confirmEmailLabel": "Nhập {email} để xác nhận",
+    "wrongPassword": "Sai mật khẩu.",
+    "deleting": "Đang xóa…",
+    "error": "Không thể xóa tài khoản. Vui lòng thử lại."
+  },
+  "billing": {
+    "title": "Thanh toán",
+    "plan": {
+      "FREE": "Miễn phí",
+      "PRO": "Pro",
+      "INSTITUTION": "Tổ chức"
+    },
+    "currentPlan": "Gói hiện tại",
+    "unlimitedTerms": "Không giới hạn học kỳ",
+    "limitedTerms": "{count} học kỳ đang hoạt động",
+    "noTAs": "Không có trợ giảng",
+    "limitedTAs": "Tối đa {count} trợ giảng",
+    "unlimitedTAs": "Không giới hạn trợ giảng",
+    "unlimitedTAsPooled": "Không giới hạn trợ giảng, dùng chung trong tổ chức của bạn",
+    "upgrade": "Nâng cấp",
+    "redirecting": "Đang chuyển hướng…",
+    "manageBilling": "Quản lý thanh toán",
+    "checkoutSuccess": "Đã cập nhật gói đăng ký. Có thể mất một chút thời gian để hiển thị ở đây.",
+    "checkoutCanceled": "Đã hủy thanh toán.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "join": {
+    "title": "Tham gia lớp học này",
+    "name": "Họ tên",
+    "studentId": "Mã số sinh viên",
+    "email": "Email",
+    "submit": "Yêu cầu tham gia",
+    "submitting": "Đang gửi…",
+    "submitted": "Đã gửi yêu cầu! Giáo viên sẽ xem xét trước khi thêm bạn vào danh sách lớp.",
+    "error": "Không thể gửi yêu cầu. Vui lòng thử lại."
   }
 }

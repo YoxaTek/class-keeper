@@ -43,7 +43,10 @@
   "signup": {
     "title": "Buat akun Anda",
     "subtitle": "Daftar untuk mulai mengelola kelas Anda.",
-    "haveAccount": "Sudah punya akun?"
+    "haveAccount": "Sudah punya akun?",
+    "name": "Nama",
+    "submit": "Buat akun",
+    "error": "Tidak dapat membuat akun. Silakan coba lagi."
   },
   "nav": {
     "terms": "Semester",
@@ -77,7 +80,9 @@
     "deleteTermError": "Gagal menghapus semester. Silakan coba lagi.",
     "addStudentsWhileCreating": "Tambah siswa",
     "addStudentsPlaceholder": "Satu nama siswa per baris (opsional — Anda juga bisa menambahkannya nanti dari tab Daftar siswa)",
-    "editTitle": "Edit semester"
+    "editTitle": "Edit semester",
+    "institute": "Institusi",
+    "institutePlaceholder": "mis. SMA Lincoln"
   },
   "roster": {
     "title": "Daftar siswa",
@@ -91,7 +96,15 @@
     "inviteTAEmail": "Email (opsional)",
     "linked": "Terhubung",
     "notLinked": "Belum terhubung",
-    "status": "Status"
+    "status": "Status",
+    "joinLink": "Tautan gabung",
+    "joinLinkHelp": "Bagikan tautan atau kode QR ini agar siswa dapat meminta untuk bergabung dengan semester ini.",
+    "showQr": "Tampilkan kode QR",
+    "hideQr": "Sembunyikan kode QR",
+    "pendingJoinRequests": "Permintaan gabung tertunda",
+    "approve": "Setujui",
+    "reject": "Tolak",
+    "joinRequestError": "Tidak dapat menyetujui permintaan ini. Silakan coba lagi."
   },
   "sessions": {
     "title": "Kelas",
@@ -113,9 +126,10 @@
     "deleteConfirm": "Hapus kelas ini? Ini akan menghapus data kehadiran dan nilainya. Tindakan ini tidak dapat dibatalkan.",
     "quizMaxScore": "Total nilai kuis",
     "assignmentMaxScore": "Total nilai tugas",
-    "midtermMaxScore": "Total nilai UTS (membaca + mendengar)",
+    "midtermMaxScore": "Total nilai UTS",
     "finalMaxScore": "Total nilai ujian akhir",
-    "unsavedChanges": "Perubahan belum disimpan"
+    "unsavedChanges": "Perubahan belum disimpan",
+    "feedback": "Umpan balik"
   },
   "grid": {
     "title": "Tabel nilai",
@@ -153,7 +167,8 @@
     "feedbackPlaceholder": "Bagikan masukan Anda tentang semester ini…",
     "feedbackSubmit": "Kirim masukan",
     "feedbackSubmitted": "Masukan dikirim pada {date}. Terima kasih!",
-    "noEvaluationYet": "Belum ditulis."
+    "noEvaluationYet": "Belum ditulis.",
+    "sessionScores": "Nilai per kelas"
   },
   "language": {
     "label": "Bahasa"
@@ -178,6 +193,46 @@
   },
   "invite": {
     "title": "Anda telah diundang",
-    "subtitle": "Masuk dengan Google untuk menerima undangan ini."
+    "subtitle": "Masuk untuk menerima undangan ini."
+  },
+  "account": {
+    "title": "Akun",
+    "deleteAccount": "Hapus akun",
+    "deleteWarning": "Menghapus akun Anda secara permanen. Jika Anda mengajar suatu term, semua isinya — daftar siswa, kehadiran, dan nilai — juga akan dihapus. Tindakan ini tidak dapat dibatalkan.",
+    "confirmEmailLabel": "Ketik {email} untuk konfirmasi",
+    "wrongPassword": "Kata sandi salah.",
+    "deleting": "Menghapus…",
+    "error": "Tidak dapat menghapus akun Anda. Silakan coba lagi."
+  },
+  "billing": {
+    "title": "Penagihan",
+    "plan": {
+      "FREE": "Gratis",
+      "PRO": "Pro",
+      "INSTITUTION": "Institusi"
+    },
+    "currentPlan": "Paket saat ini",
+    "unlimitedTerms": "Semester tanpa batas",
+    "limitedTerms": "{count} semester aktif",
+    "noTAs": "Tanpa asisten pengajar",
+    "limitedTAs": "Hingga {count} asisten pengajar",
+    "unlimitedTAs": "Asisten pengajar tanpa batas",
+    "unlimitedTAsPooled": "Asisten pengajar tanpa batas, digabung di seluruh institusi Anda",
+    "upgrade": "Upgrade",
+    "redirecting": "Mengalihkan…",
+    "manageBilling": "Kelola penagihan",
+    "checkoutSuccess": "Langganan diperbarui. Mungkin perlu beberapa saat untuk tampil di sini.",
+    "checkoutCanceled": "Checkout dibatalkan.",
+    "error": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "join": {
+    "title": "Gabung ke kelas ini",
+    "name": "Nama",
+    "studentId": "NIM/NIS",
+    "email": "Email",
+    "submit": "Minta untuk bergabung",
+    "submitting": "Mengirim…",
+    "submitted": "Permintaan terkirim! Guru Anda akan meninjaunya sebelum Anda ditambahkan ke daftar siswa.",
+    "error": "Tidak dapat mengirim permintaan Anda. Silakan coba lagi."
   }
 }

@@ -43,7 +43,10 @@
   "signup": {
     "title": "Create your account",
     "subtitle": "Sign up to start managing your classes.",
-    "haveAccount": "Already have an account?"
+    "haveAccount": "Already have an account?",
+    "name": "Name",
+    "submit": "Create account",
+    "error": "Couldn't create your account. Please try again."
   },
   "nav": {
     "terms": "Terms",
@@ -77,7 +80,9 @@
     "deleteTermError": "Could not delete the term. Please try again.",
     "addStudentsWhileCreating": "Add students",
     "addStudentsPlaceholder": "One student name per line (optional — you can also add students later from the Roster tab)",
-    "editTitle": "Edit term"
+    "editTitle": "Edit term",
+    "institute": "Institute",
+    "institutePlaceholder": "e.g. Lincoln High School"
   },
   "roster": {
     "title": "Students",
@@ -91,7 +96,15 @@
     "inviteTAEmail": "Email (optional)",
     "linked": "Linked",
     "notLinked": "Not linked",
-    "status": "Status"
+    "status": "Status",
+    "joinLink": "Join link",
+    "joinLinkHelp": "Share this link or QR code so students can request to join this term.",
+    "showQr": "Show QR code",
+    "hideQr": "Hide QR code",
+    "pendingJoinRequests": "Pending join requests",
+    "approve": "Approve",
+    "reject": "Reject",
+    "joinRequestError": "Could not approve this request. Please try again."
   },
   "sessions": {
     "title": "Classes",
@@ -113,9 +126,10 @@
     "deleteConfirm": "Delete this class? This removes its attendance and scores. This cannot be undone.",
     "quizMaxScore": "Quiz total score",
     "assignmentMaxScore": "Assignment total score",
-    "midtermMaxScore": "Midterm total score (reading + listening)",
+    "midtermMaxScore": "Midterm total score",
     "finalMaxScore": "Final exam total score",
-    "unsavedChanges": "Unsaved changes"
+    "unsavedChanges": "Unsaved changes",
+    "feedback": "Feedback"
   },
   "grid": {
     "title": "Session grid",
@@ -153,7 +167,8 @@
     "feedbackPlaceholder": "Share your feedback about this term…",
     "feedbackSubmit": "Submit feedback",
     "feedbackSubmitted": "Feedback submitted on {date}. Thank you!",
-    "noEvaluationYet": "Not written yet."
+    "noEvaluationYet": "Not written yet.",
+    "sessionScores": "Class scores"
   },
   "language": {
     "label": "Language"
@@ -178,6 +193,46 @@
   },
   "invite": {
     "title": "You've been invited",
-    "subtitle": "Sign in with Google to accept this invite."
+    "subtitle": "Sign in to accept this invite."
+  },
+  "account": {
+    "title": "Account",
+    "deleteAccount": "Delete account",
+    "deleteWarning": "Permanently deletes your account. If you teach any terms, everything in them — rosters, attendance, and grades — is deleted too. This cannot be undone.",
+    "confirmEmailLabel": "Type {email} to confirm",
+    "wrongPassword": "Incorrect password.",
+    "deleting": "Deleting…",
+    "error": "Couldn't delete your account. Please try again."
+  },
+  "billing": {
+    "title": "Billing",
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "INSTITUTION": "Institution"
+    },
+    "currentPlan": "Current plan",
+    "unlimitedTerms": "Unlimited terms",
+    "limitedTerms": "{count} active term",
+    "noTAs": "No TAs",
+    "limitedTAs": "Up to {count} TAs",
+    "unlimitedTAs": "Unlimited TAs",
+    "unlimitedTAsPooled": "Unlimited TAs, pooled across your organization",
+    "upgrade": "Upgrade",
+    "redirecting": "Redirecting…",
+    "manageBilling": "Manage billing",
+    "checkoutSuccess": "Subscription updated. It may take a moment to reflect here.",
+    "checkoutCanceled": "Checkout canceled.",
+    "error": "Something went wrong. Please try again."
+  },
+  "join": {
+    "title": "Join this class",
+    "name": "Name",
+    "studentId": "Student ID",
+    "email": "Email",
+    "submit": "Request to join",
+    "submitting": "Submitting…",
+    "submitted": "Request sent! Your teacher will review it before you're added to the roster.",
+    "error": "Couldn't submit your request. Please try again."
   }
 }

@@ -13,6 +13,7 @@ export const termInputSchema = z.object({
   weightMidterm: z.number().min(0).default(15),
   weightFinal: z.number().min(0).default(15),
   weightImpression: z.number().min(0).default(10),
+  institute: z.string().nullable().optional(),
 });
 
 export type TermInput = z.infer<typeof termInputSchema>;

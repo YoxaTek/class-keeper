@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award } from "lucide-react";
+import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award, MessageSquareText } from "lucide-react";
 import { DateInput } from "@/components/ui/DateInput";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
@@ -15,6 +15,7 @@ export interface SessionFormValues {
   hasAssignment: boolean;
   hasMidterm: boolean;
   hasFinal: boolean;
+  hasFeedback: boolean;
   quizMaxScore: number | "";
   assignmentMaxScore: number | "";
   midtermMaxScore: number | "";
@@ -27,6 +28,7 @@ const FLAGS: { key: keyof SessionFormValues; labelKey: string; Icon: typeof Cale
   { key: "hasAssignment", labelKey: "sessions.assignment", Icon: ClipboardList },
   { key: "hasMidterm", labelKey: "sessions.midterm", Icon: GraduationCap },
   { key: "hasFinal", labelKey: "sessions.final", Icon: Award },
+  { key: "hasFeedback", labelKey: "sessions.feedback", Icon: MessageSquareText },
 ];
 
 const MAX_SCORE_FIELDS: {
@@ -63,6 +65,7 @@ export function SessionForm({
       hasAssignment: false,
       hasMidterm: false,
       hasFinal: false,
+      hasFeedback: false,
       quizMaxScore: 100,
       assignmentMaxScore: 100,
       midtermMaxScore: 100,

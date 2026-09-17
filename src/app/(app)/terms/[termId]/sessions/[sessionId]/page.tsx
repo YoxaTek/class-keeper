@@ -23,6 +23,7 @@ export default async function ClassDetailPage({
         student: true,
         attendance: { where: { sessionId } },
         scores: { where: { sessionId } },
+        sessionFeedback: { where: { sessionId } },
       },
       orderBy: { student: { name: "asc" } },
     }),

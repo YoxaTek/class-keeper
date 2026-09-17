@@ -22,6 +22,7 @@ interface TermFields {
   weightImpression: number;
   maxExcusedAbsences: number;
   passingScore: number;
+  institute: string;
 }
 
 type Props = { mode: "create" } | { mode: "edit"; termId: string; initial: TermFields };
@@ -49,6 +50,7 @@ export function TermFormDrawer(props: Props) {
           weightImpression: 10,
           maxExcusedAbsences: 3,
           passingScore: 70,
+          institute: "",
         };
 
   const [subjectName, setSubjectName] = useState(initial.subjectName);
@@ -65,6 +67,7 @@ export function TermFormDrawer(props: Props) {
   });
   const [maxExcusedAbsences, setMaxExcusedAbsences] = useState(initial.maxExcusedAbsences);
   const [passingScore, setPassingScore] = useState(initial.passingScore);
+  const [institute, setInstitute] = useState(initial.institute);
   const [error, setError] = useState<string | null>(null);
   const dateRangeError =
     startDate && endDate && endDate < startDate ? "End date must be on or after start date." : null;
@@ -95,6 +98,7 @@ export function TermFormDrawer(props: Props) {
         endDate,
         maxExcusedAbsences,
         passingScore,
+        institute: institute.trim() || null,
         ...weights,
       }),
     });
@@ -183,6 +187,16 @@ export function TermFormDrawer(props: Props) {
                 type="number"
                 value={passingScore}
                 onChange={(e) => setPassingScore(Number(e.target.value))}
+                className={inputClass}
+              />
+            </div>
+
+            <div className="col-span-2 space-y-1">
+              <label className={labelClass}>{t("institute")}</label>
+              <input
+                value={institute}
+                onChange={(e) => setInstitute(e.target.value)}
+                placeholder={t("institutePlaceholder")}
                 className={inputClass}
               />
             </div>

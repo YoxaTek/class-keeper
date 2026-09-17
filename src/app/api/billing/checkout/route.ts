@@ -2,16 +2,21 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getStripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
+import { paypalFetch, PAYPAL_PLAN_IDS } from "@/lib/paypal";
 
 const schema = z.object({ tier: z.enum(["PRO", "INSTITUTION"]) });
 
+interface PayPalLink {
+  rel: string;
+  href: string;
+}
+
 /**
- * Starts a Stripe Checkout session for the caller's own plan (PRO) or their
+ * Creates a PayPal subscription for the caller's own plan (PRO) or their
  * organization's plan (INSTITUTION — an org is created on the fly if the
- * teacher doesn't belong to one yet). The resulting Subscription row is
- * created by the webhook once checkout.session.completed fires, never here —
- * we only ever get the customer/subscription IDs back from Stripe async.
+ * teacher doesn't belong to one yet) and returns the "approve" link the
+ * browser redirects to. The Subscription row itself is only ever written by
+ * the webhook once the payer actually approves it — not here.
  */
 export async function POST(request: Request) {
   const session = await auth();
@@ -24,21 +29,14 @@ export async function POST(request: Request) {
   if (!body.success) return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
   const { tier } = body.data;
 
-  const priceId = STRIPE_PRICE_IDS[tier];
-  if (!priceId) {
-    return NextResponse.json({ error: `No Stripe price configured for ${tier}` }, { status: 500 });
+  const planId = PAYPAL_PLAN_IDS[tier];
+  if (!planId) {
+    return NextResponse.json({ error: `No PayPal plan configured for ${tier}` }, { status: 500 });
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { id: session.user.id },
-    include: { subscription: true, organization: { include: { subscription: true } } },
-  });
-
-  const origin = new URL(request.url).origin;
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: session.user.id } });
 
   let scope: { userId: string } | { organizationId: string };
-  let existingCustomerId: string | null;
-
   if (tier === "INSTITUTION") {
     let organizationId = user.organizationId;
     if (!organizationId) {
@@ -47,31 +45,32 @@ export async function POST(request: Request) {
       organizationId = org.id;
     }
     scope = { organizationId };
-    existingCustomerId = user.organization?.subscription?.stripeCustomerId ?? null;
   } else {
     scope = { userId: user.id };
-    existingCustomerId = user.subscription?.stripeCustomerId ?? null;
   }
 
-  const stripe = getStripe();
-  const customerId =
-    existingCustomerId ??
-    (
-      await stripe.customers.create({
-        email: user.email,
-        metadata: scope,
-      })
-    ).id;
+  const origin = new URL(request.url).origin;
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${origin}/billing?checkout=success`,
-    cancel_url: `${origin}/billing?checkout=canceled`,
-    metadata: { tier, ...scope },
-    subscription_data: { metadata: { tier, ...scope } },
+  const res = await paypalFetch("/v1/billing/subscriptions", {
+    method: "POST",
+    body: JSON.stringify({
+      plan_id: planId,
+      // Under PayPal's 127-char limit — the scope is either {userId} or
+      // {organizationId}, both short cuids. Read back by the webhook.
+      custom_id: JSON.stringify({ tier, ...scope }),
+      application_context: {
+        brand_name: "ClassKeeper",
+        return_url: `${origin}/billing?checkout=success`,
+        cancel_url: `${origin}/billing?checkout=canceled`,
+        user_action: "SUBSCRIBE_NOW",
+      },
+    }),
   });
+  const subscription = (await res.json()) as { links?: PayPalLink[] };
+  const approveLink = subscription.links?.find((l) => l.rel === "approve")?.href;
+  if (!approveLink) {
+    return NextResponse.json({ error: "PayPal did not return an approval link" }, { status: 502 });
+  }
 
-  return NextResponse.json({ url: checkoutSession.url });
+  return NextResponse.json({ url: approveLink });
 }

@@ -150,8 +150,10 @@ model Subscription {
   id                   String             @id @default(cuid())
   tier                 PlanTier
   status               SubscriptionStatus
-  stripeCustomerId     String             @unique
-  stripeSubscriptionId String?            @unique
+  // PayPal has no merchant-created "customer" object like Stripe's — a
+  // subscription only gets an identity once the payer approves it, so this
+  // is the sole provider identifier we track.
+  paypalSubscriptionId String?            @unique
   currentPeriodEnd     DateTime?
   userId               String?            @unique
   user                 User?              @relation(fields: [userId], references: [id])
@@ -185,11 +187,13 @@ model Term {
   weightFinal        Float    @default(15)
   weightImpression   Float    @default(10)
   finalExamSessionId String? // optional override: which session's score counts as the final exam
+  institute          String? // shown on the public join page; one value for the whole term, not per student
 
-  assistants  TermAssistant[]
-  enrollments Enrollment[]
-  sessions    Session[]
-  invites     Invite[]
+  assistants   TermAssistant[]
+  enrollments  Enrollment[]
+  sessions     Session[]
+  invites      Invite[]
+  joinRequests JoinRequest[]
 }
 
 model TermAssistant {
@@ -205,10 +209,25 @@ model TermAssistant {
 model Student {
   id          String       @id @default(cuid())
   name        String
+  studentId   String? // the institution's own student ID — informational, not used as a lookup key
+  email       String?
   userId      String?      @unique
   user        User?        @relation(fields: [userId], references: [id])
   enrollments Enrollment[]
   invite      Invite?
+}
+
+// A self-submitted request to join a term via its public join link/QR code,
+// pending the teacher's approval. Approving one creates the real Student +
+// Enrollment rows and removes this row; rejecting just removes it.
+model JoinRequest {
+  id        String   @id @default(cuid())
+  termId    String
+  term      Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
+  name      String
+  studentId String
+  email     String
+  createdAt DateTime @default(now())
 }
 
 model Enrollment {
@@ -219,10 +238,11 @@ model Enrollment {
   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   joinedAt  DateTime @default(now()) // sessions before this date are NOT_ENROLLED for this student
 
-  attendance Attendance[]
-  scores     ScoreRecord[]
-  evaluation Evaluation?
-  feedback   Feedback?
+  attendance      Attendance[]
+  scores          ScoreRecord[]
+  evaluation      Evaluation?
+  feedback        Feedback?
+  sessionFeedback SessionFeedback[]
   // Max 30 enrollments per term is enforced by a DB trigger, see migration
   // 20260101000000_enrollment_cap_trigger — Prisma's schema DSL has no way
   // to express a per-group row-count constraint directly.
@@ -245,9 +265,11 @@ model Session {
   midtermMaxScore    Int      @default(100) // combined reading + listening total for this class's midterm
   hasFinal           Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Term.finalExamSessionId is set
   finalMaxScore      Int      @default(100)
+  hasFeedback        Boolean  @default(false) // a free-text note per student for this class meeting — not graded, doesn't affect the term grade
 
   attendance Attendance[]
   scores     ScoreRecord[]
+  feedback   SessionFeedback[]
 }
 
 model Attendance {
@@ -257,6 +279,20 @@ model Attendance {
   enrollmentId String
   enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   status       AttendanceStatus
+
+  @@unique([sessionId, enrollmentId])
+}
+
+// A teacher's free-text note for one student at one class meeting — distinct
+// from Feedback, which is a student's own one-time comment for the whole
+// term.
+model SessionFeedback {
+  id           String     @id @default(cuid())
+  sessionId    String
+  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  enrollmentId String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  note         String
 
   @@unique([sessionId, enrollmentId])
 }

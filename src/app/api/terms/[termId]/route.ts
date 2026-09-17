@@ -47,6 +47,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ te
       weightMidterm: data.weightMidterm,
       weightFinal: data.weightFinal,
       weightImpression: data.weightImpression,
+      institute: data.institute ?? null,
     },
   });
 

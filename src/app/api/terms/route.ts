@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       weightMidterm: data.weightMidterm,
       weightFinal: data.weightFinal,
       weightImpression: data.weightImpression,
+      institute: data.institute ?? null,
     },
   });
 

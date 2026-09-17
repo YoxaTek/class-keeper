@@ -17,6 +17,7 @@ const sessionSchema = z.object({
   midtermMaxScore: z.number().int().min(1).default(100),
   hasFinal: z.boolean(),
   finalMaxScore: z.number().int().min(1).default(100),
+  hasFeedback: z.boolean(),
 });
 
 async function checkAccess(termId: string) {

@@ -27,6 +27,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Facebook({
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      // Auth.js's default Facebook config requests the "email" scope, which
+      // Meta only grants after App Review (or Business Verification) —
+      // without it, the OAuth dialog hard-fails with "Invalid Scopes:
+      // email" before the user even sees a login screen. "public_profile"
+      // is Meta's always-available default scope, no review required. We
+      // already treat a missing email as expected (see the fallback below),
+      // so there's nothing to lose by not asking for it.
+      authorization: { params: { scope: "public_profile" } },
       // A small fraction of Facebook accounts (phone-only signup) have no
       // email on file — User.email is required, so synthesize a stable
       // fallback rather than let account creation fail outright. The

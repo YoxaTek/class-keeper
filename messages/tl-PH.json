@@ -43,7 +43,10 @@
   "signup": {
     "title": "Gumawa ng iyong account",
     "subtitle": "Mag-sign up para simulan ang pamamahala ng iyong mga klase.",
-    "haveAccount": "May account ka na ba?"
+    "haveAccount": "May account ka na ba?",
+    "name": "Pangalan",
+    "submit": "Gumawa ng account",
+    "error": "Hindi magawa ang account mo. Pakisubukang muli."
   },
   "nav": {
     "terms": "Mga Term",
@@ -77,7 +80,9 @@
     "deleteTermError": "Hindi matanggal ang term. Subukan muli.",
     "addStudentsWhileCreating": "Magdagdag ng mga estudyante",
     "addStudentsPlaceholder": "Isang pangalan ng estudyante bawat linya (opsyonal — maaari mo ring idagdag mamaya sa tab na Listahan ng Estudyante)",
-    "editTitle": "I-edit ang term"
+    "editTitle": "I-edit ang term",
+    "institute": "Institusyon",
+    "institutePlaceholder": "hal. Lincoln High School"
   },
   "roster": {
     "title": "Listahan ng Estudyante",
@@ -91,7 +96,15 @@
     "inviteTAEmail": "Email (opsyonal)",
     "linked": "Naka-link",
     "notLinked": "Hindi pa naka-link",
-    "status": "Katayuan"
+    "status": "Katayuan",
+    "joinLink": "Link para sumali",
+    "joinLinkHelp": "Ibahagi ang link o QR code na ito para makapag-request ang mga estudyante na sumali sa term na ito.",
+    "showQr": "Ipakita ang QR code",
+    "hideQr": "Itago ang QR code",
+    "pendingJoinRequests": "Mga nakabinbing request na sumali",
+    "approve": "Aprubahan",
+    "reject": "Tanggihan",
+    "joinRequestError": "Hindi ma-aprubahan ang request na ito. Pakisubukang muli."
   },
   "sessions": {
     "title": "Mga Klase",
@@ -113,9 +126,10 @@
     "deleteConfirm": "Tanggalin ang klase na ito? Aalisin nito ang mga tala ng pagdalo at marka. Hindi na ito maibabalik.",
     "quizMaxScore": "Kabuuang marka ng pagsusulit",
     "assignmentMaxScore": "Kabuuang marka ng takdang-aralin",
-    "midtermMaxScore": "Kabuuang marka ng midterm (pagbasa + pakikinig)",
+    "midtermMaxScore": "Kabuuang marka ng midterm",
     "finalMaxScore": "Kabuuang marka ng final na pagsusulit",
-    "unsavedChanges": "May hindi pa na-save na pagbabago"
+    "unsavedChanges": "May hindi pa na-save na pagbabago",
+    "feedback": "Feedback"
   },
   "grid": {
     "title": "Talahanayan ng Marka",
@@ -153,7 +167,8 @@
     "feedbackPlaceholder": "Ibahagi ang iyong feedback tungkol sa term na ito…",
     "feedbackSubmit": "Isumite ang Feedback",
     "feedbackSubmitted": "Naisumite ang feedback noong {date}. Salamat!",
-    "noEvaluationYet": "Wala pang isinusulat."
+    "noEvaluationYet": "Wala pang isinusulat.",
+    "sessionScores": "Marka bawat klase"
   },
   "language": {
     "label": "Wika"
@@ -178,6 +193,46 @@
   },
   "invite": {
     "title": "Naimbitahan ka",
-    "subtitle": "Mag-sign in gamit ang Google para tanggapin ang invite na ito."
+    "subtitle": "Mag-sign in para tanggapin ang invite na ito."
+  },
+  "account": {
+    "title": "Account",
+    "deleteAccount": "Burahin ang account",
+    "deleteWarning": "Permanenteng bubura ang iyong account. Kung may term kang tinuturuan, mabubura rin ang lahat dito — roster, attendance, at grades. Hindi na ito mababawi.",
+    "confirmEmailLabel": "I-type ang {email} para kumpirmahin",
+    "wrongPassword": "Maling password.",
+    "deleting": "Binubura…",
+    "error": "Hindi mabura ang iyong account. Pakisubukang muli."
+  },
+  "billing": {
+    "title": "Billing",
+    "plan": {
+      "FREE": "Libre",
+      "PRO": "Pro",
+      "INSTITUTION": "Institusyon"
+    },
+    "currentPlan": "Kasalukuyang plano",
+    "unlimitedTerms": "Walang limitasyong term",
+    "limitedTerms": "{count} aktibong term",
+    "noTAs": "Walang TA",
+    "limitedTAs": "Hanggang {count} TA",
+    "unlimitedTAs": "Walang limitasyong TA",
+    "unlimitedTAsPooled": "Walang limitasyong TA, ibinabahagi sa buong institusyon mo",
+    "upgrade": "Mag-upgrade",
+    "redirecting": "Ire-redirect…",
+    "manageBilling": "Pamahalaan ang billing",
+    "checkoutSuccess": "Na-update na ang subscription. Maaaring tumagal ito bago makita dito.",
+    "checkoutCanceled": "Kinansela ang checkout.",
+    "error": "May nangyaring mali. Subukan muli."
+  },
+  "join": {
+    "title": "Sumali sa klaseng ito",
+    "name": "Pangalan",
+    "studentId": "Student ID",
+    "email": "Email",
+    "submit": "I-request ang pagsali",
+    "submitting": "Isinusumite…",
+    "submitted": "Naipadala ang request! Susuriin muna ito ng iyong guro bago ka idagdag sa listahan ng estudyante.",
+    "error": "Hindi maisumite ang iyong request. Pakisubukang muli."
   }
 }

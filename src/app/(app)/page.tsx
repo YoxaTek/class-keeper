@@ -1,18 +1,15 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/currentUser";
 import { TermFormDrawer } from "./TermFormDrawer";
 import { InviteCoTeacherForm } from "./InviteCoTeacherForm";
 import { TermDeleteButton } from "./TermDeleteButton";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session) redirect("/login");
-  if (session.user.role === "STUDENT") redirect("/me");
-
-  const { id: userId, role, organizationId } = session.user;
+  const { id: userId, role, organizationId } = await getCurrentUser();
+  if (role === "STUDENT") redirect("/me");
 
   const terms = await prisma.term.findMany({
     where:
@@ -89,6 +86,7 @@ export default async function DashboardPage() {
                           weightImpression: term.weightImpression,
                           maxExcusedAbsences: term.maxExcusedAbsences,
                           passingScore: term.passingScore,
+                          institute: term.institute ?? "",
                         }}
                       />
                       <TermDeleteButton termId={term.id} termLabel={`${term.subject.name} · ${term.name}`} />

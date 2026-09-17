@@ -40,3 +40,21 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   }
 }
 
+@keyframes drawer-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes drawer-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+

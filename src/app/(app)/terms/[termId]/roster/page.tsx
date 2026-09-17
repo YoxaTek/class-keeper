@@ -2,24 +2,35 @@ import { getTranslations } from "next-intl/server";
 import { requireTermAccess } from "@/lib/termAccess";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { JoinLinkCard } from "@/components/JoinLinkCard";
+import { JoinRequestsList } from "@/components/JoinRequestsList";
 import { RosterTable } from "./RosterTable";
 import { BulkAddForm } from "./BulkAddForm";
 import { InviteTAForm } from "./InviteTAForm";
 
 export default async function RosterPage({ params }: { params: Promise<{ termId: string }> }) {
   const { termId } = await params;
-  const { session, term } = await requireTermAccess(termId);
+  const { user, term } = await requireTermAccess(termId);
   const t = await getTranslations("roster");
 
-  const enrollments = await prisma.enrollment.findMany({
-    where: { termId },
-    include: { student: true },
-    orderBy: { student: { name: "asc" } },
-  });
+  const [enrollments, joinRequests] = await Promise.all([
+    prisma.enrollment.findMany({
+      where: { termId },
+      include: { student: true },
+      orderBy: { student: { name: "asc" } },
+    }),
+    prisma.joinRequest.findMany({ where: { termId }, orderBy: { createdAt: "asc" } }),
+  ]);
 
   return (
     <div>
       <Breadcrumb items={[{ label: term.name, href: `/terms/${termId}` }, { label: t("title") }]} />
+
+      {joinRequests.length > 0 && (
+        <div className="mb-4">
+          <JoinRequestsList termId={termId} requests={joinRequests} />
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
         <div className="space-y-2">
@@ -31,12 +42,13 @@ export default async function RosterPage({ params }: { params: Promise<{ termId:
         </div>
 
         <div className="space-y-4">
+          <JoinLinkCard termId={termId} />
           {enrollments.length >= 30 ? (
             <p className="text-sm text-amber-700 dark:text-amber-500">{t("capReached")}</p>
           ) : (
             <BulkAddForm termId={termId} remaining={30 - enrollments.length} />
           )}
-          {session.user.role === "TEACHER" && <InviteTAForm termId={termId} />}
+          {user.role === "TEACHER" && <InviteTAForm termId={termId} />}
         </div>
       </div>
     </div>

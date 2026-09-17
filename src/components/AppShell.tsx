@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { TermSelector } from "@/components/TermSelector";
+import { AdSlot } from "@/components/AdSlot";
 
 export function AppShell({
   name,
@@ -49,6 +50,7 @@ export function AppShell({
           <ProfileMenu name={name} email={email} image={image} role={role} />
         </div>
       </header>
+      <AdSlot />
       <div className="flex min-h-0 flex-1">
         <AppSidebar />
         <main className="min-w-0 flex-1 overflow-y-auto px-6 py-5">{children}</main>

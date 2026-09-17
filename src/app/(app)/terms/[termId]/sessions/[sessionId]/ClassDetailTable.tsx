@@ -3,12 +3,17 @@
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
-import type { Attendance, AttendanceStatus, Enrollment, ScoreRecord, Session, Student } from "@prisma/client";
+import type { Attendance, AttendanceStatus, Enrollment, ScoreRecord, SessionFeedback, Session, Student } from "@prisma/client";
 import { attendanceIcon, attendanceColor } from "@/lib/attendanceIcons";
 import { Button } from "@/components/ui/Button";
-import { cardClass } from "@/components/ui/styles";
+import { cardClass, inputClass } from "@/components/ui/styles";
 
-type Row = Enrollment & { student: Student; attendance: Attendance[]; scores: ScoreRecord[] };
+type Row = Enrollment & {
+  student: Student;
+  attendance: Attendance[];
+  scores: ScoreRecord[];
+  sessionFeedback: SessionFeedback[];
+};
 type ScoreCategory = "QUIZ" | "ASSIGNMENT" | "MIDTERM_READING" | "MIDTERM_LISTENING" | "FINAL";
 type ScoreState = { original: string; retake: string; retakeMax: string };
 
@@ -31,13 +36,17 @@ export function ClassDetailTable({
     | "midtermMaxScore"
     | "hasFinal"
     | "finalMaxScore"
+    | "hasFeedback"
   >;
   enrollments: Row[];
 }) {
   const t = useTranslations();
 
   const [rowState] = useState(() => {
-    const state = new Map<string, { attendance: AttendanceStatus | undefined; scores: Map<ScoreCategory, ScoreState> }>();
+    const state = new Map<
+      string,
+      { attendance: AttendanceStatus | undefined; scores: Map<ScoreCategory, ScoreState>; feedback: string }
+    >();
     for (const row of enrollments) {
       const scores = new Map<ScoreCategory, ScoreState>();
       for (const s of row.scores) {
@@ -47,7 +56,11 @@ export function ClassDetailTable({
           retakeMax: s.retakeMaxScore?.toString() ?? "",
         });
       }
-      state.set(row.id, { attendance: row.attendance[0]?.status, scores });
+      state.set(row.id, {
+        attendance: row.attendance[0]?.status,
+        scores,
+        feedback: row.sessionFeedback[0]?.note ?? "",
+      });
     }
     return state;
   });
@@ -85,6 +98,18 @@ export function ClassDetailTable({
         retakeScore: next.retake === "" ? null : Number(next.retake),
         retakeMaxScore: next.retakeMax === "" ? null : Number(next.retakeMax),
       },
+    });
+    setDirtyCount(pending.current.size);
+    forceRender((n) => n + 1);
+  }
+
+  function setFeedback(enrollmentId: string, note: string) {
+    const row = rowState.get(enrollmentId);
+    if (!row) return;
+    row.feedback = note;
+    pending.current.set(`feedback:${enrollmentId}`, {
+      url: "/api/session-feedback",
+      body: { sessionId, enrollmentId, note },
     });
     setDirtyCount(pending.current.size);
     forceRender((n) => n + 1);
@@ -154,6 +179,7 @@ export function ClassDetailTable({
                 <th className="px-3 py-2">{t("grid.retake")}</th>
               </>
             )}
+            {session.hasFeedback && <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">{t("sessions.feedback")}</th>}
           </tr>
         </thead>
         <tbody className="bg-white dark:bg-zinc-950">
@@ -262,6 +288,10 @@ export function ClassDetailTable({
                     />
                   </>
                 )}
+
+                {session.hasFeedback && (
+                  <FeedbackCell value={state.feedback} onCommit={(v) => setFeedback(row.id, v)} />
+                )}
               </tr>
             );
           })}
@@ -316,24 +346,32 @@ function clampScore(raw: string, max?: number) {
   return String(bounded);
 }
 
+// Controlled directly by the parent's committed state (no local draft) so
+// every keystroke marks the row dirty and enables Save immediately — only
+// the clamp-to-bounds pass waits for blur, since it reformats the value.
 function NumberCell({ value, max, onCommit }: { value: string; max?: number; onCommit: (value: string) => void }) {
-  const [draft, setDraft] = useState(value);
-
   return (
     <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
       <input
         type="number"
         min={0}
         max={max}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
+        value={value}
+        onChange={(e) => onCommit(e.target.value)}
         onBlur={() => {
-          const clamped = clampScore(draft, max);
-          setDraft(clamped);
+          const clamped = clampScore(value, max);
           if (clamped !== value) onCommit(clamped);
         }}
         className="tabular w-20 rounded border border-zinc-200 bg-white px-1.5 py-1 text-left text-sm text-zinc-900 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600"
       />
+    </td>
+  );
+}
+
+function FeedbackCell({ value, onCommit }: { value: string; onCommit: (value: string) => void }) {
+  return (
+    <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
+      <input value={value} onChange={(e) => onCommit(e.target.value)} className={`min-w-40 ${inputClass}`} />
     </td>
   );
 }
@@ -351,21 +389,17 @@ function RetakeCell({
   onCommitObtained: (value: string) => void;
   onCommitTotal: (value: string) => void;
 }) {
-  const [obtainedDraft, setObtainedDraft] = useState(obtained);
-  const [totalDraft, setTotalDraft] = useState(total);
-
   return (
     <td className="px-2 py-1">
       <div className="flex items-center gap-1">
         <input
           type="number"
           min={0}
-          max={totalDraft === "" ? undefined : Number(totalDraft)}
-          value={obtainedDraft}
-          onChange={(e) => setObtainedDraft(e.target.value)}
+          max={total === "" ? undefined : Number(total)}
+          value={obtained}
+          onChange={(e) => onCommitObtained(e.target.value)}
           onBlur={() => {
-            const clamped = clampScore(obtainedDraft, totalDraft === "" ? undefined : Number(totalDraft));
-            setObtainedDraft(clamped);
+            const clamped = clampScore(obtained, total === "" ? undefined : Number(total));
             if (clamped !== obtained) onCommitObtained(clamped);
           }}
           placeholder={placeholder}
@@ -375,11 +409,10 @@ function RetakeCell({
         <input
           type="number"
           min={0}
-          value={totalDraft}
-          onChange={(e) => setTotalDraft(e.target.value)}
+          value={total}
+          onChange={(e) => onCommitTotal(e.target.value)}
           onBlur={() => {
-            const clamped = clampScore(totalDraft);
-            setTotalDraft(clamped);
+            const clamped = clampScore(total);
             if (clamped !== total) onCommitTotal(clamped);
           }}
           className="tabular w-12 rounded border border-zinc-200 bg-white px-1 py-1 text-left text-sm text-zinc-500 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600"

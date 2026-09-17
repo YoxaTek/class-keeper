@@ -1,15 +1,18 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getEnabledProviders } from "@/lib/authProviders";
-import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
+import { safeCallbackUrl } from "@/lib/safeCallbackUrl";
 import { AuthShell } from "@/components/AuthShell";
-import { linkClass } from "@/components/ui/styles";
+import { SignupForm } from "./SignupForm";
 
-export default async function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
   const t = await getTranslations("signup");
-  const tLogin = await getTranslations("login");
   const tCommon = await getTranslations("common");
   const providers = getEnabledProviders();
+  const { callbackUrl } = await searchParams;
 
   return (
     <AuthShell appName={tCommon("appName")}>
@@ -19,11 +22,7 @@ export default async function SignupPage() {
           <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
         </div>
 
-        <ProviderSignInButtons providers={providers} />
-
-        <p className="text-sm text-zinc-500 dark:text-zinc-500">
-          {t("haveAccount")} <Link href="/login" className={linkClass}>{tLogin("submit")}</Link>
-        </p>
+        <SignupForm providers={providers} callbackUrl={safeCallbackUrl(callbackUrl)} />
       </div>
     </AuthShell>
   );

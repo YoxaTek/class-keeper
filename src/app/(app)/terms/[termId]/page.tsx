@@ -44,6 +44,7 @@ export default async function SessionsListPage({
       s.hasAssignment && t("sessions.assignment"),
       s.hasMidterm && t("sessions.midterm"),
       s.hasFinal && t("sessions.final"),
+      s.hasFeedback && t("sessions.feedback"),
     ]
       .filter(Boolean)
       .join(", ");
@@ -148,6 +149,7 @@ export default async function SessionsListPage({
                           midtermMaxScore: s.midtermMaxScore,
                           hasFinal: s.hasFinal,
                           finalMaxScore: s.finalMaxScore,
+                          hasFeedback: s.hasFeedback,
                         }}
                       />
                       <ClassDeleteButton termId={termId} sessionId={s.id} />
