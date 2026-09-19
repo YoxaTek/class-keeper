@@ -99,8 +99,8 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   subscription   Subscription?
 
-  invitesSent    Invite[] @relation("InvitesSent")
-  inviteAccepted Invite?  @relation("InviteAccepted")
+  invitesSent     Invite[] @relation("InvitesSent")
+  invitesAccepted Invite[] @relation("InviteAccepted")
 }
 
 model Organization {
@@ -116,7 +116,10 @@ model Organization {
  * Organization — is ever granted. A teacher generates one of these (a
  * shareable link, not an emailed invite — there's no email infra), the
  * recipient signs in with Google, and /onboarding applies it to their
- * account exactly once.
+ * account. A brand-new account applies exactly one invite, ever (that's
+ * what sets its role); an existing TA may accept further TA invites on top
+ * of that to pick up additional terms, which is why acceptedByUserId isn't
+ * unique — see acceptInvite() in lib/invites.ts.
  */
 model Invite {
   id    String  @id @default(cuid())
@@ -140,7 +143,7 @@ model Invite {
 
   expiresAt        DateTime?
   acceptedAt       DateTime?
-  acceptedByUserId String?   @unique
+  acceptedByUserId String?
   acceptedByUser   User?     @relation("InviteAccepted", fields: [acceptedByUserId], references: [id])
 
   createdAt DateTime @default(now())
@@ -208,6 +211,7 @@ model TermAssistant {
 model Student {
   id          String       @id @default(cuid())
   name        String
+  chineseName String?
   studentId   String? // the institution's own student ID — informational, not used as a lookup key
   email       String?
   userId      String?      @unique

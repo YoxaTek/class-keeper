@@ -104,7 +104,7 @@ export function SessionForm({
     <form id="session-form" onSubmit={onSubmit}>
       <div className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
+          <div className="min-w-0 space-y-1">
             <label className={labelClass}>{t("common.date")}</label>
             <DateInput value={values.date} onChange={(date) => setValues((v) => ({ ...v, date }))} required />
           </div>

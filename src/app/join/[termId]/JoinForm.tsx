@@ -8,6 +8,7 @@ import { inputClass, labelClass } from "@/components/ui/styles";
 export function JoinForm({ termId, initialName }: { termId: string; initialName: string }) {
   const t = useTranslations("join");
   const [name, setName] = useState(initialName);
+  const [chineseName, setChineseName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +21,7 @@ export function JoinForm({ termId, initialName }: { termId: string; initialName:
     const res = await fetch(`/api/terms/${termId}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, studentId }),
+      body: JSON.stringify({ name, chineseName: chineseName || undefined, studentId }),
     });
 
     if (!res.ok) {
@@ -43,6 +44,18 @@ export function JoinForm({ termId, initialName }: { termId: string; initialName:
           {t("name")}
         </label>
         <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="chineseName" className={labelClass}>
+          {t("chineseName")}
+        </label>
+        <input
+          id="chineseName"
+          value={chineseName}
+          onChange={(e) => setChineseName(e.target.value)}
+          className={inputClass}
+        />
       </div>
 
       <div className="space-y-1">

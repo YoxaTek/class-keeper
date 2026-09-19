@@ -78,7 +78,12 @@ export default async function StudentDetailPage({
           { label: enrollment.student.name },
         ]}
       />
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{enrollment.student.name}</h2>
+      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        {enrollment.student.name}
+        {enrollment.student.chineseName && (
+          <span className="ml-2 font-normal text-zinc-500 dark:text-zinc-500">{enrollment.student.chineseName}</span>
+        )}
+      </h2>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GradeBreakdownCard

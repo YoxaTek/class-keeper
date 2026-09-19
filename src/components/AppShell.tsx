@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BookOpenCheck } from "lucide-react";
@@ -31,6 +32,7 @@ export function AppShell({
   const termId = pathname.match(/^\/terms\/([^/]+)/)?.[1];
   const currentTerm = termId ? terms.find((term) => term.id === termId) : undefined;
   const isTermsList = pathname === "/";
+  const [footerHeight, setFooterHeight] = useState(0);
 
   return (
     <div className="flex h-screen flex-col">
@@ -58,9 +60,14 @@ export function AppShell({
       <AdSlot />
       <div className="flex min-h-0 flex-1">
         <AppSidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto px-6 py-5 pb-24 lg:pb-5">{children}</main>
+        <main
+          className="flex min-w-0 flex-1 flex-col overflow-y-auto px-3 py-5 lg:pb-5"
+          style={footerHeight ? { paddingBottom: footerHeight + 16 } : undefined}
+        >
+          {children}
+        </main>
       </div>
-      <MobileFooterNav terms={terms} />
+      <MobileFooterNav terms={terms} onHeightChange={setFooterHeight} />
     </div>
   );
 }

@@ -10,5 +10,5 @@ export default async function TermLayout({
   const { termId } = await params;
   await requireTermAccess(termId); // access check only — nav lives in the sidebar now, breadcrumbs are per-page
 
-  return <div className="mx-auto flex h-full max-w-6xl flex-col">{children}</div>;
+  return <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col">{children}</div>;
 }

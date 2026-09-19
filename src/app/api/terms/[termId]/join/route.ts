@@ -8,6 +8,7 @@ const MAX_PER_TERM = 30;
 
 const schema = z.object({
   name: z.string().min(1),
+  chineseName: z.string().min(1).optional(),
   studentId: z.string().min(1),
 });
 
@@ -46,7 +47,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ ter
   const student =
     user.student ??
     (await prisma.student.create({
-      data: { userId: session.user.id, name: body.data.name, studentId: body.data.studentId, email: user.email },
+      data: {
+        userId: session.user.id,
+        name: body.data.name,
+        chineseName: body.data.chineseName,
+        studentId: body.data.studentId,
+        email: user.email,
+      },
     }));
 
   const existingEnrollment = await prisma.enrollment.findUnique({

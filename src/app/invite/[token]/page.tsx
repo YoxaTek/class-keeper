@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getEnabledProviders } from "@/lib/authProviders";
+import { tryAcceptAdditionalTaTerm } from "@/lib/invites";
 import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
 import { AuthShell } from "@/components/AuthShell";
 import { linkClass } from "@/components/ui/styles";
@@ -12,7 +13,14 @@ export default async function InviteLandingPage({ params }: { params: Promise<{ 
   const session = await auth();
 
   const onboardingUrl = `/onboarding?invite=${encodeURIComponent(token)}`;
-  if (session) redirect(onboardingUrl);
+  if (session) {
+    // An existing TA picking up another term has nothing left to fill
+    // out — apply it now and skip /onboarding entirely. Any other case
+    // (new account, or a real role change) still goes through onboarding
+    // so it can show the right form or error.
+    const applied = await tryAcceptAdditionalTaTerm(session.user.id, session.user.email!, token);
+    redirect(applied ? "/" : onboardingUrl);
+  }
 
   const t = await getTranslations("invite");
   const tCommon = await getTranslations("common");

@@ -9,6 +9,20 @@ import { DateInput } from "@/components/ui/DateInput";
 import { Drawer } from "@/components/ui/Drawer";
 import { inputClass, inputClassSm, labelClass } from "@/components/ui/styles";
 
+const sliderClass =
+  "themed-slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700";
+
+function sliderFillStyle(value: number, min: number, max: number) {
+  const clamped = Math.min(Math.max(value, min), max);
+  const pct = ((clamped - min) / (max - min || 1)) * 100;
+  return {
+    background:
+      `linear-gradient(to right, ` +
+      `var(--slider-track-filled) 0%, var(--slider-track-filled) ${pct}%, ` +
+      `var(--slider-track-empty) ${pct}%, var(--slider-track-empty) 100%)`,
+  };
+}
+
 interface TermFields {
   subjectName: string;
   name: string;
@@ -176,12 +190,12 @@ export function TermFormDrawer(props: Props) {
               />
             </div>
 
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               <label className={labelClass}>{t("startDate")}</label>
               <DateInput value={startDate} onChange={setStartDate} max={endDate || undefined} required />
             </div>
 
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               <label className={labelClass}>{t("endDate")}</label>
               <DateInput value={endDate} onChange={setEndDate} min={startDate || undefined} required />
             </div>
@@ -190,6 +204,9 @@ export function TermFormDrawer(props: Props) {
               <label className={labelClass}>{t("maxExcusedAbsences")}</label>
               <input
                 type="number"
+                min={0}
+                max={30}
+                step={1}
                 value={maxExcusedAbsences}
                 onChange={(e) => setMaxExcusedAbsences(Number(e.target.value))}
                 className={inputClass}
@@ -200,6 +217,9 @@ export function TermFormDrawer(props: Props) {
               <label className={labelClass}>{t("passingScore")}</label>
               <input
                 type="number"
+                min={0}
+                max={100}
+                step={1}
                 value={passingScore}
                 onChange={(e) => setPassingScore(Number(e.target.value))}
                 className={inputClass}
@@ -224,16 +244,34 @@ export function TermFormDrawer(props: Props) {
                 ({weightTotal}/100)
               </span>
             </legend>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            <div className="space-y-2">
               {(Object.keys(weights) as (keyof typeof weights)[]).map((key) => (
-                <div key={key} className="space-y-1">
+                <div key={key} className="grid grid-cols-[9rem_1fr_4.5rem] items-center gap-2">
                   <label className={labelClass}>{t(key)}</label>
                   <input
-                    type="number"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
                     value={weights[key]}
                     onChange={(e) => updateWeight(key, Number(e.target.value))}
-                    className={inputClassSm}
+                    className={sliderClass}
+                    style={sliderFillStyle(weights[key], 0, 100)}
                   />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={weights[key]}
+                      onChange={(e) => updateWeight(key, Number(e.target.value))}
+                      className={`${inputClassSm} tabular pr-5`}
+                    />
+                    <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-zinc-500 dark:text-zinc-400">
+                      %
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

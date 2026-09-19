@@ -5,11 +5,10 @@ import { BookMarked, BookOpenText, CalendarDays, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
 import { TermFormDrawer } from "./TermFormDrawer";
-import { InviteCoTeacherForm } from "./InviteCoTeacherForm";
 import { TermDeleteButton } from "./TermDeleteButton";
 
 export default async function DashboardPage() {
-  const { id: userId, role, organizationId } = await getCurrentUser();
+  const { id: userId, role } = await getCurrentUser();
   if (role === "STUDENT") redirect("/me");
 
   const terms = await prisma.term.findMany({
@@ -41,7 +40,7 @@ export default async function DashboardPage() {
               key={term.id}
               className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
             >
-              <Link href={`/terms/${term.id}`} className="block space-y-3">
+              <Link href={`/terms/${term.id}/term`} className="block space-y-3">
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
                     <BookMarked className="h-3 w-3" aria-hidden />
@@ -106,8 +105,6 @@ export default async function DashboardPage() {
           {role === "TA" ? t("taPending") : "—"}
         </div>
       )}
-
-      {role === "TEACHER" && organizationId && <InviteCoTeacherForm />}
     </div>
   );
 }

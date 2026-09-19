@@ -13,7 +13,12 @@ async function checkAccess(termId: string) {
   return { session };
 }
 
-const renameSchema = z.object({ name: z.string().min(1) });
+const renameSchema = z.object({
+  name: z.string().min(1),
+  chineseName: z.string().nullable().optional(),
+  studentId: z.string().nullable().optional(),
+  email: z.string().email().nullable().optional(),
+});
 
 export async function PATCH(
   request: Request,
@@ -29,9 +34,19 @@ export async function PATCH(
   const enrollment = await prisma.enrollment.findUnique({ where: { id: enrollmentId, termId } });
   if (!enrollment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const current = await prisma.student.findUniqueOrThrow({ where: { id: enrollment.studentId } });
+
   const student = await prisma.student.update({
     where: { id: enrollment.studentId },
-    data: { name: body.data.name },
+    data: {
+      name: body.data.name,
+      ...(body.data.chineseName !== undefined && { chineseName: body.data.chineseName || null }),
+      // Student ID and email are usually set by the student's own self-serve
+      // join and treated as authoritative from then on — a teacher can fill
+      // them in while blank, but not overwrite an existing value here.
+      ...(!current.studentId && body.data.studentId !== undefined && { studentId: body.data.studentId || null }),
+      ...(!current.email && body.data.email !== undefined && { email: body.data.email || null }),
+    },
   });
 
   return NextResponse.json(student);

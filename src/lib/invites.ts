@@ -42,6 +42,12 @@ export function validateInvite(
  * carries, and marks onboarding complete. Refuses to touch an
  * already-onboarded account — role changes for an established user are an
  * admin action, not something a stray invite link should be able to do.
+ *
+ * The one exception is a TA accepting another TA invite: a teacher can
+ * assign the same TA to several of their terms, each as its own invite, so
+ * an existing TA picking up one more term isn't a role change at all —
+ * just another TermAssistant row. That's the only case that skips the
+ * already-onboarded refusal and the role/onboardingComplete write below.
  */
 export async function acceptInvite(userId: string, userEmail: string, token: string): Promise<void> {
   const invite = await prisma.invite.findUnique({ where: { token } });
@@ -49,7 +55,8 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
   if (!validation.ok) throw new InviteError(validation.reason);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
-  if (user.onboardingComplete) throw new InviteError("already_onboarded");
+  const isAdditionalTaTerm = invite!.role === "TA" && user.role === "TA" && user.onboardingComplete;
+  if (user.onboardingComplete && !isAdditionalTaTerm) throw new InviteError("already_onboarded");
 
   if (invite!.role === "TA" && invite!.termId) {
     // Re-check the plan limit at acceptance time too, not just when the
@@ -65,14 +72,16 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
       data: { acceptedAt: new Date(), acceptedByUserId: userId },
     });
 
-    await tx.user.update({
-      where: { id: userId },
-      data: {
-        role: invite!.role,
-        onboardingComplete: true,
-        ...(invite!.organizationId ? { organizationId: invite!.organizationId } : {}),
-      },
-    });
+    if (!isAdditionalTaTerm) {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          role: invite!.role,
+          onboardingComplete: true,
+          ...(invite!.organizationId ? { organizationId: invite!.organizationId } : {}),
+        },
+      });
+    }
 
     if (invite!.role === "TA" && invite!.termId) {
       await tx.termAssistant.upsert({
@@ -86,6 +95,30 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
       await tx.student.update({ where: { id: invite!.studentId }, data: { userId } });
     }
   });
+}
+
+/**
+ * For a signed-in, already-onboarded TA opening a fresh TA invite (another
+ * term from the same or a different teacher) there's nothing left to ask
+ * them — no name, no onboarding step — so the invite landing page applies
+ * it immediately and sends them straight to the dashboard instead of
+ * routing them through /onboarding. Returns whether it did so; false
+ * (touching nothing) for every other case, which leaves /onboarding to run
+ * its normal form-or-error flow.
+ */
+export async function tryAcceptAdditionalTaTerm(userId: string, userEmail: string, token: string): Promise<boolean> {
+  const invite = await prisma.invite.findUnique({ where: { token }, select: { role: true } });
+  if (!invite || invite.role !== "TA") return false;
+
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true, onboardingComplete: true } });
+  if (!user || user.role !== "TA" || !user.onboardingComplete) return false;
+
+  try {
+    await acceptInvite(userId, userEmail, token);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

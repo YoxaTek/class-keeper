@@ -1,22 +1,36 @@
 import { getTranslations } from "next-intl/server";
 import { requireTermAccess } from "@/lib/termAccess";
-import { prisma } from "@/lib/prisma";
+import { computeGradesForTerm } from "@/lib/grading/computeTermGrades";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { JoinLinkCard } from "@/components/JoinLinkCard";
 import { RosterTable } from "./RosterTable";
 import { BulkAddForm } from "./BulkAddForm";
-import { InviteTAForm } from "./InviteTAForm";
 
 export default async function RosterPage({ params }: { params: Promise<{ termId: string }> }) {
   const { termId } = await params;
-  const { user } = await requireTermAccess(termId);
+  await requireTermAccess(termId);
   const t = await getTranslations("roster");
 
-  const enrollments = await prisma.enrollment.findMany({
-    where: { termId },
-    include: { student: true },
-    orderBy: { student: { name: "asc" } },
-  });
+  const { term, results } = await computeGradesForTerm(termId);
+  // Weights are per-term and don't have to sum to 100, so the score % is
+  // relative to this term's own total rather than assumed out of 100.
+  const totalMax =
+    term.weightAttendance +
+    term.weightAssignment +
+    term.weightQuiz +
+    term.weightMidterm +
+    term.weightFinal +
+    term.weightImpression;
+
+  const rows = results
+    .map(({ enrollment, grade }) => ({
+      id: enrollment.id,
+      student: enrollment.student,
+      attendancePct: Math.round(grade.attendance.pct * 100),
+      scorePct: totalMax > 0 ? Math.round((grade.total / totalMax) * 100) : 0,
+      passing: grade.passing,
+    }))
+    .sort((a, b) => a.student.name.localeCompare(b.student.name));
 
   return (
     <div>
@@ -26,19 +40,18 @@ export default async function RosterPage({ params }: { params: Promise<{ termId:
         <div className="space-y-2">
           <div className="flex items-baseline justify-between">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h2>
-            <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{enrollments.length} / 30</span>
+            <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{rows.length} / 30</span>
           </div>
-          <RosterTable termId={termId} enrollments={enrollments} />
+          <RosterTable termId={termId} rows={rows} />
         </div>
 
         <div className="space-y-4">
           <JoinLinkCard termId={termId} />
-          {enrollments.length >= 30 ? (
+          {rows.length >= 30 ? (
             <p className="text-sm text-amber-700 dark:text-amber-500">{t("capReached")}</p>
           ) : (
-            <BulkAddForm termId={termId} remaining={30 - enrollments.length} />
+            <BulkAddForm termId={termId} remaining={30 - rows.length} />
           )}
-          {user.role === "TEACHER" && <InviteTAForm termId={termId} />}
         </div>
       </div>
     </div>
