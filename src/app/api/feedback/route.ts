@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json(feedback, { status: 201 });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      return NextResponse.json({ error: "Feedback already submitted for this term" }, { status: 409 });
+      return NextResponse.json({ error: "Feedback already submitted for this course" }, { status: 409 });
     }
     throw e;
   }

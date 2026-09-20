@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canWriteTerm } from "@/lib/permissions";
+import { canWriteCourse } from "@/lib/permissions";
 
 const schema = z.object({
   sessionId: z.string(),
@@ -25,7 +25,7 @@ export async function PUT(request: Request) {
   const classSession = await prisma.session.findUnique({
     where: { id: sessionId },
     select: {
-      termId: true,
+      courseId: true,
       quizMaxScore: true,
       assignmentMaxScore: true,
       midtermMaxScore: true,
@@ -33,7 +33,7 @@ export async function PUT(request: Request) {
     },
   });
   if (!classSession) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (!(await canWriteTerm(session.user.id, classSession.termId))) {
+  if (!(await canWriteCourse(session.user.id, classSession.courseId))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

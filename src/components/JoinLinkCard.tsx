@@ -6,12 +6,12 @@ import { useTranslations } from "next-intl";
 import { Copy, Check, QrCode } from "lucide-react";
 import { cardClass, labelClass } from "@/components/ui/styles";
 
-export function JoinLinkCard({ termId }: { termId: string }) {
+export function JoinLinkCard({ courseId }: { courseId: string }) {
   const t = useTranslations("roster");
   const tCommon = useTranslations("common");
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
-  const url = typeof window !== "undefined" ? `${window.location.origin}/join/${termId}` : "";
+  const url = typeof window !== "undefined" ? `${window.location.origin}/join/${courseId}` : "";
 
   async function copy() {
     try {

@@ -28,14 +28,14 @@ export default async function MePage() {
     include: {
       enrollments: {
         include: {
-          term: { include: { subject: true, sessions: true } },
+          course: { include: { subject: true, sessions: true } },
           attendance: true,
           scores: true,
           evaluation: true,
           feedback: true,
           sessionFeedback: true,
         },
-        orderBy: { term: { startDate: "desc" } },
+        orderBy: { course: { startDate: "desc" } },
       },
     },
   });
@@ -47,10 +47,10 @@ export default async function MePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       {student.enrollments.map((enrollment) => {
-        const { term } = enrollment;
+        const { course } = enrollment;
         const grade = calculateGrade({
           attendance: enrollment.attendance.map((a) => ({ status: a.status })),
-          sessions: term.sessions.map((s) => ({
+          sessions: course.sessions.map((s) => ({
             id: s.id,
             hasQuiz: s.hasQuiz,
             quizMaxScore: s.quizMaxScore,
@@ -70,15 +70,15 @@ export default async function MePage() {
           })),
           impressionScore: enrollment.evaluation?.impressionScore ?? null,
           settings: {
-            maxExcusedAbsences: term.maxExcusedAbsences,
-            weightAttendance: term.weightAttendance,
-            weightAssignment: term.weightAssignment,
-            weightQuiz: term.weightQuiz,
-            weightMidterm: term.weightMidterm,
-            weightFinal: term.weightFinal,
-            weightImpression: term.weightImpression,
-            passingScore: term.passingScore,
-            finalExamSessionId: term.finalExamSessionId,
+            maxExcusedAbsences: course.maxExcusedAbsences,
+            weightAttendance: course.weightAttendance,
+            weightAssignment: course.weightAssignment,
+            weightQuiz: course.weightQuiz,
+            weightMidterm: course.weightMidterm,
+            weightFinal: course.weightFinal,
+            weightImpression: course.weightImpression,
+            passingScore: course.passingScore,
+            finalExamSessionId: course.finalExamSessionId,
           },
         });
 
@@ -97,7 +97,7 @@ export default async function MePage() {
         // was PRESENT for, OR a TA/teacher left it session feedback — that
         // can happen for any session, present or not (e.g. a note about an
         // absence), so it isn't gated on attendance the way scores are.
-        const cardSessions = term.sessions
+        const cardSessions = course.sessions
           .filter(
             (s) =>
               ((s.hasQuiz || s.hasAssignment || s.hasMidterm || s.hasFinal) &&
@@ -109,18 +109,18 @@ export default async function MePage() {
         return (
           <section key={enrollment.id} className="space-y-4">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-              {term.subject.name} <span className="text-zinc-400 dark:text-zinc-600">·</span> {term.name}
+              {course.subject.name} <span className="text-zinc-400 dark:text-zinc-600">·</span> {course.name}
             </h2>
 
             <GradeBreakdownCard
               grade={grade}
               weights={{
-                attendance: term.weightAttendance,
-                assignment: term.weightAssignment,
-                quiz: term.weightQuiz,
-                midterm: term.weightMidterm,
-                final: term.weightFinal,
-                impression: term.weightImpression,
+                attendance: course.weightAttendance,
+                assignment: course.weightAssignment,
+                quiz: course.weightQuiz,
+                midterm: course.weightMidterm,
+                final: course.weightFinal,
+                impression: course.weightImpression,
               }}
               labels={{
                 title: t("title"),

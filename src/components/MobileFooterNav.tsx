@@ -4,30 +4,37 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BookOpenCheck, CalendarRange, House, Settings, Users } from "lucide-react";
+import { BookOpenCheck, CalendarRange, CircleUserRound, House, Users } from "lucide-react";
 
 export function MobileFooterNav({
-  terms,
+  name,
+  email,
   onHeightChange,
 }: {
-  terms: { id: string; label: string }[];
+  name: string | null;
+  email: string;
   onHeightChange?: (height: number) => void;
 }) {
   const t = useTranslations();
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
 
-  const activeTermId = pathname.match(/^\/terms\/([^/]+)/)?.[1] ?? terms[0]?.id;
-  const studentsHref = activeTermId ? `/terms/${activeTermId}/roster` : "/";
-  const classesHref = activeTermId ? `/terms/${activeTermId}` : "/";
-  const termHref = activeTermId ? `/terms/${activeTermId}/term` : "/";
+  // Same "who am I" display used by the header's ProfileMenu.
+  const displayName = name || email;
+
+  // Course/Classes/Students only make sense once an actual course is
+  // selected — no fallback to "some" course on pages like /account, or
+  // they'd show up scoped to a course the user never picked.
+  const courseId = pathname.match(/^\/courses\/([^/]+)/)?.[1];
+  const studentsHref = courseId ? `/courses/${courseId}/roster` : "/";
+  const classesHref = courseId ? `/courses/${courseId}` : "/";
+  const courseHref = courseId ? `/courses/${courseId}/course` : "/";
 
   const studentsActive =
-    !!activeTermId &&
-    (pathname === `/terms/${activeTermId}/roster` || pathname.startsWith(`/terms/${activeTermId}/students/`));
+    !!courseId && (pathname === `/courses/${courseId}/roster` || pathname.startsWith(`/courses/${courseId}/students/`));
   const classesActive =
-    !!activeTermId && (pathname === `/terms/${activeTermId}` || pathname.startsWith(`/terms/${activeTermId}/sessions/`));
-  const termActive = pathname === `/terms/${activeTermId}/term`;
+    !!courseId && (pathname === `/courses/${courseId}` || pathname.startsWith(`/courses/${courseId}/sessions/`));
+  const courseActive = pathname === `/courses/${courseId}/course`;
   const homeActive = pathname === "/";
   const profileActive = pathname === "/account";
 
@@ -35,9 +42,7 @@ export function MobileFooterNav({
     const nav = navRef.current;
     if (!nav) return;
 
-    const report = () => {
-      onHeightChange?.(homeActive ? 0 : nav.offsetHeight);
-    };
+    const report = () => onHeightChange?.(nav.offsetHeight);
 
     report();
     const observer = new ResizeObserver(report);
@@ -48,39 +53,45 @@ export function MobileFooterNav({
       observer.disconnect();
       window.removeEventListener("resize", report);
     };
-  }, [homeActive, onHeightChange]);
+  }, [onHeightChange]);
 
-  const tabs = [
-    { href: "/", label: t("common.home"), icon: House, active: homeActive },
-    { href: termHref, label: t("dashboard.term"), icon: BookOpenCheck, active: termActive },
-    { href: classesHref, label: t("sessions.title"), icon: CalendarRange, active: classesActive },
-    { href: studentsHref, label: t("roster.title"), icon: Users, active: studentsActive },
-    { href: "/account", label: t("account.title"), icon: Settings, active: profileActive },
-  ];
+  const profileTab = { href: "/account", label: displayName, icon: CircleUserRound, active: profileActive };
+
+  // No selected course (the courses list, /account, ...) gets just Home +
+  // Profile; once inside a course, the full set appears.
+  const tabs = !courseId
+    ? [{ href: "/", label: t("common.home"), icon: House, active: homeActive }, profileTab]
+    : [
+        { href: "/", label: t("common.home"), icon: House, active: homeActive },
+        { href: courseHref, label: t("dashboard.course"), icon: BookOpenCheck, active: courseActive },
+        { href: classesHref, label: t("sessions.title"), icon: CalendarRange, active: classesActive },
+        { href: studentsHref, label: t("roster.title"), icon: Users, active: studentsActive },
+        profileTab,
+      ];
 
   return (
     <nav
       ref={navRef}
       aria-label="Mobile navigation"
-      aria-hidden={homeActive}
-      inert={homeActive || undefined}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-2 pt-1 backdrop-blur transition-transform duration-200 ease-in-out lg:hidden dark:border-zinc-800 dark:bg-zinc-950/95 ${
-        homeActive ? "translate-y-full" : "translate-y-0"
-      }`}
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-2 pt-1 backdrop-blur lg:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
     >
-      <ul className="grid grid-cols-5 gap-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
-        {tabs.map(({ href, label, icon: Icon, active }) => (
-          <li key={label}>
+      <ul
+        className={`grid gap-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] ${
+          tabs.length === 2 ? "grid-cols-2" : "grid-cols-5"
+        }`}
+      >
+        {tabs.map((tab) => (
+          <li key={tab.href}>
             <Link
-              href={href}
+              href={tab.href}
               className={`flex min-h-14 flex-col items-center justify-center rounded-md px-1 text-[11px] leading-tight ${
-                active
+                tab.active
                   ? "text-[#0f6e56] dark:text-teal-400"
                   : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
               }`}
             >
-              <Icon className="mb-0.5 h-4.5 w-4.5" aria-hidden />
-              <span>{label}</span>
+              <tab.icon className="mb-0.5 h-4.5 w-4.5" aria-hidden />
+              <span className="max-w-full truncate">{tab.label}</span>
             </Link>
           </li>
         ))}

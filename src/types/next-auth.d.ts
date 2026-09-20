@@ -17,6 +17,10 @@ declare module "next-auth" {
     locale: string | null;
     onboardingComplete: boolean;
     organizationId: string | null;
+    // Credentials-login-only: whether this sign-in should get the long
+    // ("remember me") session lifetime or the short default one — read
+    // once at sign-in by the jwt() callback, see src/lib/auth.ts.
+    rememberMe?: boolean;
   }
 }
 
@@ -26,5 +30,6 @@ declare module "next-auth/jwt" {
     locale: string | null;
     onboardingComplete: boolean;
     organizationId: string | null;
+    rememberMe?: boolean;
   }
 }

@@ -36,10 +36,10 @@ export async function DELETE(request: Request) {
   // with nothing pointing at it. Wire in a POST /v1/billing/subscriptions/
   // {id}/cancel call once PayPal is actually configured for this app.
   await prisma.$transaction([
-    // Term.teacherId is ON DELETE RESTRICT, so a teacher's terms (and
+    // Course.teacherId is ON DELETE RESTRICT, so a teacher's courses (and
     // everything under them — enrollments, sessions, attendance, scores,
     // invites) must be deleted explicitly before the user row itself.
-    prisma.term.deleteMany({ where: { teacherId: session.user.id } }),
+    prisma.course.deleteMany({ where: { teacherId: session.user.id } }),
     prisma.user.delete({ where: { id: session.user.id } }),
   ]);
 

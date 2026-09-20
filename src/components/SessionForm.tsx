@@ -42,13 +42,13 @@ const MAX_SCORE_FIELDS: {
 ];
 
 export function SessionForm({
-  termId,
+  courseId,
   sessionId,
   initial,
   onSaved,
   onSubmittingChange,
 }: {
-  termId: string;
+  courseId: string;
   sessionId?: string;
   initial?: SessionFormValues;
   onSaved: () => void;
@@ -79,8 +79,8 @@ export function SessionForm({
     onSubmittingChange?.(true);
 
     const url = sessionId
-      ? `/api/terms/${termId}/sessions/${sessionId}`
-      : `/api/terms/${termId}/sessions`;
+      ? `/api/courses/${courseId}/sessions/${sessionId}`
+      : `/api/courses/${courseId}/sessions`;
     const method = sessionId ? "PATCH" : "POST";
 
     // A total that was never set (its flag is off) is sent as undefined

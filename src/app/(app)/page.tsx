@@ -4,14 +4,14 @@ import { getTranslations } from "next-intl/server";
 import { BookMarked, BookOpenText, CalendarDays, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
-import { TermFormDrawer } from "./TermFormDrawer";
-import { TermDeleteButton } from "./TermDeleteButton";
+import { CourseFormDrawer } from "./CourseFormDrawer";
+import { CourseDeleteButton } from "./CourseDeleteButton";
 
 export default async function DashboardPage() {
   const { id: userId, role } = await getCurrentUser();
   if (role === "STUDENT") redirect("/me");
 
-  const terms = await prisma.term.findMany({
+  const courses = await prisma.course.findMany({
     where:
       role === "TEACHER"
         ? { teacherId: userId }
@@ -25,35 +25,35 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
         </div>
-        {role === "TEACHER" && <TermFormDrawer mode="create" />}
+        {role === "TEACHER" && <CourseFormDrawer mode="create" />}
       </div>
 
-      {terms.length > 0 ? (
+      {courses.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
-          {terms.map((term) => (
+          {courses.map((course) => (
             <article
-              key={term.id}
+              key={course.id}
               className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
             >
-              <Link href={`/terms/${term.id}/term`} className="block space-y-3">
+              <Link href={`/courses/${course.id}/course`} className="block space-y-3">
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
                     <BookMarked className="h-3 w-3" aria-hidden />
-                    {t("term")}
+                    {t("course")}
                   </p>
-                  <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{term.name}</p>
+                  <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{course.name}</p>
                 </div>
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
                     <BookOpenText className="h-3 w-3" aria-hidden />
                     {t("subject")}
                   </p>
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{term.subject.name}</p>
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{course.subject.name}</p>
                 </div>
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
                     {t("dates")}
                   </p>
                   <p className="tabular text-sm text-zinc-600 dark:text-zinc-400">
-                    {dateFmt.format(term.startDate)} – {dateFmt.format(term.endDate)}
+                    {dateFmt.format(course.startDate)} – {dateFmt.format(course.endDate)}
                   </p>
                 </div>
               </Link>
@@ -69,31 +69,31 @@ export default async function DashboardPage() {
               <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-900">
                 <p className="tabular flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
                   <Users className="h-3.5 w-3.5" aria-hidden />
-                  {t("students")}: {term._count.enrollments}
+                  {t("students")}: {course._count.enrollments}
                 </p>
 
-                {term.teacherId === userId && (
+                {course.teacherId === userId && (
                   <div className="flex items-center gap-1">
-                    <TermFormDrawer
+                    <CourseFormDrawer
                       mode="edit"
-                      termId={term.id}
+                      courseId={course.id}
                       initial={{
-                        subjectName: term.subject.name,
-                        name: term.name,
-                        startDate: term.startDate.toISOString().slice(0, 10),
-                        endDate: term.endDate.toISOString().slice(0, 10),
-                        weightAttendance: term.weightAttendance,
-                        weightAssignment: term.weightAssignment,
-                        weightQuiz: term.weightQuiz,
-                        weightMidterm: term.weightMidterm,
-                        weightFinal: term.weightFinal,
-                        weightImpression: term.weightImpression,
-                        maxExcusedAbsences: term.maxExcusedAbsences,
-                        passingScore: term.passingScore,
-                        institute: term.institute ?? "",
+                        subjectName: course.subject.name,
+                        name: course.name,
+                        startDate: course.startDate.toISOString().slice(0, 10),
+                        endDate: course.endDate.toISOString().slice(0, 10),
+                        weightAttendance: course.weightAttendance,
+                        weightAssignment: course.weightAssignment,
+                        weightQuiz: course.weightQuiz,
+                        weightMidterm: course.weightMidterm,
+                        weightFinal: course.weightFinal,
+                        weightImpression: course.weightImpression,
+                        maxExcusedAbsences: course.maxExcusedAbsences,
+                        passingScore: course.passingScore,
+                        institute: course.institute ?? "",
                       }}
                     />
-                    <TermDeleteButton termId={term.id} termLabel={`${term.subject.name} · ${term.name}`} />
+                    <CourseDeleteButton courseId={course.id} courseLabel={`${course.subject.name} · ${course.name}`} />
                   </div>
                 )}
               </div>

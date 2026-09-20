@@ -6,8 +6,9 @@ export type AuthProviderId = "google" | "facebook" | "line";
 
 export function getEnabledProviders(): AuthProviderId[] {
   const providers: AuthProviderId[] = [];
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) providers.push("google");
-  if (process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET) providers.push("facebook");
-  if (process.env.LINE_CLIENT_ID && process.env.LINE_CLIENT_SECRET) providers.push("line");
+  // Google, Facebook, and Line sign-in are disabled for now — see src/lib/auth.ts.
+  // if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) providers.push("google");
+  // if (process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET) providers.push("facebook");
+  // if (process.env.LINE_CLIENT_ID && process.env.LINE_CLIENT_SECRET) providers.push("line");
   return providers;
 }

@@ -25,7 +25,7 @@ export const GRADE_CATEGORY_COLORS = {
 
 /**
  * A segmented radial progress ring: each category fills a share of the ring
- * proportional to its earned points out of `max` (the sum of the term's
+ * proportional to its earned points out of `max` (the sum of the course's
  * weights, usually 100 but not hardcoded since a teacher can customize
  * them), with the remainder left as an empty track. Colors come from the
  * dataviz skill's validated categorical order (first 6 slots, worst

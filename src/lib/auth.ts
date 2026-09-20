@@ -1,85 +1,112 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import Facebook, { type FacebookProfile } from "next-auth/providers/facebook";
-import Line, { type LineProfile } from "next-auth/providers/line";
+import { encode as defaultEncode } from "next-auth/jwt";
+// Google, Facebook, and Line sign-in are disabled for now — see the
+// commented-out providers below. Re-enable by uncommenting these imports too.
+// import Google from "next-auth/providers/google";
+// import Facebook, { type FacebookProfile } from "next-auth/providers/facebook";
+// import Line, { type LineProfile } from "next-auth/providers/line";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import type { Role } from "@prisma/client";
+
+// "Remember me" unchecked still gets a real, working session — just a
+// shorter-lived one — not a browser-session-only cookie.
+const SHORT_SESSION_MAX_AGE = 24 * 60 * 60; // 1 day
+const LONG_SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days — also the cookie's own lifetime (see jwt.encode below)
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Session strategy is JWT (required for Credentials login), so the
   // adapter's own Session table is never read from or written to —
   // it's only used here for User/Account bookkeeping.
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  // The cookie itself always gets the long lifetime, so a "remembered"
+  // sign-in can actually last 30 days. What varies per sign-in is the
+  // JWT's own internal expiry, enforced by the custom encode() below.
+  session: { strategy: "jwt", maxAge: LONG_SESSION_MAX_AGE },
+  jwt: {
+    // Auth.js's own encode() always derives the JWT's real "exp" from the
+    // `maxAge` it's called with — it ignores any `exp` already on the
+    // token payload (see @auth/core/jwt: encode() calls
+    // setExpirationTime(now() + maxAge) unconditionally). So a per-sign-in
+    // "remember me" has to override maxAge here; setting token.exp from
+    // the jwt() callback below would silently do nothing.
+    encode: async ({ token, secret, salt }) => {
+      const maxAge = token?.rememberMe === false ? SHORT_SESSION_MAX_AGE : LONG_SESSION_MAX_AGE;
+      return defaultEncode({ token, secret, salt, maxAge });
+    },
+  },
   pages: { signIn: "/login" },
   // No NEXTAUTH_URL is set (see .env.local), so OAuth redirect_uris are
   // built from the actual request's Host header — required to work both
   // from localhost and from another device on the LAN.
   trustHost: true,
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    Facebook({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      // Auth.js's default Facebook config requests the "email" scope, which
-      // Meta only grants after App Review (or Business Verification) —
-      // without it, the OAuth dialog hard-fails with "Invalid Scopes:
-      // email" before the user even sees a login screen. "public_profile"
-      // is Meta's always-available default scope, no review required. We
-      // already treat a missing email as expected (see the fallback below),
-      // so there's nothing to lose by not asking for it.
-      authorization: { params: { scope: "public_profile" } },
-      // A small fraction of Facebook accounts (phone-only signup) have no
-      // email on file — User.email is required, so synthesize a stable
-      // fallback rather than let account creation fail outright. The
-      // role/locale/onboardingComplete/organizationId fields only matter for
-      // first-time account creation (an existing user's real DB row is what
-      // gets used on every later sign-in) — they mirror the schema's own
-      // defaults, just made explicit to satisfy the augmented User type.
-      profile(profile: FacebookProfile) {
-        return {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email ?? `facebook-${profile.id}@users.noreply.classkeeper`,
-          image: profile.picture?.data?.url,
-          role: "TEACHER" as const,
-          locale: null,
-          onboardingComplete: false,
-          organizationId: null,
-        };
-      },
-    }),
-    Line({
-      clientId: process.env.LINE_CLIENT_ID,
-      clientSecret: process.env.LINE_CLIENT_SECRET,
-      // LINE only returns an email once the channel has separately applied
-      // for and been granted "Email address permission" in the LINE
-      // Developers console — until then (or if the user declines it),
-      // there's no email at all. Same fallback as Facebook above.
-      profile(profile: LineProfile & { email?: string }) {
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email ?? `line-${profile.sub}@users.noreply.classkeeper`,
-          image: profile.picture,
-          role: "TEACHER" as const,
-          locale: null,
-          onboardingComplete: false,
-          organizationId: null,
-        };
-      },
-    }),
+    // Disabled for now.
+    // Google({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
+    // Disabled for now.
+    // Facebook({
+    //   clientId: process.env.FACEBOOK_CLIENT_ID,
+    //   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    //   // Auth.js's default Facebook config requests the "email" scope, which
+    //   // Meta only grants after App Review (or Business Verification) —
+    //   // without it, the OAuth dialog hard-fails with "Invalid Scopes:
+    //   // email" before the user even sees a login screen. "public_profile"
+    //   // is Meta's always-available default scope, no review required. We
+    //   // already treat a missing email as expected (see the fallback below),
+    //   // so there's nothing to lose by not asking for it.
+    //   authorization: { params: { scope: "public_profile" } },
+    //   // A small fraction of Facebook accounts (phone-only signup) have no
+    //   // email on file — User.email is required, so synthesize a stable
+    //   // fallback rather than let account creation fail outright. The
+    //   // role/locale/onboardingComplete/organizationId fields only matter for
+    //   // first-time account creation (an existing user's real DB row is what
+    //   // gets used on every later sign-in) — they mirror the schema's own
+    //   // defaults, just made explicit to satisfy the augmented User type.
+    //   profile(profile: FacebookProfile) {
+    //     return {
+    //       id: profile.id,
+    //       name: profile.name,
+    //       email: profile.email ?? `facebook-${profile.id}@users.noreply.classkeeper`,
+    //       image: profile.picture?.data?.url,
+    //       role: "TEACHER" as const,
+    //       locale: null,
+    //       onboardingComplete: false,
+    //       organizationId: null,
+    //     };
+    //   },
+    // }),
+    // Disabled for now.
+    // Line({
+    //   clientId: process.env.LINE_CLIENT_ID,
+    //   clientSecret: process.env.LINE_CLIENT_SECRET,
+    //   // LINE only returns an email once the channel has separately applied
+    //   // for and been granted "Email address permission" in the LINE
+    //   // Developers console — until then (or if the user declines it),
+    //   // there's no email at all. Same fallback as Facebook above.
+    //   profile(profile: LineProfile & { email?: string }) {
+    //     return {
+    //       id: profile.sub,
+    //       name: profile.name,
+    //       email: profile.email ?? `line-${profile.sub}@users.noreply.classkeeper`,
+    //       image: profile.picture,
+    //       role: "TEACHER" as const,
+    //       locale: null,
+    //       onboardingComplete: false,
+    //       organizationId: null,
+    //     };
+    //   },
+    // }),
     Credentials({
       name: "Email and password",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        remember: { label: "Remember me", type: "checkbox" },
       },
       authorize: async (credentials) => {
         const email = credentials?.email;
@@ -102,6 +129,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           locale: user.locale,
           onboardingComplete: user.onboardingComplete,
           organizationId: user.organizationId,
+          // Defaults to remembered when the caller doesn't say otherwise
+          // (e.g. the post-signup auto sign-in) — only an explicit "false"
+          // from the login form's checkbox shortens the session.
+          rememberMe: credentials?.remember !== "false",
         };
       },
     }),
@@ -113,6 +144,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.locale = user.locale as string | null;
         token.onboardingComplete = user.onboardingComplete;
         token.organizationId = user.organizationId;
+        token.rememberMe = user.rememberMe;
       } else if (trigger === "update" && token.sub) {
         // Onboarding completion (or any later profile change) happens after
         // the JWT was minted, so the client explicitly triggers a refresh

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
-import { getCurrentUser, getStaffTerms } from "@/lib/currentUser";
+import { getCurrentUser, getStaffCourses } from "@/lib/currentUser";
 import { SignOutButton } from "@/components/SignOutButton";
 import { AppShell } from "@/components/AppShell";
 import { AdSlot } from "@/components/AdSlot";
@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const isStaff = user.role === "TEACHER" || user.role === "TA";
 
   if (!isStaff) {
-    // Students get the simple shell — just the top bar, no term-scoped
+    // Students get the simple shell — just the top bar, no course-scoped
     // sidebar since they only ever see their own read-only summary.
     return (
       <div className="flex min-h-screen flex-col">
@@ -40,10 +40,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const terms = await getStaffTerms();
+  const courses = await getStaffCourses();
 
   return (
-    <AppShell name={user.name} email={user.email} image={user.image} role={user.role} terms={terms}>
+    <AppShell name={user.name} email={user.email} image={user.image} role={user.role} courses={courses}>
       {children}
     </AppShell>
   );

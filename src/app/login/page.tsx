@@ -10,12 +10,20 @@ export default async function LoginPage({
   searchParams: Promise<{ callbackUrl?: string }>;
 }) {
   const providers = getEnabledProviders();
-  const t = await getTranslations("common");
+  const t = await getTranslations("login");
+  const tCommon = await getTranslations("common");
   const { callbackUrl } = await searchParams;
 
   return (
-    <AuthShell appName={t("appName")}>
-      <LoginForm providers={providers} callbackUrl={safeCallbackUrl(callbackUrl)} />
+    <AuthShell appName={tCommon("appName")}>
+      <div className="space-y-5">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
+        </div>
+
+        <LoginForm providers={providers} callbackUrl={safeCallbackUrl(callbackUrl)} />
+      </div>
     </AuthShell>
   );
 }

@@ -58,9 +58,10 @@ export function ProviderSignInButtons({
 }) {
   const t = useTranslations("login");
 
-  if (providers.length === 0) {
-    return <p className="text-sm text-red-600 dark:text-red-400">{t("noProvidersConfigured")}</p>;
-  }
+  // No error here: zero providers is the expected state while OAuth
+  // sign-in is deliberately disabled (see src/lib/authProviders.ts) — not
+  // just a misconfiguration — and Credentials login still works below.
+  if (providers.length === 0) return null;
 
   return (
     <div className="space-y-2">

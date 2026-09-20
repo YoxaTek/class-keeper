@@ -7,7 +7,7 @@ import { PlanLimitError } from "@/lib/subscriptions/gate";
 const schema = z.object({
   role: z.enum(["TEACHER", "TA", "STUDENT"]),
   email: z.string().email().optional(),
-  termId: z.string().optional(),
+  courseId: z.string().optional(),
   studentId: z.string().optional(),
 });
 

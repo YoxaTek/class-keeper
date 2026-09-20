@@ -38,15 +38,15 @@ export function validateInvite(
 
 /**
  * Applies an accepted invite to the accepting user's own account: sets
- * their role, links them to the org/term/student roster row the invite
+ * their role, links them to the org/course/student roster row the invite
  * carries, and marks onboarding complete. Refuses to touch an
  * already-onboarded account — role changes for an established user are an
  * admin action, not something a stray invite link should be able to do.
  *
  * The one exception is a TA accepting another TA invite: a teacher can
- * assign the same TA to several of their terms, each as its own invite, so
- * an existing TA picking up one more term isn't a role change at all —
- * just another TermAssistant row. That's the only case that skips the
+ * assign the same TA to several of their courses, each as its own invite, so
+ * an existing TA picking up one more course isn't a role change at all —
+ * just another CourseAssistant row. That's the only case that skips the
  * already-onboarded refusal and the role/onboardingComplete write below.
  */
 export async function acceptInvite(userId: string, userEmail: string, token: string): Promise<void> {
@@ -55,15 +55,15 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
   if (!validation.ok) throw new InviteError(validation.reason);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
-  const isAdditionalTaTerm = invite!.role === "TA" && user.role === "TA" && user.onboardingComplete;
-  if (user.onboardingComplete && !isAdditionalTaTerm) throw new InviteError("already_onboarded");
+  const isAdditionalTaCourse = invite!.role === "TA" && user.role === "TA" && user.onboardingComplete;
+  if (user.onboardingComplete && !isAdditionalTaCourse) throw new InviteError("already_onboarded");
 
-  if (invite!.role === "TA" && invite!.termId) {
+  if (invite!.role === "TA" && invite!.courseId) {
     // Re-check the plan limit at acceptance time too, not just when the
     // invite was created — it may have sat pending long enough for the
     // inviting teacher's TA count or plan to have changed.
-    const term = await prisma.term.findUniqueOrThrow({ where: { id: invite!.termId } });
-    await assertCanAddTA(term.teacherId);
+    const course = await prisma.course.findUniqueOrThrow({ where: { id: invite!.courseId } });
+    await assertCanAddTA(course.teacherId);
   }
 
   await prisma.$transaction(async (tx) => {
@@ -72,7 +72,7 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
       data: { acceptedAt: new Date(), acceptedByUserId: userId },
     });
 
-    if (!isAdditionalTaTerm) {
+    if (!isAdditionalTaCourse) {
       await tx.user.update({
         where: { id: userId },
         data: {
@@ -83,10 +83,10 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
       });
     }
 
-    if (invite!.role === "TA" && invite!.termId) {
-      await tx.termAssistant.upsert({
-        where: { termId_userId: { termId: invite!.termId, userId } },
-        create: { termId: invite!.termId, userId },
+    if (invite!.role === "TA" && invite!.courseId) {
+      await tx.courseAssistant.upsert({
+        where: { courseId_userId: { courseId: invite!.courseId, userId } },
+        create: { courseId: invite!.courseId, userId },
         update: {},
       });
     }
@@ -99,14 +99,14 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
 
 /**
  * For a signed-in, already-onboarded TA opening a fresh TA invite (another
- * term from the same or a different teacher) there's nothing left to ask
+ * course from the same or a different teacher) there's nothing left to ask
  * them — no name, no onboarding step — so the invite landing page applies
  * it immediately and sends them straight to the dashboard instead of
  * routing them through /onboarding. Returns whether it did so; false
  * (touching nothing) for every other case, which leaves /onboarding to run
  * its normal form-or-error flow.
  */
-export async function tryAcceptAdditionalTaTerm(userId: string, userEmail: string, token: string): Promise<boolean> {
+export async function tryAcceptAdditionalTaCourse(userId: string, userEmail: string, token: string): Promise<boolean> {
   const invite = await prisma.invite.findUnique({ where: { token }, select: { role: true } });
   if (!invite || invite.role !== "TA") return false;
 
@@ -152,16 +152,16 @@ export interface CreateInviteInput {
   invitedById: string;
   role: Role;
   email?: string;
-  termId?: string;
+  courseId?: string;
   studentId?: string;
 }
 
 /**
  * Only a teacher issues invites, and only for things they actually own:
  * a TEACHER invite joins the inviter's own Organization (they must have
- * one), a TA invite must reference one of the inviter's own terms, and a
+ * one), a TA invite must reference one of the inviter's own courses, and a
  * STUDENT invite must reference an unlinked roster row from one of their
- * own terms.
+ * own courses.
  */
 export async function createInvite(input: CreateInviteInput) {
   const inviter = await prisma.user.findUniqueOrThrow({ where: { id: input.invitedById } });
@@ -182,21 +182,21 @@ export async function createInvite(input: CreateInviteInput) {
   }
 
   if (input.role === "TA") {
-    if (!input.termId) throw new Error("termId is required for a TA invite");
-    const term = await prisma.term.findUnique({ where: { id: input.termId } });
-    if (!term || term.teacherId !== inviter.id) throw new Error("You don't own that term");
+    if (!input.courseId) throw new Error("courseId is required for a TA invite");
+    const course = await prisma.course.findUnique({ where: { id: input.courseId } });
+    if (!course || course.teacherId !== inviter.id) throw new Error("You don't own that course");
 
     await assertCanAddTA(inviter.id);
 
     return prisma.invite.create({
-      data: { role: "TA", email: input.email, termId: input.termId, invitedById: inviter.id },
+      data: { role: "TA", email: input.email, courseId: input.courseId, invitedById: inviter.id },
     });
   }
 
   // STUDENT
   if (!input.studentId) throw new Error("studentId is required for a student invite");
   const enrollment = await prisma.enrollment.findFirst({
-    where: { studentId: input.studentId, term: { teacherId: inviter.id } },
+    where: { studentId: input.studentId, course: { teacherId: inviter.id } },
     include: { student: true },
   });
   if (!enrollment) throw new Error("That student isn't on any of your rosters");

@@ -1,10 +1,10 @@
 // Subscription limits are temporarily disabled — every account gets
-// unlimited terms/TAs regardless of plan. To re-enable, uncomment the
+// unlimited courses/TAs regardless of plan. To re-enable, uncomment the
 // bodies below (and the now-unused imports/helpers).
 //
 // import { prisma } from "@/lib/prisma";
 // import { getEffectivePlanTier, type UserForSubscription } from "./effectiveSubscription";
-// import { canAddTA, canCreateTerm, PLAN_LIMITS } from "./planLimits";
+// import { canAddTA, canCreateCourse, PLAN_LIMITS } from "./planLimits";
 //
 // async function loadUserForSubscription(userId: string): Promise<UserForSubscription> {
 //   return prisma.user.findUniqueOrThrow({
@@ -17,14 +17,14 @@
 //   });
 // }
 //
-// /** A term is "active" for FREE-plan purposes if it hasn't ended yet. */
-// async function countActiveTerms(teacherId: string): Promise<number> {
-//   return prisma.term.count({ where: { teacherId, endDate: { gte: new Date() } } });
+// /** A course is "active" for FREE-plan purposes if it hasn't ended yet. */
+// async function countActiveCourses(teacherId: string): Promise<number> {
+//   return prisma.course.count({ where: { teacherId, endDate: { gte: new Date() } } });
 // }
 //
 // /**
-//  * Distinct TAs across every term this account is responsible for: just the
-//  * teacher's own terms for a solo/PRO account, or every term across every
+//  * Distinct TAs across every course this account is responsible for: just the
+//  * teacher's own courses for a solo/PRO account, or every course across every
 //  * teacher in the organization for an org-covered one.
 //  */
 // async function countDistinctTAs(user: UserForSubscription, teacherId: string): Promise<number> {
@@ -34,8 +34,8 @@
 //       ).map((u) => u.id)
 //     : [teacherId];
 //
-//   const rows = await prisma.termAssistant.findMany({
-//     where: { term: { teacherId: { in: teacherIds } } },
+//   const rows = await prisma.courseAssistant.findMany({
+//     where: { course: { teacherId: { in: teacherIds } } },
 //     select: { userId: true },
 //     distinct: ["userId"],
 //   });
@@ -45,14 +45,14 @@
 export class PlanLimitError extends Error {}
 
 /** Every gated action must call one of these — never check plan fields directly. */
-export async function assertCanCreateTerm(_teacherId: string) {
+export async function assertCanCreateCourse(_teacherId: string) {
   // const user = await loadUserForSubscription(teacherId);
   // const tier = getEffectivePlanTier(user);
-  // const activeCount = await countActiveTerms(teacherId);
+  // const activeCount = await countActiveCourses(teacherId);
   //
-  // if (!canCreateTerm(tier, activeCount)) {
+  // if (!canCreateCourse(tier, activeCount)) {
   //   throw new PlanLimitError(
-  //     `The ${tier} plan allows ${PLAN_LIMITS[tier].maxActiveTerms} active term(s). Upgrade to add more.`
+  //     `The ${tier} plan allows ${PLAN_LIMITS[tier].maxActiveCourses} active course(s). Upgrade to add more.`
   //   );
   // }
 }

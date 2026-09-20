@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { calculateGrade, type GradingInput, type TermGradingSettings } from "./calculateGrade";
+import { calculateGrade, type GradingInput, type CourseGradingSettings } from "./calculateGrade";
 
-const baseSettings: TermGradingSettings = {
+const baseSettings: CourseGradingSettings = {
   maxExcusedAbsences: 3,
   weightAttendance: 15,
   weightAssignment: 15,
@@ -294,7 +294,7 @@ describe("calculateGrade — total and passing threshold", () => {
     settings: baseSettings,
   };
 
-  it("sums all six categories and flags passing against the term's threshold", () => {
+  it("sums all six categories and flags passing against the course's threshold", () => {
     const result = calculateGrade(input);
     const expectedTotal =
       result.attendance.score +
@@ -308,7 +308,7 @@ describe("calculateGrade — total and passing threshold", () => {
     expect(result.passing).toBe(result.total >= baseSettings.passingScore);
   });
 
-  it("flags a low-scoring enrollment as below the term's passing threshold", () => {
+  it("flags a low-scoring enrollment as below the course's passing threshold", () => {
     const failing = calculateGrade({
       ...input,
       scores: [],

@@ -15,16 +15,16 @@ export function AppSidebar() {
   const t = useTranslations();
   const pathname = usePathname();
 
-  const termMatch = pathname.match(/^\/terms\/([^/]+)/);
-  const termId = termMatch?.[1];
+  const courseMatch = pathname.match(/^\/courses\/([^/]+)/);
+  const courseId = courseMatch?.[1];
 
-  if (!termId) return null;
+  if (!courseId) return null;
 
   const items: NavItem[] = [
     { href: "/", label: t("dashboard.title"), icon: LayoutGrid },
-    { href: `/terms/${termId}/roster`, label: t("roster.title"), icon: Users },
-    { href: `/terms/${termId}`, label: t("sessions.title"), icon: CalendarRange },
-    { href: `/terms/${termId}/below-passing`, label: t("belowPassing.title"), icon: TriangleAlert },
+    { href: `/courses/${courseId}/roster`, label: t("roster.title"), icon: Users },
+    { href: `/courses/${courseId}`, label: t("sessions.title"), icon: CalendarRange },
+    { href: `/courses/${courseId}/below-passing`, label: t("belowPassing.title"), icon: TriangleAlert },
   ];
 
   function nav() {
@@ -52,7 +52,7 @@ export function AppSidebar() {
   }
 
   // Mobile now uses a native-style bottom tab bar.
-  // Keep this component desktop-only for term-scoped sidebar navigation.
+  // Keep this component desktop-only for course-scoped sidebar navigation.
   return (
     <aside className="hidden h-full w-56 shrink-0 flex-col border-r border-zinc-200 bg-white lg:flex dark:border-zinc-800 dark:bg-zinc-950">
       {nav()}

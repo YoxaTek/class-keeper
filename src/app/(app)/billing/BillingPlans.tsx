@@ -58,9 +58,9 @@ export function BillingPlans({
   }
 
   function features(tier: PlanTier): string[] {
-    const { maxActiveTerms, maxTAs } = PLAN_LIMITS[tier];
+    const { maxActiveCourses, maxTAs } = PLAN_LIMITS[tier];
     return [
-      maxActiveTerms === null ? t("unlimitedTerms") : t("limitedTerms", { count: maxActiveTerms }),
+      maxActiveCourses === null ? t("unlimitedCourses") : t("limitedCourses", { count: maxActiveCourses }),
       maxTAs === null
         ? tier === "INSTITUTION"
           ? t("unlimitedTAsPooled")

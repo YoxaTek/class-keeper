@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { canAddTA, canCreateTerm, PRO_TA_LIMIT } from "./planLimits";
+import { canAddTA, canCreateCourse, PRO_TA_LIMIT } from "./planLimits";
 
-describe("canCreateTerm", () => {
-  it("FREE allows the first active term but not a second", () => {
-    expect(canCreateTerm("FREE", 0)).toBe(true);
-    expect(canCreateTerm("FREE", 1)).toBe(false);
+describe("canCreateCourse", () => {
+  it("FREE allows the first active course but not a second", () => {
+    expect(canCreateCourse("FREE", 0)).toBe(true);
+    expect(canCreateCourse("FREE", 1)).toBe(false);
   });
 
   it("PRO and INSTITUTION are unlimited", () => {
-    expect(canCreateTerm("PRO", 999)).toBe(true);
-    expect(canCreateTerm("INSTITUTION", 999)).toBe(true);
+    expect(canCreateCourse("PRO", 999)).toBe(true);
+    expect(canCreateCourse("INSTITUTION", 999)).toBe(true);
   });
 });
 

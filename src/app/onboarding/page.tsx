@@ -14,12 +14,12 @@ async function loadInviteContext(token: string, acceptingEmail: string) {
     include: {
       invitedBy: { select: { name: true, email: true } },
       organization: { select: { name: true } },
-      term: { select: { name: true, subject: { select: { name: true } } } },
+      course: { select: { name: true, subject: { select: { name: true } } } },
       student: {
         select: {
           enrollments: {
             take: 1,
-            select: { term: { select: { name: true, subject: { select: { name: true } } } } },
+            select: { course: { select: { name: true, subject: { select: { name: true } } } } },
           },
         },
       },
@@ -35,10 +35,10 @@ async function loadInviteContext(token: string, acceptingEmail: string) {
   if (invite.role === "TEACHER") {
     context = invite.organization?.name ?? "";
   } else if (invite.role === "TA") {
-    context = invite.term ? `${invite.term.subject.name} · ${invite.term.name}` : "";
+    context = invite.course ? `${invite.course.subject.name} · ${invite.course.name}` : "";
   } else {
     const enrollment = invite.student?.enrollments[0];
-    context = enrollment ? `${enrollment.term.subject.name} · ${enrollment.term.name}` : "";
+    context = enrollment ? `${enrollment.course.subject.name} · ${enrollment.course.name}` : "";
   }
 
   return {
@@ -88,11 +88,11 @@ export default async function OnboardingPage({
     // role/org on an account that's already set up — surface that instead
     // of letting the form render an action that will fail. The one
     // exception is an existing TA picking up another TA invite (another
-    // term); the invite landing page normally fast-paths that case
+    // course); the invite landing page normally fast-paths that case
     // straight home, so reaching the form here only happens as a fallback
     // (e.g. a direct link) — acceptInvite() itself allows it.
-    const isAdditionalTaTerm = inviteContext?.role === "TA" && user.role === "TA";
-    if (!inviteError && user.onboardingComplete && !isAdditionalTaTerm) {
+    const isAdditionalTaCourse = inviteContext?.role === "TA" && user.role === "TA";
+    if (!inviteError && user.onboardingComplete && !isAdditionalTaCourse) {
       inviteContext = null;
       inviteError = "already_onboarded";
     }

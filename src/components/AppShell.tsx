@@ -17,21 +17,20 @@ export function AppShell({
   email,
   image,
   role,
-  terms,
+  courses,
   children,
 }: {
   name: string | null;
   email: string;
   image: string | null;
   role: Role;
-  terms: { id: string; label: string }[];
+  courses: { id: string; label: string }[];
   children: React.ReactNode;
 }) {
   const t = useTranslations();
   const pathname = usePathname();
-  const termId = pathname.match(/^\/terms\/([^/]+)/)?.[1];
-  const currentTerm = termId ? terms.find((term) => term.id === termId) : undefined;
-  const isTermsList = pathname === "/";
+  const courseId = pathname.match(/^\/courses\/([^/]+)/)?.[1];
+  const currentCourse = courseId ? courses.find((course) => course.id === courseId) : undefined;
   const [footerHeight, setFooterHeight] = useState(0);
 
   return (
@@ -44,15 +43,14 @@ export function AppShell({
           </Link>
         </div>
         <div className="flex min-w-0 items-center gap-3">
-          {currentTerm && (
+          {currentCourse && (
             <span className="flex min-w-0 max-w-[45vw] items-center gap-1.5 truncate text-sm font-bold text-[#0f6e56] lg:max-w-none dark:text-teal-400">
               <BookOpenCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{currentTerm.label}</span>
+              <span className="truncate">{currentCourse.label}</span>
             </span>
           )}
-          {/* On mobile, other pages have the footer's Settings tab for this — only the
-              Terms list hides the footer, so it needs profile access in the header. */}
-          <div className={isTermsList ? "" : "hidden lg:block"}>
+          {/* On mobile, the footer's Settings tab covers this everywhere. */}
+          <div className="hidden lg:block">
             <ProfileMenu name={name} email={email} image={image} role={role} />
           </div>
         </div>
@@ -67,7 +65,7 @@ export function AppShell({
           {children}
         </main>
       </div>
-      <MobileFooterNav terms={terms} onHeightChange={setFooterHeight} />
+      <MobileFooterNav name={name} email={email} onHeightChange={setFooterHeight} />
     </div>
   );
 }

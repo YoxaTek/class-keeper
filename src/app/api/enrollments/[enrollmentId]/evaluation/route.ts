@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canWriteTerm } from "@/lib/permissions";
+import { canWriteCourse } from "@/lib/permissions";
 
 const schema = z.object({
   narrative: z.string().nullable(),
@@ -16,7 +16,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ enro
 
   const enrollment = await prisma.enrollment.findUnique({ where: { id: enrollmentId } });
   if (!enrollment) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (!(await canWriteTerm(session.user.id, enrollment.termId))) {
+  if (!(await canWriteCourse(session.user.id, enrollment.courseId))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -1,28 +1,28 @@
 import { prisma } from "./prisma";
 
 /**
- * A user may write to a term iff they are its teacher, or they have an
- * explicit TermAssistant row for it. Never trust a client-supplied role
- * claim — always resolve this from the DB for the term being touched.
+ * A user may write to a course iff they are its teacher, or they have an
+ * explicit CourseAssistant row for it. Never trust a client-supplied role
+ * claim — always resolve this from the DB for the course being touched.
  */
-export async function canWriteTerm(userId: string, termId: string): Promise<boolean> {
-  const term = await prisma.term.findUnique({
-    where: { id: termId },
+export async function canWriteCourse(userId: string, courseId: string): Promise<boolean> {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
     select: { teacherId: true },
   });
-  if (!term) return false;
-  if (term.teacherId === userId) return true;
+  if (!course) return false;
+  if (course.teacherId === userId) return true;
 
-  const assistant = await prisma.termAssistant.findUnique({
-    where: { termId_userId: { termId, userId } },
+  const assistant = await prisma.courseAssistant.findUnique({
+    where: { courseId_userId: { courseId, userId } },
   });
   return assistant !== null;
 }
 
-export async function requireTermWriteAccess(userId: string, termId: string) {
-  const allowed = await canWriteTerm(userId, termId);
+export async function requireCourseWriteAccess(userId: string, courseId: string) {
+  const allowed = await canWriteCourse(userId, courseId);
   if (!allowed) {
-    throw new ForbiddenError(`User ${userId} cannot write to term ${termId}`);
+    throw new ForbiddenError(`User ${userId} cannot write to course ${courseId}`);
   }
 }
 

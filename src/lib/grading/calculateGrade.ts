@@ -28,7 +28,7 @@ export interface ScoreInput {
  * A session's flags, used to know which sessions count toward each average.
  * Each *MaxScore is that category's total possible points for this specific
  * class — set per class rather than assumed to be 100 (or, for midterm,
- * assumed term-wide), since a quiz, assignment, midterm, or final can be
+ * assumed course-wide), since a quiz, assignment, midterm, or final can be
  * worth a different number of points from one class to the next.
  */
 export interface SessionFlags {
@@ -44,7 +44,7 @@ export interface SessionFlags {
   finalMaxScore?: number;
 }
 
-export interface TermGradingSettings {
+export interface CourseGradingSettings {
   maxExcusedAbsences: number;
   weightAttendance: number;
   weightAssignment: number;
@@ -62,7 +62,7 @@ export interface GradingInput {
   sessions: SessionFlags[];
   scores: ScoreInput[];
   impressionScore: number | null;
-  settings: TermGradingSettings;
+  settings: CourseGradingSettings;
 }
 
 export interface GradeBreakdown {
@@ -183,7 +183,7 @@ function calculateMidterm(
   // Reading and listening are two records within the same midterm class;
   // find whichever session actually hosts each one, falling back to the
   // first midterm-flagged session (matches the historical, un-scoped
-  // lookup, for a term with more than one midterm-flagged class).
+  // lookup, for a course with more than one midterm-flagged class).
   const readingSession = midtermSessions.find((s) => s.id === reading?.sessionId) ?? midtermSessions[0];
   const listeningSession = midtermSessions.find((s) => s.id === listening?.sessionId) ?? midtermSessions[0];
 

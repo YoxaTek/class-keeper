@@ -12,7 +12,7 @@ export async function ensureAttendanceForSession(sessionId: string) {
   if (!classSession.hasAttendance) return;
 
   const enrollments = await prisma.enrollment.findMany({
-    where: { termId: classSession.termId, joinedAt: { lte: classSession.date } },
+    where: { courseId: classSession.courseId, joinedAt: { lte: classSession.date } },
     select: { id: true },
   });
   if (enrollments.length === 0) return;
@@ -25,9 +25,9 @@ export async function ensureAttendanceForSession(sessionId: string) {
 
 // Called after enrolling a student: backfills PRESENT rows for every
 // attendance-taking session on or after the day they joined.
-export async function ensureAttendanceForEnrollment(enrollmentId: string, termId: string, joinedAt: Date) {
+export async function ensureAttendanceForEnrollment(enrollmentId: string, courseId: string, joinedAt: Date) {
   const sessions = await prisma.session.findMany({
-    where: { termId, hasAttendance: true, date: { gte: joinedAt } },
+    where: { courseId, hasAttendance: true, date: { gte: joinedAt } },
     select: { id: true },
   });
   if (sessions.length === 0) return;
