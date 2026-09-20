@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canWriteCourse } from "@/lib/permissions";
@@ -36,20 +37,26 @@ export async function PATCH(
 
   const current = await prisma.student.findUniqueOrThrow({ where: { id: enrollment.studentId } });
 
-  const student = await prisma.student.update({
-    where: { id: enrollment.studentId },
-    data: {
-      name: body.data.name,
-      ...(body.data.chineseName !== undefined && { chineseName: body.data.chineseName || null }),
-      // Student ID and email are usually set by the student's own self-serve
-      // join and treated as authoritative from then on — a teacher can fill
-      // them in while blank, but not overwrite an existing value here.
-      ...(!current.studentId && body.data.studentId !== undefined && { studentId: body.data.studentId || null }),
-      ...(!current.email && body.data.email !== undefined && { email: body.data.email || null }),
-    },
-  });
-
-  return NextResponse.json(student);
+  try {
+    const student = await prisma.student.update({
+      where: { id: enrollment.studentId },
+      data: {
+        name: body.data.name,
+        ...(body.data.chineseName !== undefined && { chineseName: body.data.chineseName || null }),
+        // Student ID and email are usually set by the student's own self-serve
+        // join and treated as authoritative from then on — a teacher can fill
+        // them in while blank, but not overwrite an existing value here.
+        ...(!current.studentId && body.data.studentId !== undefined && { studentId: body.data.studentId || null }),
+        ...(!current.email && body.data.email !== undefined && { email: body.data.email || null }),
+      },
+    });
+    return NextResponse.json(student);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      return NextResponse.json({ error: "That student ID is already used by another student." }, { status: 409 });
+    }
+    throw e;
+  }
 }
 
 export async function DELETE(

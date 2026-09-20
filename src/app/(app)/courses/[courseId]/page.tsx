@@ -6,7 +6,9 @@ import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ClassFormDrawer } from "./ClassFormDrawer";
 import { ClassDeleteButton } from "./ClassDeleteButton";
+import { ExportSessionPdfButton } from "./ExportSessionPdfButton";
 import { categorySessionMax, pctFor } from "@/lib/grading/calculateGrade";
+import { buildClassRecordTitle } from "@/lib/classRecordTitle";
 
 type Filter = "all" | "upcoming" | "past";
 
@@ -18,17 +20,30 @@ export default async function SessionsListPage({
   searchParams: Promise<{ filter?: string }>;
 }) {
   const { courseId } = await params;
-  await requireCourseAccess(courseId);
+  const { course } = await requireCourseAccess(courseId);
   const { filter: rawFilter } = await searchParams;
   const filter: Filter = rawFilter === "upcoming" || rawFilter === "past" ? rawFilter : "all";
   const t = await getTranslations();
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
 
-  const allSessions = await prisma.session.findMany({
-    where: { courseId },
-    include: { attendance: true, scores: true },
-    orderBy: { date: "asc" },
-  });
+  const [allSessions, rosterEnrollments] = await Promise.all([
+    prisma.session.findMany({
+      where: { courseId },
+      include: { attendance: true, scores: true, feedback: true },
+      orderBy: { date: "asc" },
+    }),
+    // For the per-row PDF export — fetched once and reused across every
+    // session card instead of each one re-querying the same roster.
+    prisma.enrollment.findMany({
+      where: { courseId },
+      include: { student: true },
+      orderBy: { student: { name: "asc" } },
+    }),
+  ]);
+  const pdfEnrollments = rosterEnrollments.map((e) => ({ id: e.id, student: e.student }));
+  // allSessions is already ordered by date ascending, so its index doubles
+  // as each session's "week number" for the PDF title.
+  const weekNumberBySessionId = new Map(allSessions.map((s, i) => [s.id, i + 1]));
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -122,7 +137,21 @@ export default async function SessionsListPage({
                   </div>
                 </Link>
 
-                <div className="mt-3 flex items-center justify-end gap-1 border-t border-zinc-100 pt-3 dark:border-zinc-900">
+                <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-900">
+                  <ExportSessionPdfButton
+                    title={buildClassRecordTitle({
+                      courseName: course.name,
+                      subjectName: course.subject.name,
+                      weekNumber: weekNumberBySessionId.get(s.id)!,
+                      date: s.date,
+                    })}
+                    session={s}
+                    enrollments={pdfEnrollments}
+                    attendance={s.attendance}
+                    scores={s.scores}
+                    sessionFeedback={s.feedback}
+                  />
+                  <div className="flex items-center gap-1">
                   <ClassFormDrawer
                     mode="edit"
                     courseId={courseId}
@@ -143,6 +172,7 @@ export default async function SessionsListPage({
                     }}
                   />
                   <ClassDeleteButton courseId={courseId} sessionId={s.id} />
+                  </div>
                 </div>
               </article>
             );

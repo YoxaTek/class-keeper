@@ -130,3 +130,13 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   }
 }
 
+/* A print-only portal (see ExportSessionPdfButton) renders its printable
+   content directly under <body>, alongside the whole normal page — this
+   hides every other direct child of <body> while printing, so only the
+   portal's own content (marked .print-portal) ends up on the page. */
+@media print {
+  body.print-portal-active > *:not(.print-portal) {
+    display: none !important;
+  }
+}
+

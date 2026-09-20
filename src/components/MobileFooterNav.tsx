@@ -9,10 +9,16 @@ import { BookOpenCheck, CalendarRange, CircleUserRound, House, Users } from "luc
 export function MobileFooterNav({
   name,
   email,
+  simple = false,
   onHeightChange,
 }: {
   name: string | null;
   email: string;
+  // Students only ever get Home + Profile — Course/Classes/Students are
+  // teacher/TA concepts (managing a roster/sessions), not something a
+  // student's own read-only view needs, so there's no course-scoped set
+  // for them at all, unlike staff outside a course.
+  simple?: boolean;
   onHeightChange?: (height: number) => void;
 }) {
   const t = useTranslations();
@@ -25,7 +31,7 @@ export function MobileFooterNav({
   // Course/Classes/Students only make sense once an actual course is
   // selected — no fallback to "some" course on pages like /account, or
   // they'd show up scoped to a course the user never picked.
-  const courseId = pathname.match(/^\/courses\/([^/]+)/)?.[1];
+  const courseId = simple ? undefined : pathname.match(/^\/courses\/([^/]+)/)?.[1];
   const studentsHref = courseId ? `/courses/${courseId}/roster` : "/";
   const classesHref = courseId ? `/courses/${courseId}` : "/";
   const courseHref = courseId ? `/courses/${courseId}/course` : "/";
@@ -35,7 +41,8 @@ export function MobileFooterNav({
   const classesActive =
     !!courseId && (pathname === `/courses/${courseId}` || pathname.startsWith(`/courses/${courseId}/sessions/`));
   const courseActive = pathname === `/courses/${courseId}/course`;
-  const homeActive = pathname === "/";
+  const homeHref = simple ? "/me" : "/";
+  const homeActive = pathname === "/" || pathname === "/me";
   const profileActive = pathname === "/account";
 
   useEffect(() => {
@@ -60,9 +67,9 @@ export function MobileFooterNav({
   // No selected course (the courses list, /account, ...) gets just Home +
   // Profile; once inside a course, the full set appears.
   const tabs = !courseId
-    ? [{ href: "/", label: t("common.home"), icon: House, active: homeActive }, profileTab]
+    ? [{ href: homeHref, label: t("common.home"), icon: House, active: homeActive }, profileTab]
     : [
-        { href: "/", label: t("common.home"), icon: House, active: homeActive },
+        { href: homeHref, label: t("common.home"), icon: House, active: homeActive },
         { href: courseHref, label: t("dashboard.course"), icon: BookOpenCheck, active: courseActive },
         { href: classesHref, label: t("sessions.title"), icon: CalendarRange, active: classesActive },
         { href: studentsHref, label: t("roster.title"), icon: Users, active: studentsActive },
@@ -73,7 +80,7 @@ export function MobileFooterNav({
     <nav
       ref={navRef}
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-2 pt-1 backdrop-blur lg:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-2 pt-1 backdrop-blur lg:hidden print:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
     >
       <ul
         className={`grid gap-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] ${

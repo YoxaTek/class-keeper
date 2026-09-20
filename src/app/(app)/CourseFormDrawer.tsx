@@ -180,7 +180,7 @@ export function CourseFormDrawer(props: Props) {
             </div>
 
             <div className="space-y-1">
-              <label className={labelClass}>{t("course")}</label>
+              <label className={labelClass}>{t("term")}</label>
               <input
                 required
                 value={name}

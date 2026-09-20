@@ -2,11 +2,12 @@
 
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Printer } from "lucide-react";
 import type { Attendance, AttendanceStatus, Enrollment, ScoreRecord, SessionFeedback, Session, Student } from "@prisma/client";
 import { attendanceIcon, attendanceColor } from "@/lib/attendanceIcons";
 import { Button } from "@/components/ui/Button";
 import { cardClass, inputClass } from "@/components/ui/styles";
+import { ClassAttendancePdfTable } from "@/components/ClassAttendancePdfTable";
 
 type Row = Enrollment & {
   student: Student;
@@ -21,10 +22,12 @@ const ATTENDANCE_OPTIONS: AttendanceStatus[] = ["PRESENT", "EXCUSED", "ABSENT", 
 
 export function ClassDetailTable({
   sessionId,
+  pdfTitle,
   session,
   enrollments,
 }: {
   sessionId: string;
+  pdfTitle: string;
   session: Pick<
     Session,
     | "hasAttendance"
@@ -45,7 +48,12 @@ export function ClassDetailTable({
   const [rowState] = useState(() => {
     const state = new Map<
       string,
-      { attendance: AttendanceStatus | undefined; scores: Map<ScoreCategory, ScoreState>; feedback: string }
+      {
+        attendance: AttendanceStatus | undefined;
+        attendanceNote: string;
+        scores: Map<ScoreCategory, ScoreState>;
+        feedback: string;
+      }
     >();
     for (const row of enrollments) {
       const scores = new Map<ScoreCategory, ScoreState>();
@@ -58,6 +66,7 @@ export function ClassDetailTable({
       }
       state.set(row.id, {
         attendance: row.attendance[0]?.status,
+        attendanceNote: row.attendance[0]?.note ?? "",
         scores,
         feedback: row.sessionFeedback[0]?.note ?? "",
       });
@@ -73,10 +82,26 @@ export function ClassDetailTable({
   const pending = useRef(new Map<string, { url: string; body: object }>());
 
   function setAttendance(enrollmentId: string, status: AttendanceStatus) {
-    rowState.get(enrollmentId)!.attendance = status;
+    const row = rowState.get(enrollmentId)!;
+    row.attendance = status;
     pending.current.set(`attendance:${enrollmentId}`, {
       url: "/api/attendance",
-      body: { sessionId, enrollmentId, status },
+      body: { sessionId, enrollmentId, status, note: row.attendanceNote || null },
+    });
+    setDirtyCount(pending.current.size);
+    forceRender((n) => n + 1);
+  }
+
+  // A note on the attendance record itself — why late, why excused, etc.
+  // Distinct from session feedback (see FeedbackCell), which is a general
+  // note unrelated to attendance specifically.
+  function setAttendanceNote(enrollmentId: string, note: string) {
+    const row = rowState.get(enrollmentId);
+    if (!row) return;
+    row.attendanceNote = note;
+    pending.current.set(`attendance:${enrollmentId}`, {
+      url: "/api/attendance",
+      body: { sessionId, enrollmentId, status: row.attendance ?? "PRESENT", note: note || null },
     });
     setDirtyCount(pending.current.size);
     forceRender((n) => n + 1);
@@ -129,15 +154,27 @@ export function ClassDetailTable({
 
   const dirty = dirtyCount > 0;
 
+  // The shared export table wants plain arrays, not the live rowState map —
+  // Attendance/ScoreRecord/SessionFeedback already carry their own
+  // enrollmentId, so each enrollment's nested arrays flatten directly.
+  const pdfEnrollments = enrollments.map((row) => ({ id: row.id, student: row.student }));
+  const pdfAttendance = enrollments.flatMap((row) => row.attendance);
+  const pdfScores = enrollments.flatMap((row) => row.scores);
+  const pdfFeedback = enrollments.flatMap((row) => row.sessionFeedback);
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex items-center justify-end gap-3 print:hidden">
         {dirty && !saving && <span className="text-sm text-zinc-500 dark:text-zinc-500">{t("sessions.unsavedChanges")}</span>}
+        <Button type="button" variant="secondary" onClick={() => window.print()}>
+          <Printer className="h-4 w-4" aria-hidden />
+          {t("sessions.exportPdf")}
+        </Button>
         <Button type="button" variant="primary" onClick={handleSave} disabled={!dirty || saving}>
           {saving ? t("common.saving") : t("common.save")}
         </Button>
       </div>
-      <div className={`overflow-x-auto ${cardClass}`}>
+      <div className={`overflow-x-auto print:hidden ${cardClass}`}>
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
@@ -204,7 +241,9 @@ export function ClassDetailTable({
                 {session.hasAttendance && (
                   <AttendanceCell
                     status={state.attendance ?? "PRESENT"}
+                    note={state.attendanceNote}
                     onChange={(status) => setAttendance(row.id, status)}
+                    onNoteChange={(note) => setAttendanceNote(row.id, note)}
                     t={t}
                   />
                 )}
@@ -303,36 +342,60 @@ export function ClassDetailTable({
         </tbody>
       </table>
       </div>
+
+      {/* Print/export-only. */}
+      <div className="hidden print:block">
+        <ClassAttendancePdfTable
+          title={pdfTitle}
+          session={session}
+          enrollments={pdfEnrollments}
+          attendance={pdfAttendance}
+          scores={pdfScores}
+          sessionFeedback={pdfFeedback}
+        />
+      </div>
     </div>
   );
 }
 
 function AttendanceCell({
   status,
+  note,
   onChange,
+  onNoteChange,
   t,
 }: {
   status: AttendanceStatus;
+  note: string;
   onChange: (status: AttendanceStatus) => void;
+  onNoteChange: (note: string) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
   const Icon = attendanceIcon[status];
   return (
     <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
-      <div className="relative flex items-center">
-        <Icon className={`pointer-events-none absolute left-2 h-3.5 w-3.5 ${attendanceColor[status]}`} aria-hidden />
-        <select
-          value={status}
-          onChange={(e) => onChange(e.target.value as AttendanceStatus)}
-          className="w-full cursor-pointer appearance-none rounded border border-zinc-200 bg-white py-1 pl-7 pr-6 text-sm text-zinc-800 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-600"
-        >
-          {ATTENDANCE_OPTIONS.map((s) => (
-            <option key={s} value={s}>
-              {t(`attendanceStatus.${s}`)}
-            </option>
-          ))}
-        </select>
-        <ChevronDown className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-zinc-400" aria-hidden />
+      <div className="space-y-1">
+        <div className="relative flex items-center">
+          <Icon className={`pointer-events-none absolute left-2 h-3.5 w-3.5 ${attendanceColor[status]}`} aria-hidden />
+          <select
+            value={status}
+            onChange={(e) => onChange(e.target.value as AttendanceStatus)}
+            className="w-full cursor-pointer appearance-none rounded border border-zinc-200 bg-white py-1 pl-7 pr-6 text-sm text-zinc-800 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-600"
+          >
+            {ATTENDANCE_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {t(`attendanceStatus.${s}`)}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-zinc-400" aria-hidden />
+        </div>
+        <input
+          value={note}
+          onChange={(e) => onNoteChange(e.target.value)}
+          placeholder={t("sessions.attendanceNotePlaceholder")}
+          className="w-full rounded border border-zinc-200 bg-white px-1.5 py-1 text-xs text-zinc-700 placeholder:text-zinc-300 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-600 dark:hover:border-zinc-600"
+        />
       </div>
     </td>
   );

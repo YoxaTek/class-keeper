@@ -212,7 +212,7 @@ model Student {
   id          String       @id @default(cuid())
   name        String
   chineseName String?
-  studentId   String? // the institution's own student ID — informational, not used as a lookup key
+  studentId   String?      @unique // the institution's own student ID — the natural key used to recognize the same physical student across a TA-entered roster row and their own self-serve join (see the join route); many students can still be null here, since a unique index doesn't dedupe nulls
   email       String?
   userId      String?      @unique
   user        User?        @relation(fields: [userId], references: [id])
@@ -255,7 +255,7 @@ model Session {
   midtermMaxScore    Int      @default(100) // combined reading + listening total for this class's midterm
   hasFinal           Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Course.finalExamSessionId is set
   finalMaxScore      Int      @default(100)
-  hasFeedback        Boolean  @default(false) // a free-text note per student for this class meeting — not graded, doesn't affect the course grade
+  hasFeedback        Boolean  @default(true) // a free-text note per student for this class meeting — always on, not an optional category like the others; doesn't affect the course grade
 
   attendance Attendance[]
   scores     ScoreRecord[]
@@ -269,6 +269,7 @@ model Attendance {
   enrollmentId String
   enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   status       AttendanceStatus
+  note         String? // e.g. how late, or why excused/absent — distinct from SessionFeedback, which is a general note unrelated to attendance specifically
 
   @@unique([sessionId, enrollmentId])
 }

@@ -44,17 +44,41 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
     );
   }
 
-  const student =
-    user.student ??
-    (await prisma.student.create({
-      data: {
-        userId: session.user.id,
-        name: body.data.name,
-        chineseName: body.data.chineseName,
-        studentId: body.data.studentId,
-        email: user.email,
-      },
-    }));
+  let student = user.student;
+
+  if (!student) {
+    // A teacher/TA may have already added this student to a roster (bulk
+    // add, or backfilled their student ID later) before the student ever
+    // signs in themselves. The student ID is the natural key that
+    // recognizes that as the same person instead of creating a duplicate
+    // — their entered name/Chinese name stays authoritative; joining only
+    // claims the account link (and fills in email, which a roster-only
+    // row never has).
+    const existing = await prisma.student.findUnique({ where: { studentId: body.data.studentId } });
+
+    if (existing) {
+      if (existing.userId) {
+        return NextResponse.json(
+          { error: "This student ID is already linked to another account." },
+          { status: 409 }
+        );
+      }
+      student = await prisma.student.update({
+        where: { id: existing.id },
+        data: { userId: session.user.id, email: existing.email ?? user.email },
+      });
+    } else {
+      student = await prisma.student.create({
+        data: {
+          userId: session.user.id,
+          name: body.data.name,
+          chineseName: body.data.chineseName,
+          studentId: body.data.studentId,
+          email: user.email,
+        },
+      });
+    }
+  }
 
   const existingEnrollment = await prisma.enrollment.findUnique({
     where: { courseId_studentId: { courseId, studentId: student.id } },

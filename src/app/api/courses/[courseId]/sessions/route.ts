@@ -17,7 +17,7 @@ const sessionSchema = z.object({
   midtermMaxScore: z.number().int().min(1).default(100),
   hasFinal: z.boolean().default(false),
   finalMaxScore: z.number().int().min(1).default(100),
-  hasFeedback: z.boolean().default(false),
+  hasFeedback: z.boolean().default(true),
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ courseId: string }> }) {

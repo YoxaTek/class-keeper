@@ -44,7 +44,7 @@ export default async function DashboardPage() {
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
                     <BookMarked className="h-3 w-3" aria-hidden />
-                    {t("course")}
+                    {t("term")}
                   </p>
                   <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{course.name}</p>
                 </div>

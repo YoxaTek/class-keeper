@@ -34,8 +34,8 @@ export function AppShell({
   const [footerHeight, setFooterHeight] = useState(0);
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex h-screen flex-col print:block print:h-auto">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 print:hidden dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             <Image src="/icon-512.png" alt="" width={20} height={20} className="rounded-sm" />
@@ -55,17 +55,21 @@ export function AppShell({
           </div>
         </div>
       </header>
-      <AdSlot />
-      <div className="flex min-h-0 flex-1">
-        <AppSidebar />
+      <div className="print:hidden">
+        <AdSlot />
+      </div>
+      <div className="flex min-h-0 flex-1 print:block">
+        <div className="print:hidden">
+          <AppSidebar />
+        </div>
         <main
-          className="flex min-w-0 flex-1 flex-col overflow-y-auto px-3 py-5 lg:pb-5"
+          className="flex min-w-0 flex-1 flex-col overflow-y-auto px-3 py-5 lg:pb-5 print:overflow-visible print:!p-0"
           style={footerHeight ? { paddingBottom: footerHeight + 16 } : undefined}
         >
           {children}
         </main>
       </div>
-      <MobileFooterNav name={name} email={email} onHeightChange={setFooterHeight} />
+      <MobileFooterNav name={name} email={email} simple={role === "STUDENT"} onHeightChange={setFooterHeight} />
     </div>
   );
 }

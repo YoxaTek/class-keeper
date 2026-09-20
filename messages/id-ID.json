@@ -91,6 +91,7 @@
     "subtitle": "Kelola semester dan kelas yang Anda ajar.",
     "newCourse": "Tambah kursus",
     "subject": "Mata pelajaran",
+    "term": "Semester",
     "course": "Semester",
     "dates": "Tanggal",
     "students": "Siswa",
@@ -163,7 +164,9 @@
     "finalMaxScore": "Total nilai ujian akhir",
     "unsavedChanges": "Perubahan belum disimpan",
     "feedback": "Umpan balik",
-    "empty": "Belum ada kelas. Gunakan tombol \"{button}\" untuk menambahkannya."
+    "empty": "Belum ada kelas. Gunakan tombol \"{button}\" untuk menambahkannya.",
+    "exportPdf": "Ekspor PDF",
+    "attendanceNotePlaceholder": "Catatan (mis. terlambat 10 menit)"
   },
   "grid": {
     "title": "Tabel nilai",
@@ -194,6 +197,8 @@
     "needsAttention": "Perlu perhatian"
   },
   "studentView": {
+    "myCourses": "Kursus saya",
+    "noCourses": "Anda belum terdaftar di kursus apa pun.",
     "title": "Nilai saya",
     "attendancePct": "Kehadiran",
     "evaluation": "Evaluasi guru",

@@ -91,6 +91,7 @@
     "subtitle": "管理您授課的課程。",
     "newCourse": "新增課程",
     "subject": "科目",
+    "term": "學期",
     "course": "課程",
     "dates": "日期",
     "students": "學生",
@@ -163,7 +164,9 @@
     "finalMaxScore": "期末考總分",
     "unsavedChanges": "有未儲存的變更",
     "feedback": "回饋",
-    "empty": "目前沒有課堂，請使用「{button}」按鈕新增。"
+    "empty": "目前沒有課堂，請使用「{button}」按鈕新增。",
+    "exportPdf": "匯出 PDF",
+    "attendanceNotePlaceholder": "備註（例如：遲到10分鐘）"
   },
   "grid": {
     "title": "成績總表",
@@ -194,6 +197,8 @@
     "needsAttention": "需注意"
   },
   "studentView": {
+    "myCourses": "我的課程",
+    "noCourses": "您尚未加入任何課程。",
     "title": "我的成績",
     "attendancePct": "出席率",
     "evaluation": "老師評語",

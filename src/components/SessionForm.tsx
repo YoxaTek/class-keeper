@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award, MessageSquareText } from "lucide-react";
+import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award } from "lucide-react";
 import { DateInput } from "@/components/ui/DateInput";
 import { inputClass, labelClass } from "@/components/ui/styles";
 
@@ -21,13 +21,15 @@ export interface SessionFormValues {
   finalMaxScore: number | "";
 }
 
+// Feedback isn't in this list — unlike the others, it's not an optional
+// category a teacher opts into per class; every session always has it
+// (see the hardcoded hasFeedback: true below).
 const FLAGS: { key: keyof SessionFormValues; labelKey: string; Icon: typeof CalendarCheck2 }[] = [
   { key: "hasAttendance", labelKey: "sessions.attendance", Icon: CalendarCheck2 },
   { key: "hasQuiz", labelKey: "sessions.quiz", Icon: HelpCircle },
   { key: "hasAssignment", labelKey: "sessions.assignment", Icon: ClipboardList },
   { key: "hasMidterm", labelKey: "sessions.midterm", Icon: GraduationCap },
   { key: "hasFinal", labelKey: "sessions.final", Icon: Award },
-  { key: "hasFeedback", labelKey: "sessions.feedback", Icon: MessageSquareText },
 ];
 
 const MAX_SCORE_FIELDS: {
@@ -67,7 +69,7 @@ export function SessionForm({
       hasAssignment: false,
       hasMidterm: false,
       hasFinal: false,
-      hasFeedback: false,
+      hasFeedback: true,
       quizMaxScore: 100,
       assignmentMaxScore: 100,
       midtermMaxScore: 100,
@@ -84,8 +86,10 @@ export function SessionForm({
     const method = sessionId ? "PATCH" : "POST";
 
     // A total that was never set (its flag is off) is sent as undefined
-    // instead of "" so the API's own default applies.
-    const payload = { ...values } as Record<string, unknown>;
+    // instead of "" so the API's own default applies. hasFeedback is
+    // forced true here too — belt-and-suspenders for a session edited from
+    // before feedback stopped being an optional toggle (see FLAGS above).
+    const payload = { ...values, hasFeedback: true } as Record<string, unknown>;
     for (const { maxKey } of MAX_SCORE_FIELDS) {
       if (payload[maxKey] === "") payload[maxKey] = undefined;
     }

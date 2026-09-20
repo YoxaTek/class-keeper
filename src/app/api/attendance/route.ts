@@ -8,6 +8,7 @@ const schema = z.object({
   sessionId: z.string(),
   enrollmentId: z.string(),
   status: z.enum(["PRESENT", "EXCUSED", "ABSENT", "NOT_ENROLLED"]),
+  note: z.string().nullable().optional(),
 });
 
 export async function PUT(request: Request) {
@@ -16,7 +17,7 @@ export async function PUT(request: Request) {
 
   const body = schema.safeParse(await request.json());
   if (!body.success) return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
-  const { sessionId, enrollmentId, status } = body.data;
+  const { sessionId, enrollmentId, status, note } = body.data;
 
   const classSession = await prisma.session.findUnique({
     where: { id: sessionId },
@@ -29,8 +30,8 @@ export async function PUT(request: Request) {
 
   const record = await prisma.attendance.upsert({
     where: { sessionId_enrollmentId: { sessionId, enrollmentId } },
-    create: { sessionId, enrollmentId, status },
-    update: { status },
+    create: { sessionId, enrollmentId, status, note },
+    update: { status, ...(note !== undefined && { note }) },
   });
 
   return NextResponse.json(record);

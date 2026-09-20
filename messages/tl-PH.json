@@ -91,6 +91,7 @@
     "subtitle": "Pamahalaan ang mga course at klaseng itinuturo mo.",
     "newCourse": "Magdagdag ng course",
     "subject": "Asignatura",
+    "term": "Course",
     "course": "Course",
     "dates": "Mga Petsa",
     "students": "Mga Estudyante",
@@ -163,7 +164,9 @@
     "finalMaxScore": "Kabuuang marka ng final na pagsusulit",
     "unsavedChanges": "May hindi pa na-save na pagbabago",
     "feedback": "Feedback",
-    "empty": "Wala pang klase. Gamitin ang button na \"{button}\" para magdagdag."
+    "empty": "Wala pang klase. Gamitin ang button na \"{button}\" para magdagdag.",
+    "exportPdf": "I-export bilang PDF",
+    "attendanceNotePlaceholder": "Tala (hal. 10 minutong huli)"
   },
   "grid": {
     "title": "Talahanayan ng Marka",
@@ -194,6 +197,8 @@
     "needsAttention": "Kailangan ng pansin"
   },
   "studentView": {
+    "myCourses": "Aking mga course",
+    "noCourses": "Wala ka pang naka-enroll na course.",
     "title": "Aking mga Marka",
     "attendancePct": "Pagdalo",
     "evaluation": "Ebalwasyon ng Guro",

@@ -91,6 +91,7 @@
     "subtitle": "Quản lý các học kỳ và lớp học bạn giảng dạy.",
     "newCourse": "Thêm khóa học",
     "subject": "Môn học",
+    "term": "Học kỳ",
     "course": "Học kỳ",
     "dates": "Ngày",
     "students": "Học viên",
@@ -163,7 +164,9 @@
     "finalMaxScore": "Tổng điểm thi cuối kỳ",
     "unsavedChanges": "Có thay đổi chưa lưu",
     "feedback": "Nhận xét",
-    "empty": "Chưa có buổi học nào. Hãy dùng nút \"{button}\" để thêm."
+    "empty": "Chưa có buổi học nào. Hãy dùng nút \"{button}\" để thêm.",
+    "exportPdf": "Xuất PDF",
+    "attendanceNotePlaceholder": "Ghi chú (vd: trễ 10 phút)"
   },
   "grid": {
     "title": "Bảng điểm",
@@ -194,6 +197,8 @@
     "needsAttention": "Cần chú ý"
   },
   "studentView": {
+    "myCourses": "Khóa học của tôi",
+    "noCourses": "Bạn chưa đăng ký khóa học nào.",
     "title": "Điểm của tôi",
     "attendancePct": "Điểm danh",
     "evaluation": "Nhận xét của giáo viên",

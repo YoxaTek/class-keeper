@@ -91,6 +91,7 @@
     "subtitle": "Manage the courses and classes you teach.",
     "newCourse": "Add course",
     "subject": "Subject",
+    "term": "Term",
     "course": "Course",
     "dates": "Dates",
     "students": "Students",
@@ -163,7 +164,9 @@
     "finalMaxScore": "Final exam total score",
     "unsavedChanges": "Unsaved changes",
     "feedback": "Feedback",
-    "empty": "No classes yet — use the \"{button}\" button to add one."
+    "empty": "No classes yet — use the \"{button}\" button to add one.",
+    "exportPdf": "Export PDF",
+    "attendanceNotePlaceholder": "Note (e.g. 10 min late)"
   },
   "grid": {
     "title": "Session grid",
@@ -194,6 +197,8 @@
     "needsAttention": "Needs attention"
   },
   "studentView": {
+    "myCourses": "My courses",
+    "noCourses": "You're not enrolled in any courses yet.",
     "title": "My grades",
     "attendancePct": "Attendance",
     "evaluation": "Teacher's evaluation",
