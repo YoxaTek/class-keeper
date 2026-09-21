@@ -38,10 +38,6 @@ export default async function RosterPage({ params }: { params: Promise<{ courseI
 
       <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
         <div className="space-y-2">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h2>
-            <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{rows.length}</span>
-          </div>
           <RosterTable courseId={courseId} rows={rows} />
         </div>
 

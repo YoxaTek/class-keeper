@@ -46,14 +46,14 @@ export default async function DashboardPage() {
                     <BookMarked className="h-3 w-3" aria-hidden />
                     {t("term")}
                   </p>
-                  <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{course.name}</p>
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{course.name}</p>
                 </div>
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
                     <BookOpenText className="h-3 w-3" aria-hidden />
                     {t("subject")}
                   </p>
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300">{course.subject.name}</p>
+                  <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{course.subject.name}</p>
                 </div>
                 <div>
                   <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
