@@ -64,7 +64,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
       // creating a second row for the same ID.
       student = await prisma.student.update({
         where: { id: existing.id },
-        data: { userId: session.user.id, email: existing.email ?? user.email },
+        data: {
+          userId: session.user.id,
+          // Never overwrite what a teacher/TA already entered — only fill
+          // in whatever's still blank, same rule as the roster edit form.
+          email: existing.email ?? user.email,
+          chineseName: existing.chineseName ?? body.data.chineseName,
+        },
       });
     } else {
       student = await prisma.student.create({
@@ -79,25 +85,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
     }
   }
 
-  const existingEnrollment = await prisma.enrollment.findUnique({
+  let enrollment = await prisma.enrollment.findUnique({
     where: { courseId_studentId: { courseId, studentId: student.id } },
   });
-  if (existingEnrollment) {
-    // Reopening the same join link after already joining — treat as success.
-    return NextResponse.json(existingEnrollment);
+
+  if (!enrollment) {
+    const currentCount = await prisma.enrollment.count({ where: { courseId } });
+    if (currentCount >= MAX_PER_COURSE) {
+      return NextResponse.json(
+        { error: `Course is capped at ${MAX_PER_COURSE} students (currently ${currentCount}).` },
+        { status: 400 }
+      );
+    }
+
+    enrollment = await prisma.enrollment.create({ data: { courseId, studentId: student.id } });
+    await ensureAttendanceForEnrollment(enrollment.id, courseId, enrollment.joinedAt);
   }
 
-  const currentCount = await prisma.enrollment.count({ where: { courseId } });
-  if (currentCount >= MAX_PER_COURSE) {
-    return NextResponse.json(
-      { error: `Course is capped at ${MAX_PER_COURSE} students (currently ${currentCount}).` },
-      { status: 400 }
-    );
-  }
-
-  const enrollment = await prisma.enrollment.create({ data: { courseId, studentId: student.id } });
-  await ensureAttendanceForEnrollment(enrollment.id, courseId, enrollment.joinedAt);
-
+  // Finalize the account as a student either way — reopening the same
+  // join link (an enrollment already existed) is still this account's
+  // first time actually landing here, same as a re-linked student row
+  // that happened to already be enrolled from a previous owner (see
+  // above). Skipping this on the "already enrolled" branch was exactly
+  // the bug: the account never got marked STUDENT/onboarded and was left
+  // however it started (often TEACHER, from the default signup role).
   await prisma.user.update({
     where: { id: session.user.id },
     data: { role: "STUDENT", onboardingComplete: true },
