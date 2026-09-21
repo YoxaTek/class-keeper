@@ -84,6 +84,7 @@ export function ClassDetailTable({
   const [, forceRender] = useState(0);
   const [saving, setSaving] = useState(false);
   const [dirtyCount, setDirtyCount] = useState(0);
+  const [attendanceFilter, setAttendanceFilter] = useState<"ALL" | AttendanceStatus>("ALL");
   // Field edits update local state immediately but only reach the server on
   // Save — one pending PUT body per (row, field), so re-editing before
   // saving just overwrites the queued request instead of stacking more.
@@ -109,7 +110,7 @@ export function ClassDetailTable({
     row.attendanceNote = note;
     pending.current.set(`attendance:${enrollmentId}`, {
       url: "/api/attendance",
-      body: { sessionId, enrollmentId, status: row.attendance ?? "PRESENT", note: note || null },
+      body: { sessionId, enrollmentId, status: row.attendance ?? "ABSENT", note: note || null },
     });
     setDirtyCount(pending.current.size);
     forceRender((n) => n + 1);
@@ -175,7 +176,7 @@ export function ClassDetailTable({
   const pdfEnrollments = enrollments.map((row) => ({ id: row.id, student: row.student }));
   const pdfAttendance = enrollments.map((row) => {
     const state = rowState.get(row.id)!;
-    return { enrollmentId: row.id, status: state.attendance ?? "PRESENT", note: state.attendanceNote || null };
+    return { enrollmentId: row.id, status: state.attendance ?? "ABSENT", note: state.attendanceNote || null };
   });
   const pdfScores = enrollments.flatMap((row) => {
     const state = rowState.get(row.id)!;
@@ -197,22 +198,52 @@ export function ClassDetailTable({
     .map((row) => ({ enrollmentId: row.id, note: rowState.get(row.id)!.feedback }))
     .filter((f) => f.note !== "");
 
+  // Viewing-only — the PDF export above always includes every student
+  // regardless of this filter, since it's the official record.
+  const visibleEnrollments =
+    session.hasAttendance && attendanceFilter !== "ALL"
+      ? enrollments.filter((row) => (rowState.get(row.id)?.attendance ?? "ABSENT") === attendanceFilter)
+      : enrollments;
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end gap-3 print:hidden">
-        {dirty && !saving && <span className="text-sm text-zinc-500 dark:text-zinc-500">{t("sessions.unsavedChanges")}</span>}
-        <Button type="button" variant="secondary" onClick={() => window.print()}>
-          <Printer className="h-4 w-4" aria-hidden />
-          {t("sessions.exportPdf")}
-        </Button>
-        <Button type="button" variant="primary" onClick={handleSave} disabled={!dirty || saving}>
-          {saving ? t("common.saving") : t("common.save")}
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+        {session.hasAttendance ? (
+          <div className="flex flex-wrap gap-1">
+            {(["ALL", "PRESENT", "ABSENT", "EXCUSED", "NOT_ENROLLED"] as const).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setAttendanceFilter(f)}
+                aria-pressed={attendanceFilter === f}
+                className={`rounded-md px-2.5 py-1.5 text-sm ${
+                  attendanceFilter === f
+                    ? "bg-[#0f6e56]/10 font-medium text-[#0f6e56] dark:text-teal-400"
+                    : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:bg-zinc-900"
+                }`}
+              >
+                {f === "ALL" ? t("sessions.filterAll") : t(`attendanceStatus.${f}`)}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="flex items-center gap-3">
+          {dirty && !saving && <span className="text-sm text-zinc-500 dark:text-zinc-500">{t("sessions.unsavedChanges")}</span>}
+          <Button type="button" variant="secondary" onClick={() => window.print()}>
+            <Printer className="h-4 w-4" aria-hidden />
+            {t("sessions.exportPdf")}
+          </Button>
+          <Button type="button" variant="primary" onClick={handleSave} disabled={!dirty || saving}>
+            {saving ? t("common.saving") : t("common.save")}
+          </Button>
+        </div>
       </div>
       {/* Cards: one card per student, at every screen width — same fields
           the old table had, just stacked instead of columned. */}
       <div className="grid grid-cols-1 gap-3 print:hidden sm:grid-cols-2 lg:grid-cols-3">
-        {enrollments.map((row) => {
+        {visibleEnrollments.map((row) => {
           const state = rowState.get(row.id)!;
           const reading = state.scores.get("MIDTERM_READING") ?? { original: "", retake: "" };
           const listening = state.scores.get("MIDTERM_LISTENING") ?? { original: "", retake: "" };
@@ -231,7 +262,7 @@ export function ClassDetailTable({
                 <div className="space-y-1">
                   <label className={labelClass}>{t("sessions.attendance")}</label>
                   <AttendanceControl
-                    status={state.attendance ?? "PRESENT"}
+                    status={state.attendance ?? "ABSENT"}
                     note={state.attendanceNote}
                     onChange={(status) => setAttendance(row.id, status)}
                     onNoteChange={(note) => setAttendanceNote(row.id, note)}
@@ -391,7 +422,7 @@ export function ClassDetailTable({
             </div>
           );
         })}
-        {enrollments.length === 0 && (
+        {visibleEnrollments.length === 0 && (
           <div className={`${cardClass} px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-500`}>—</div>
         )}
       </div>

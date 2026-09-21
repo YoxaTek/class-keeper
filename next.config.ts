@@ -4,6 +4,17 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Every page here is dynamically rendered (reads the session), so the
+    // client router cache's default staleTime for dynamic segments (0s)
+    // means re-visiting a tab you were just on always re-fetches from
+    // scratch — this makes bouncing between e.g. Classes/Students/Course
+    // within a course reuse the last render for 30s instead. A save
+    // (Server Action / router.refresh()) still invalidates it immediately.
+    staleTimes: {
+      dynamic: 30,
+    },
+  },
   images: {
     remotePatterns: [
       // Profile pictures served back to us by each OAuth provider.

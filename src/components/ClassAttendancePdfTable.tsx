@@ -117,17 +117,17 @@ export function ClassAttendancePdfTable({
     <>
       {/* Scoped here rather than in globals.css — this table is wide, but
           that's no reason to force landscape on some unrelated print
-          feature elsewhere in the app. margin: 0 also discourages Chrome
-          from re-adding its own date/title/URL header+footer when the
-          print destination is "Save as PDF" — the padding below stands in
-          for the page margin we just zeroed out. That's the only lever
-          the page itself has; the reliable way to drop them is still the
-          print dialog's own "Headers and footers" checkbox, which no page
-          can toggle for the user. */}
+          feature elsewhere in the app. A real @page margin (not 0) matters
+          for a multi-page export: padding on the wrapper div below only
+          shows up around page 1, but the @page margin applies to every
+          page break, so without it pages 2+ had content jammed right up
+          against the paper edge top and bottom. */}
       <style>
-        {"@page { size: landscape; margin: 0; } table, th, td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }"}
+        {
+          "@page { size: landscape; margin: 1.5cm 1cm; } table, th, td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }"
+        }
       </style>
-      <div className="p-8">
+      <div>
       <p className="mb-2 text-center text-xl font-bold">{title}</p>
       {/* table-fixed with every column pinned to a width except 回答狀況,
           which is meant to be the widest — it absorbs whatever's left over

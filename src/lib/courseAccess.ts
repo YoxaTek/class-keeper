@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "./prisma";
 import { canWriteCourse } from "./permissions";
@@ -10,8 +11,13 @@ import { getCurrentUser } from "./currentUser";
  * just a fast, friendly UX path; canWriteCourse's DB-fresh ownership check is
  * the actual security boundary, so a stale session role here can't leak
  * access — it would just fall through to notFound() instead.
+ *
+ * Wrapped in cache() because both courses/[courseId]/layout.tsx (the access
+ * gate) and the page it renders call this independently — without caching,
+ * every course-scoped navigation ran the course fetch and permission check
+ * twice per request.
  */
-export async function requireCourseAccess(courseId: string) {
+export const requireCourseAccess = cache(async (courseId: string) => {
   const user = await getCurrentUser();
   if (user.role === "STUDENT") redirect("/me");
 
@@ -21,8 +27,8 @@ export async function requireCourseAccess(courseId: string) {
   });
   if (!course) notFound();
 
-  const allowed = await canWriteCourse(user.id, courseId);
+  const allowed = await canWriteCourse(user.id, courseId, course.teacherId);
   if (!allowed) notFound();
 
   return { user, course };
-}
+});
