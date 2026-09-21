@@ -2,11 +2,21 @@
 
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, Printer } from "lucide-react";
-import type { Attendance, AttendanceStatus, Enrollment, ScoreRecord, SessionFeedback, Session, Student } from "@prisma/client";
+import { Printer } from "lucide-react";
+import type {
+  Assessment,
+  Attendance,
+  AttendanceStatus,
+  Enrollment,
+  ScoreRecord,
+  SessionFeedback,
+  Session,
+  Student,
+} from "@prisma/client";
 import { attendanceIcon, attendanceColor } from "@/lib/attendanceIcons";
+import { assessmentDisplayLabel } from "@/lib/assessmentLabel";
 import { Button } from "@/components/ui/Button";
-import { cardClass, inputClass } from "@/components/ui/styles";
+import { cardClass, inputClass, labelClass } from "@/components/ui/styles";
 import { ClassAttendancePdfTable } from "@/components/ClassAttendancePdfTable";
 
 type Row = Enrollment & {
@@ -16,7 +26,12 @@ type Row = Enrollment & {
   sessionFeedback: SessionFeedback[];
 };
 type ScoreCategory = "QUIZ" | "ASSIGNMENT" | "MIDTERM_READING" | "MIDTERM_LISTENING" | "FINAL";
-type ScoreState = { original: string; retake: string; retakeMax: string };
+type ScoreState = { original: string; retake: string };
+// Which specific score a field edits — `key` is the assessmentId for
+// QUIZ/ASSIGNMENT (a session can have more than one of each) or just the
+// category string for MIDTERM_READING/MIDTERM_LISTENING/FINAL, which stay
+// exactly one per session and have no assessmentId.
+type ScoreTarget = { key: string; category: ScoreCategory; assessmentId: string | null };
 
 const ATTENDANCE_OPTIONS: AttendanceStatus[] = ["PRESENT", "EXCUSED", "ABSENT", "NOT_ENROLLED"];
 
@@ -24,26 +39,20 @@ export function ClassDetailTable({
   sessionId,
   pdfTitle,
   session,
+  assessments,
   enrollments,
 }: {
   sessionId: string;
   pdfTitle: string;
-  session: Pick<
-    Session,
-    | "hasAttendance"
-    | "hasQuiz"
-    | "quizMaxScore"
-    | "hasAssignment"
-    | "assignmentMaxScore"
-    | "hasMidterm"
-    | "midtermMaxScore"
-    | "hasFinal"
-    | "finalMaxScore"
-    | "hasFeedback"
-  >;
+  session: Pick<Session, "hasAttendance" | "hasMidterm" | "midtermMaxScore" | "hasFinal" | "finalMaxScore" | "hasFeedback">;
+  /** This session's quiz/assignment instances — any number of each. */
+  assessments: Assessment[];
   enrollments: Row[];
 }) {
   const t = useTranslations();
+
+  const quizzes = [...assessments].filter((a) => a.type === "QUIZ").sort((a, b) => a.order - b.order);
+  const classAssignments = [...assessments].filter((a) => a.type === "ASSIGNMENT").sort((a, b) => a.order - b.order);
 
   const [rowState] = useState(() => {
     const state = new Map<
@@ -51,17 +60,16 @@ export function ClassDetailTable({
       {
         attendance: AttendanceStatus | undefined;
         attendanceNote: string;
-        scores: Map<ScoreCategory, ScoreState>;
+        scores: Map<string, ScoreState>;
         feedback: string;
       }
     >();
     for (const row of enrollments) {
-      const scores = new Map<ScoreCategory, ScoreState>();
+      const scores = new Map<string, ScoreState>();
       for (const s of row.scores) {
-        scores.set(s.category as ScoreCategory, {
+        scores.set(s.assessmentId ?? s.category, {
           original: s.originalScore?.toString() ?? "",
           retake: s.retakeScore?.toString() ?? "",
-          retakeMax: s.retakeMaxScore?.toString() ?? "",
         });
       }
       state.set(row.id, {
@@ -93,7 +101,7 @@ export function ClassDetailTable({
   }
 
   // A note on the attendance record itself — why late, why excused, etc.
-  // Distinct from session feedback (see FeedbackCell), which is a general
+  // Distinct from session feedback (see FeedbackInput), which is a general
   // note unrelated to attendance specifically.
   function setAttendanceNote(enrollmentId: string, note: string) {
     const row = rowState.get(enrollmentId);
@@ -107,21 +115,24 @@ export function ClassDetailTable({
     forceRender((n) => n + 1);
   }
 
-  function setScore(enrollmentId: string, category: ScoreCategory, field: keyof ScoreState, rawValue: string) {
+  function setScore(enrollmentId: string, target: ScoreTarget, field: keyof ScoreState, rawValue: string) {
     const row = rowState.get(enrollmentId);
     if (!row) return;
-    const current = row.scores.get(category) ?? { original: "", retake: "", retakeMax: "" };
+    const current = row.scores.get(target.key) ?? { original: "", retake: "" };
     const next = { ...current, [field]: rawValue };
-    row.scores.set(category, next);
-    pending.current.set(`score:${enrollmentId}:${category}`, {
+    row.scores.set(target.key, next);
+    pending.current.set(`score:${enrollmentId}:${target.key}`, {
       url: "/api/scores",
       body: {
         sessionId,
         enrollmentId,
-        category,
+        category: target.category,
+        assessmentId: target.assessmentId,
         originalScore: next.original === "" ? null : Number(next.original),
         retakeScore: next.retake === "" ? null : Number(next.retake),
-        retakeMaxScore: next.retakeMax === "" ? null : Number(next.retakeMax),
+        // A retake is always scored out of the same total as the original —
+        // there's no separate "out of" input for it any more.
+        retakeMaxScore: null,
       },
     });
     setDirtyCount(pending.current.size);
@@ -154,13 +165,37 @@ export function ClassDetailTable({
 
   const dirty = dirtyCount > 0;
 
-  // The shared export table wants plain arrays, not the live rowState map —
-  // Attendance/ScoreRecord/SessionFeedback already carry their own
-  // enrollmentId, so each enrollment's nested arrays flatten directly.
+  // Built from the live rowState, not the original `enrollments` prop —
+  // that prop is a one-time snapshot from when the page loaded, so a save
+  // (which only PUTs to the API, it never refetches this page) left the
+  // export permanently showing pre-edit values until a full reload. Every
+  // edit already updates rowState synchronously, so reading from there
+  // instead means the export always matches what's on screen.
+  const assessmentById = new Map(assessments.map((a) => [a.id, a]));
   const pdfEnrollments = enrollments.map((row) => ({ id: row.id, student: row.student }));
-  const pdfAttendance = enrollments.flatMap((row) => row.attendance);
-  const pdfScores = enrollments.flatMap((row) => row.scores);
-  const pdfFeedback = enrollments.flatMap((row) => row.sessionFeedback);
+  const pdfAttendance = enrollments.map((row) => {
+    const state = rowState.get(row.id)!;
+    return { enrollmentId: row.id, status: state.attendance ?? "PRESENT", note: state.attendanceNote || null };
+  });
+  const pdfScores = enrollments.flatMap((row) => {
+    const state = rowState.get(row.id)!;
+    return [...state.scores.entries()]
+      .filter(([, value]) => value.original !== "" || value.retake !== "")
+      .map(([key, value]) => {
+        const assessment = assessmentById.get(key);
+        return {
+          enrollmentId: row.id,
+          category: assessment ? assessment.type : (key as ScoreCategory),
+          assessmentId: assessment?.id ?? null,
+          originalScore: value.original === "" ? null : Number(value.original),
+          retakeScore: value.retake === "" ? null : Number(value.retake),
+          retakeMaxScore: null,
+        };
+      });
+  });
+  const pdfFeedback = enrollments
+    .map((row) => ({ enrollmentId: row.id, note: rowState.get(row.id)!.feedback }))
+    .filter((f) => f.note !== "");
 
   return (
     <div className="space-y-3">
@@ -174,173 +209,191 @@ export function ClassDetailTable({
           {saving ? t("common.saving") : t("common.save")}
         </Button>
       </div>
-      <div className={`overflow-x-auto print:hidden ${cardClass}`}>
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-            <th className="px-4 py-2">{t("grid.student")}</th>
-            {session.hasAttendance && <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">{t("sessions.attendance")}</th>}
-            {session.hasQuiz && (
-              <>
-                <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  {t("sessions.quiz")} <span className="normal-case text-zinc-400">/ {session.quizMaxScore}</span>
-                </th>
-                <th className="px-3 py-2">{t("grid.retake")}</th>
-              </>
-            )}
-            {session.hasAssignment && (
-              <>
-                <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  {t("sessions.assignment")} <span className="normal-case text-zinc-400">/ {session.assignmentMaxScore}</span>
-                </th>
-                <th className="px-3 py-2">{t("grid.retake")}</th>
-              </>
-            )}
-            {session.hasMidterm && (
-              <>
-                <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  閱讀 <span className="normal-case text-zinc-400">/ {session.midtermMaxScore / 2}</span>
-                </th>
-                <th className="px-3 py-2">{t("grid.retake")}</th>
-                <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  聽力 <span className="normal-case text-zinc-400">/ {session.midtermMaxScore / 2}</span>
-                </th>
-                <th className="px-3 py-2">{t("grid.retake")}</th>
-              </>
-            )}
-            {session.hasFinal && (
-              <>
-                <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  {t("sessions.final")} <span className="normal-case text-zinc-400">/ {session.finalMaxScore}</span>
-                </th>
-                <th className="px-3 py-2">{t("grid.retake")}</th>
-              </>
-            )}
-            {session.hasFeedback && <th className="border-l border-zinc-200 px-3 py-2 dark:border-zinc-800">{t("sessions.feedback")}</th>}
-          </tr>
-        </thead>
-        <tbody className="bg-white dark:bg-zinc-950">
-          {enrollments.map((row, i) => {
-            const state = rowState.get(row.id)!;
-            const bg = i % 2 === 1 ? "bg-zinc-50/60 dark:bg-zinc-900/40" : "";
-            const quiz = state.scores.get("QUIZ") ?? { original: "", retake: "", retakeMax: "" };
-            const assignment = state.scores.get("ASSIGNMENT") ?? { original: "", retake: "", retakeMax: "" };
-            const reading = state.scores.get("MIDTERM_READING") ?? { original: "", retake: "", retakeMax: "" };
-            const listening = state.scores.get("MIDTERM_LISTENING") ?? { original: "", retake: "", retakeMax: "" };
-            const final = state.scores.get("FINAL") ?? { original: "", retake: "", retakeMax: "" };
+      {/* Cards: one card per student, at every screen width — same fields
+          the old table had, just stacked instead of columned. */}
+      <div className="grid grid-cols-1 gap-3 print:hidden sm:grid-cols-2 lg:grid-cols-3">
+        {enrollments.map((row) => {
+          const state = rowState.get(row.id)!;
+          const reading = state.scores.get("MIDTERM_READING") ?? { original: "", retake: "" };
+          const listening = state.scores.get("MIDTERM_LISTENING") ?? { original: "", retake: "" };
+          const final = state.scores.get("FINAL") ?? { original: "", retake: "" };
 
-            return (
-              <tr key={row.id} className={`border-b border-zinc-100 last:border-0 dark:border-zinc-900 ${bg}`}>
-                <td className="flex items-center gap-2 px-4 py-1.5 font-medium text-zinc-900 dark:text-zinc-100">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0f6e56]/10 text-xs font-medium text-[#0f6e56] dark:text-teal-400">
-                    {row.student.name.charAt(0)}
-                  </span>
-                  {row.student.name}
-                </td>
+          return (
+            <div key={row.id} className={`${cardClass} space-y-3 p-4`}>
+              <div className="font-medium text-zinc-900 dark:text-zinc-100">
+                {row.student.name}
+                {row.student.chineseName && (
+                  <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-500">{row.student.chineseName}</span>
+                )}
+              </div>
 
-                {session.hasAttendance && (
-                  <AttendanceCell
+              {session.hasAttendance && (
+                <div className="space-y-1">
+                  <label className={labelClass}>{t("sessions.attendance")}</label>
+                  <AttendanceControl
                     status={state.attendance ?? "PRESENT"}
                     note={state.attendanceNote}
                     onChange={(status) => setAttendance(row.id, status)}
                     onNoteChange={(note) => setAttendanceNote(row.id, note)}
                     t={t}
                   />
-                )}
+                </div>
+              )}
 
-                {session.hasQuiz && (
-                  <>
-                    <NumberCell
-                      value={quiz.original}
-                      max={session.quizMaxScore}
-                      onCommit={(v) => setScore(row.id, "QUIZ", "original", v)}
-                    />
-                    <RetakeCell
-                      obtained={quiz.retake}
-                      total={quiz.retakeMax}
-                      placeholder={t("grid.retake")}
-                      onCommitObtained={(v) => setScore(row.id, "QUIZ", "retake", v)}
-                      onCommitTotal={(v) => setScore(row.id, "QUIZ", "retakeMax", v)}
-                    />
-                  </>
-                )}
+              {quizzes.map((a, i) => {
+                const target: ScoreTarget = { key: a.id, category: "QUIZ", assessmentId: a.id };
+                const quiz = state.scores.get(a.id) ?? { original: "", retake: "" };
+                return (
+                  <div key={a.id} className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        {assessmentDisplayLabel(t("sessions.quiz"), a, i, quizzes.length)}{" "}
+                        <span className="text-zinc-400">/ {a.maxScore}</span>
+                      </label>
+                      <NumberInput
+                        value={quiz.original}
+                        max={a.maxScore}
+                        onCommit={(v) => setScore(row.id, target, "original", v)}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className={labelClass}>{t("grid.retake")}</label>
+                      <NumberInput
+                        value={quiz.retake}
+                        max={a.maxScore}
+                        onCommit={(v) => setScore(row.id, target, "retake", v)}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
 
-                {session.hasAssignment && (
-                  <>
-                    <NumberCell
-                      value={assignment.original}
-                      max={session.assignmentMaxScore}
-                      onCommit={(v) => setScore(row.id, "ASSIGNMENT", "original", v)}
-                    />
-                    <RetakeCell
-                      obtained={assignment.retake}
-                      total={assignment.retakeMax}
-                      placeholder={t("grid.retake")}
-                      onCommitObtained={(v) => setScore(row.id, "ASSIGNMENT", "retake", v)}
-                      onCommitTotal={(v) => setScore(row.id, "ASSIGNMENT", "retakeMax", v)}
-                    />
-                  </>
-                )}
+              {classAssignments.map((a, i) => {
+                const target: ScoreTarget = { key: a.id, category: "ASSIGNMENT", assessmentId: a.id };
+                const assignment = state.scores.get(a.id) ?? { original: "", retake: "" };
+                return (
+                  <div key={a.id} className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        {assessmentDisplayLabel(t("sessions.assignment"), a, i, classAssignments.length)}{" "}
+                        <span className="text-zinc-400">/ {a.maxScore}</span>
+                      </label>
+                      <NumberInput
+                        value={assignment.original}
+                        max={a.maxScore}
+                        onCommit={(v) => setScore(row.id, target, "original", v)}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className={labelClass}>{t("grid.retake")}</label>
+                      <NumberInput
+                        value={assignment.retake}
+                        max={a.maxScore}
+                        onCommit={(v) => setScore(row.id, target, "retake", v)}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
 
-                {session.hasMidterm && (
-                  <>
-                    <NumberCell
-                      value={reading.original}
-                      max={session.midtermMaxScore / 2}
-                      onCommit={(v) => setScore(row.id, "MIDTERM_READING", "original", v)}
-                    />
-                    <RetakeCell
-                      obtained={reading.retake}
-                      total={reading.retakeMax}
-                      placeholder={t("grid.retake")}
-                      onCommitObtained={(v) => setScore(row.id, "MIDTERM_READING", "retake", v)}
-                      onCommitTotal={(v) => setScore(row.id, "MIDTERM_READING", "retakeMax", v)}
-                    />
-                    <NumberCell
-                      value={listening.original}
-                      max={session.midtermMaxScore / 2}
-                      onCommit={(v) => setScore(row.id, "MIDTERM_LISTENING", "original", v)}
-                    />
-                    <RetakeCell
-                      obtained={listening.retake}
-                      total={listening.retakeMax}
-                      placeholder={t("grid.retake")}
-                      onCommitObtained={(v) => setScore(row.id, "MIDTERM_LISTENING", "retake", v)}
-                      onCommitTotal={(v) => setScore(row.id, "MIDTERM_LISTENING", "retakeMax", v)}
-                    />
-                  </>
-                )}
+              {session.hasMidterm && (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        閱讀 <span className="text-zinc-400">/ {session.midtermMaxScore / 2}</span>
+                      </label>
+                      <NumberInput
+                        value={reading.original}
+                        max={session.midtermMaxScore / 2}
+                        onCommit={(v) =>
+                          setScore(row.id, { key: "MIDTERM_READING", category: "MIDTERM_READING", assessmentId: null }, "original", v)
+                        }
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className={labelClass}>{t("grid.retake")}</label>
+                      <NumberInput
+                        value={reading.retake}
+                        max={session.midtermMaxScore / 2}
+                        onCommit={(v) =>
+                          setScore(row.id, { key: "MIDTERM_READING", category: "MIDTERM_READING", assessmentId: null }, "retake", v)
+                        }
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        聽力 <span className="text-zinc-400">/ {session.midtermMaxScore / 2}</span>
+                      </label>
+                      <NumberInput
+                        value={listening.original}
+                        max={session.midtermMaxScore / 2}
+                        onCommit={(v) =>
+                          setScore(row.id, { key: "MIDTERM_LISTENING", category: "MIDTERM_LISTENING", assessmentId: null }, "original", v)
+                        }
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className={labelClass}>{t("grid.retake")}</label>
+                      <NumberInput
+                        value={listening.retake}
+                        max={session.midtermMaxScore / 2}
+                        onCommit={(v) =>
+                          setScore(row.id, { key: "MIDTERM_LISTENING", category: "MIDTERM_LISTENING", assessmentId: null }, "retake", v)
+                        }
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
-                {session.hasFinal && (
-                  <>
-                    <NumberCell
+              {session.hasFinal && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className={labelClass}>
+                      {t("sessions.final")} <span className="text-zinc-400">/ {session.finalMaxScore}</span>
+                    </label>
+                    <NumberInput
                       value={final.original}
                       max={session.finalMaxScore}
-                      onCommit={(v) => setScore(row.id, "FINAL", "original", v)}
+                      onCommit={(v) => setScore(row.id, { key: "FINAL", category: "FINAL", assessmentId: null }, "original", v)}
+                      className="w-full"
                     />
-                    <RetakeCell
-                      obtained={final.retake}
-                      total={final.retakeMax}
-                      placeholder={t("grid.retake")}
-                      onCommitObtained={(v) => setScore(row.id, "FINAL", "retake", v)}
-                      onCommitTotal={(v) => setScore(row.id, "FINAL", "retakeMax", v)}
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelClass}>{t("grid.retake")}</label>
+                    <NumberInput
+                      value={final.retake}
+                      max={session.finalMaxScore}
+                      onCommit={(v) => setScore(row.id, { key: "FINAL", category: "FINAL", assessmentId: null }, "retake", v)}
+                      className="w-full"
                     />
-                  </>
-                )}
+                  </div>
+                </div>
+              )}
 
-                {session.hasFeedback && (
-                  <FeedbackCell value={state.feedback} onCommit={(v) => setFeedback(row.id, v)} />
-                )}
-              </tr>
-            );
-          })}
-          {enrollments.length === 0 && (
-            <tr>
-              <td className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-500">—</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+              {session.hasFeedback && (
+                <div className="space-y-1">
+                  <label className={labelClass}>{t("sessions.feedback")}</label>
+                  <FeedbackInput value={state.feedback} onCommit={(v) => setFeedback(row.id, v)} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {enrollments.length === 0 && (
+          <div className={`${cardClass} px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-500`}>—</div>
+        )}
       </div>
 
       {/* Print/export-only. */}
@@ -348,6 +401,7 @@ export function ClassDetailTable({
         <ClassAttendancePdfTable
           title={pdfTitle}
           session={session}
+          assessments={assessments}
           enrollments={pdfEnrollments}
           attendance={pdfAttendance}
           scores={pdfScores}
@@ -358,7 +412,9 @@ export function ClassDetailTable({
   );
 }
 
-function AttendanceCell({
+// Unwrapped controls (no <td>) so the same input UI works in both the
+// desktop table and the mobile card layout below.
+function AttendanceControl({
   status,
   note,
   onChange,
@@ -371,33 +427,38 @@ function AttendanceCell({
   onNoteChange: (note: string) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
-  const Icon = attendanceIcon[status];
   return (
-    <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
-      <div className="space-y-1">
-        <div className="relative flex items-center">
-          <Icon className={`pointer-events-none absolute left-2 h-3.5 w-3.5 ${attendanceColor[status]}`} aria-hidden />
-          <select
-            value={status}
-            onChange={(e) => onChange(e.target.value as AttendanceStatus)}
-            className="w-full cursor-pointer appearance-none rounded border border-zinc-200 bg-white py-1 pl-7 pr-6 text-sm text-zinc-800 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-600"
-          >
-            {ATTENDANCE_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {t(`attendanceStatus.${s}`)}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-zinc-400" aria-hidden />
-        </div>
-        <input
-          value={note}
-          onChange={(e) => onNoteChange(e.target.value)}
-          placeholder={t("sessions.attendanceNotePlaceholder")}
-          className="w-full rounded border border-zinc-200 bg-white px-1.5 py-1 text-xs text-zinc-700 placeholder:text-zinc-300 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-600 dark:hover:border-zinc-600"
-        />
+    <div className="space-y-1">
+      <div role="radiogroup" aria-label={t("sessions.attendance")} className="grid grid-cols-2 gap-1">
+        {ATTENDANCE_OPTIONS.map((s) => {
+          const Icon = attendanceIcon[s];
+          const active = status === s;
+          return (
+            <button
+              key={s}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(s)}
+              className={`flex items-center justify-center gap-1.5 rounded border py-1.5 text-xs transition-colors ${
+                active
+                  ? `border-current bg-current/10 ${attendanceColor[s]}`
+                  : "border-zinc-200 text-zinc-400 hover:border-zinc-300 hover:text-zinc-600 dark:border-zinc-700 dark:text-zinc-500 dark:hover:border-zinc-600 dark:hover:text-zinc-400"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              {t(`attendanceStatus.${s}`)}
+            </button>
+          );
+        })}
       </div>
-    </td>
+      <input
+        value={note}
+        onChange={(e) => onNoteChange(e.target.value)}
+        placeholder={t("sessions.attendanceNotePlaceholder")}
+        className="w-full rounded border border-zinc-200 bg-white px-1.5 py-1 text-xs text-zinc-700 placeholder:text-zinc-300 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-600 dark:hover:border-zinc-600"
+      />
+    </div>
   );
 }
 
@@ -412,75 +473,49 @@ function clampScore(raw: string, max?: number) {
 // Controlled directly by the parent's committed state (no local draft) so
 // every keystroke marks the row dirty and enables Save immediately — only
 // the clamp-to-bounds pass waits for blur, since it reformats the value.
-function NumberCell({ value, max, onCommit }: { value: string; max?: number; onCommit: (value: string) => void }) {
-  return (
-    <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
-      <input
-        type="number"
-        min={0}
-        max={max}
-        value={value}
-        onChange={(e) => onCommit(e.target.value)}
-        onBlur={() => {
-          const clamped = clampScore(value, max);
-          if (clamped !== value) onCommit(clamped);
-        }}
-        className="tabular w-20 rounded border border-zinc-200 bg-white px-1.5 py-1 text-left text-sm text-zinc-900 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600"
-      />
-    </td>
-  );
-}
-
-function FeedbackCell({ value, onCommit }: { value: string; onCommit: (value: string) => void }) {
-  return (
-    <td className="border-l border-zinc-100 px-2 py-1 dark:border-zinc-900">
-      <input value={value} onChange={(e) => onCommit(e.target.value)} className={`min-w-40 ${inputClass}`} />
-    </td>
-  );
-}
-
-function RetakeCell({
-  obtained,
-  total,
-  placeholder,
-  onCommitObtained,
-  onCommitTotal,
+function NumberInput({
+  value,
+  max,
+  onCommit,
+  className = "",
 }: {
-  obtained: string;
-  total: string;
-  placeholder: string;
-  onCommitObtained: (value: string) => void;
-  onCommitTotal: (value: string) => void;
+  value: string;
+  max?: number;
+  onCommit: (value: string) => void;
+  className?: string;
 }) {
   return (
-    <td className="px-2 py-1">
-      <div className="flex items-center gap-1">
-        <input
-          type="number"
-          min={0}
-          max={total === "" ? undefined : Number(total)}
-          value={obtained}
-          onChange={(e) => onCommitObtained(e.target.value)}
-          onBlur={() => {
-            const clamped = clampScore(obtained, total === "" ? undefined : Number(total));
-            if (clamped !== obtained) onCommitObtained(clamped);
-          }}
-          placeholder={placeholder}
-          className="tabular w-14 rounded border border-zinc-200 bg-white px-1 py-1 text-left text-sm text-zinc-900 placeholder:text-zinc-300 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:hover:border-zinc-600"
-        />
-        <span className="text-zinc-400 dark:text-zinc-600">/</span>
-        <input
-          type="number"
-          min={0}
-          value={total}
-          onChange={(e) => onCommitTotal(e.target.value)}
-          onBlur={() => {
-            const clamped = clampScore(total);
-            if (clamped !== total) onCommitTotal(clamped);
-          }}
-          className="tabular w-12 rounded border border-zinc-200 bg-white px-1 py-1 text-left text-sm text-zinc-500 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600"
-        />
-      </div>
-    </td>
+    <input
+      type="number"
+      min={0}
+      max={max}
+      value={value}
+      onChange={(e) => onCommit(e.target.value)}
+      onBlur={() => {
+        const clamped = clampScore(value, max);
+        if (clamped !== value) onCommit(clamped);
+      }}
+      className={`tabular w-20 rounded border border-zinc-200 bg-white px-1.5 py-1 text-left text-sm text-zinc-900 hover:border-zinc-300 focus:border-[#0f6e56] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 ${className}`}
+    />
   );
 }
+
+function FeedbackInput({
+  value,
+  onCommit,
+  className = "",
+}: {
+  value: string;
+  onCommit: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => onCommit(e.target.value)}
+      rows={2}
+      className={`${inputClass} resize-y ${className}`}
+    />
+  );
+}
+

@@ -55,6 +55,9 @@
     "scanQr": "Quét mã QR để tham gia khóa học",
     "scanQrTitle": "Quét mã QR để tham gia khóa học",
     "scanQrHelp": "Hướng camera của bạn vào mã QR mà giáo viên chia sẻ.",
+    "uploadQrImage": "Tải ảnh lên thay thế",
+    "qrImageNotFound": "Không tìm thấy mã QR trong ảnh đó.",
+    "qrImageError": "Không thể đọc ảnh đó. Vui lòng thử ảnh khác.",
     "cameraError": "Không thể truy cập camera. Kiểm tra quyền camera của trình duyệt và thử lại.",
     "cameraUnsupported": "Trình duyệt này không hỗ trợ quét bằng camera.",
     "qrUnrecognized": "Mã QR đó không phải là liên kết ClassKeeper."
@@ -126,7 +129,6 @@
     "addStudents": "Thêm học viên",
     "attendance": "Điểm danh",
     "score": "Điểm số",
-    "capReached": "Học kỳ này đã đạt giới hạn tối đa 30 học viên.",
     "removeStudent": "Xóa khỏi học kỳ",
     "editStudent": "Chỉnh sửa học viên",
     "invite": "Mời",
@@ -166,12 +168,17 @@
     "feedback": "Nhận xét",
     "empty": "Chưa có buổi học nào. Hãy dùng nút \"{button}\" để thêm.",
     "exportPdf": "Xuất PDF",
-    "attendanceNotePlaceholder": "Ghi chú (vd: trễ 10 phút)"
+    "attendanceNotePlaceholder": "Ghi chú (vd: trễ 10 phút)",
+    "quizzes": "Bài kiểm tra",
+    "assignments": "Bài tập",
+    "addQuiz": "Thêm bài kiểm tra",
+    "addAssignment": "Thêm bài tập",
+    "labelOptional": "Nhãn (tùy chọn)"
   },
   "grid": {
     "title": "Bảng điểm",
     "student": "Học viên",
-    "retake": "thi lại"
+    "retake": "Thi lại"
   },
   "attendanceStatus": {
     "PRESENT": "Có mặt",

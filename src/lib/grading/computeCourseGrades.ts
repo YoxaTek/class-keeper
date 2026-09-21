@@ -3,11 +3,15 @@ import { calculateGrade, type GradeBreakdown } from "./calculateGrade";
 
 export async function computeGradesForCourse(courseId: string) {
   const course = await prisma.course.findUniqueOrThrow({ where: { id: courseId } });
-  const sessions = await prisma.session.findMany({ where: { courseId } });
+  const sessions = await prisma.session.findMany({ where: { courseId }, include: { assessments: true } });
   const enrollments = await prisma.enrollment.findMany({
     where: { courseId },
     include: { student: true, attendance: true, scores: true, evaluation: true },
   });
+
+  const assessments = sessions.flatMap((s) =>
+    s.assessments.map((a) => ({ id: a.id, sessionId: a.sessionId, type: a.type, maxScore: a.maxScore }))
+  );
 
   const settings = {
     maxExcusedAbsences: course.maxExcusedAbsences,
@@ -26,18 +30,16 @@ export async function computeGradesForCourse(courseId: string) {
       attendance: enrollment.attendance.map((a) => ({ status: a.status })),
       sessions: sessions.map((s) => ({
         id: s.id,
-        hasQuiz: s.hasQuiz,
-        quizMaxScore: s.quizMaxScore,
-        hasAssignment: s.hasAssignment,
-        assignmentMaxScore: s.assignmentMaxScore,
         hasMidterm: s.hasMidterm,
         midtermMaxScore: s.midtermMaxScore,
         hasFinal: s.hasFinal,
         finalMaxScore: s.finalMaxScore,
       })),
+      assessments,
       scores: enrollment.scores.map((s) => ({
         sessionId: s.sessionId,
         category: s.category,
+        assessmentId: s.assessmentId,
         originalScore: s.originalScore,
         retakeScore: s.retakeScore,
         retakeMaxScore: s.retakeMaxScore,

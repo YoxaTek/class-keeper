@@ -7,8 +7,8 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { ClassFormDrawer } from "./ClassFormDrawer";
 import { ClassDeleteButton } from "./ClassDeleteButton";
 import { ExportSessionPdfButton } from "./ExportSessionPdfButton";
-import { categorySessionMax, pctFor } from "@/lib/grading/calculateGrade";
-import { buildClassRecordTitle } from "@/lib/classRecordTitle";
+import { scoreRecordMax, pctFor } from "@/lib/grading/calculateGrade";
+import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
 
 type Filter = "all" | "upcoming" | "past";
 
@@ -29,7 +29,7 @@ export default async function SessionsListPage({
   const [allSessions, rosterEnrollments] = await Promise.all([
     prisma.session.findMany({
       where: { courseId },
-      include: { attendance: true, scores: true, feedback: true },
+      include: { attendance: true, scores: true, feedback: true, assessments: true },
       orderBy: { date: "asc" },
     }),
     // For the per-row PDF export — fetched once and reused across every
@@ -41,9 +41,7 @@ export default async function SessionsListPage({
     }),
   ]);
   const pdfEnrollments = rosterEnrollments.map((e) => ({ id: e.id, student: e.student }));
-  // allSessions is already ordered by date ascending, so its index doubles
-  // as each session's "week number" for the PDF title.
-  const weekNumberBySessionId = new Map(allSessions.map((s, i) => [s.id, i + 1]));
+  const weekNumberBySessionId = new Map(allSessions.map((s) => [s.id, courseWeekNumber(course.startDate, s.date)]));
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -54,8 +52,8 @@ export default async function SessionsListPage({
   const covers = (s: (typeof sessions)[number]) =>
     [
       s.hasAttendance && t("sessions.attendance"),
-      s.hasQuiz && t("sessions.quiz"),
-      s.hasAssignment && t("sessions.assignment"),
+      s.assessments.some((a) => a.type === "QUIZ") && t("sessions.quiz"),
+      s.assessments.some((a) => a.type === "ASSIGNMENT") && t("sessions.assignment"),
       s.hasMidterm && t("sessions.midterm"),
       s.hasFinal && t("sessions.final"),
       s.hasFeedback && t("sessions.feedback"),
@@ -98,9 +96,10 @@ export default async function SessionsListPage({
             const countable = s.attendance.filter((a) => a.status !== "NOT_ENROLLED");
             const present = countable.filter((a) => a.status === "PRESENT").length;
             const turnout = countable.length ? `${Math.round((present / countable.length) * 100)}%` : "—";
+            const assessmentsById = new Map(s.assessments.map((a) => [a.id, a]));
             const scoreAvg = s.scores.length
               ? `${(
-                  s.scores.reduce((sum, r) => sum + pctFor(r, categorySessionMax(s, r.category)), 0) /
+                  s.scores.reduce((sum, r) => sum + pctFor(r, scoreRecordMax(r, s, assessmentsById)), 0) /
                   s.scores.length
                 ).toFixed(1)}%`
               : "—";
@@ -146,6 +145,7 @@ export default async function SessionsListPage({
                       date: s.date,
                     })}
                     session={s}
+                    assessments={s.assessments}
                     enrollments={pdfEnrollments}
                     attendance={s.attendance}
                     scores={s.scores}
@@ -160,15 +160,19 @@ export default async function SessionsListPage({
                       date: s.date.toISOString().slice(0, 10),
                       label: s.label ?? "",
                       hasAttendance: s.hasAttendance,
-                      hasQuiz: s.hasQuiz,
-                      quizMaxScore: s.quizMaxScore,
-                      hasAssignment: s.hasAssignment,
-                      assignmentMaxScore: s.assignmentMaxScore,
                       hasMidterm: s.hasMidterm,
                       midtermMaxScore: s.midtermMaxScore,
                       hasFinal: s.hasFinal,
                       finalMaxScore: s.finalMaxScore,
                       hasFeedback: s.hasFeedback,
+                      quizzes: s.assessments
+                        .filter((a) => a.type === "QUIZ")
+                        .sort((a, b) => a.order - b.order)
+                        .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
+                      assignments: s.assessments
+                        .filter((a) => a.type === "ASSIGNMENT")
+                        .sort((a, b) => a.order - b.order)
+                        .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
                     }}
                   />
                   <ClassDeleteButton courseId={courseId} sessionId={s.id} />

@@ -40,18 +40,14 @@ export default async function RosterPage({ params }: { params: Promise<{ courseI
         <div className="space-y-2">
           <div className="flex items-baseline justify-between">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h2>
-            <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{rows.length} / 30</span>
+            <span className="tabular text-xs text-zinc-500 dark:text-zinc-500">{rows.length}</span>
           </div>
           <RosterTable courseId={courseId} rows={rows} />
         </div>
 
         <div className="space-y-4">
           <JoinLinkCard courseId={courseId} />
-          {rows.length >= 30 ? (
-            <p className="text-sm text-amber-700 dark:text-amber-500">{t("capReached")}</p>
-          ) : (
-            <BulkAddForm courseId={courseId} remaining={30 - rows.length} />
-          )}
+          <BulkAddForm courseId={courseId} />
         </div>
       </div>
     </div>

@@ -28,6 +28,11 @@ enum ScoreCategory {
   FINAL // dedicated final-exam score; ignored when Course.finalExamSessionId overrides it
 }
 
+enum AssessmentType {
+  QUIZ
+  ASSIGNMENT
+}
+
 enum PlanTier {
   FREE
   PRO
@@ -233,33 +238,48 @@ model Enrollment {
   evaluation      Evaluation?
   feedback        Feedback?
   sessionFeedback SessionFeedback[]
-  // Max 30 enrollments per course is enforced by a DB trigger, see migration
-  // 20260101000000_enrollment_cap_trigger — Prisma's schema DSL has no way
-  // to express a per-group row-count constraint directly.
 
   @@unique([courseId, studentId])
 }
 
 model Session {
-  id                 String   @id @default(cuid())
-  courseId           String
-  course             Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  date               DateTime
-  label              String? // e.g. "L1 生詞"
-  hasAttendance      Boolean  @default(false)
-  hasQuiz            Boolean  @default(false)
-  quizMaxScore       Int      @default(100) // the quiz's total possible points — same for every student in this class
-  hasAssignment      Boolean  @default(false)
-  assignmentMaxScore Int      @default(100)
-  hasMidterm         Boolean  @default(false)
-  midtermMaxScore    Int      @default(100) // combined reading + listening total for this class's midterm
-  hasFinal           Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Course.finalExamSessionId is set
-  finalMaxScore      Int      @default(100)
-  hasFeedback        Boolean  @default(true) // a free-text note per student for this class meeting — always on, not an optional category like the others; doesn't affect the course grade
+  id              String   @id @default(cuid())
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  date            DateTime
+  label           String? // e.g. "L1 生詞"
+  hasAttendance   Boolean  @default(false)
+  hasMidterm      Boolean  @default(false)
+  midtermMaxScore Int      @default(100) // combined reading + listening total for this class's midterm
+  hasFinal        Boolean  @default(false) // marks the session as the final-exam session (ScoreCategory.FINAL); irrelevant when Course.finalExamSessionId is set
+  finalMaxScore   Int      @default(100)
+  hasFeedback     Boolean  @default(true) // a free-text note per student for this class meeting — always on, not an optional category like the others; doesn't affect the course grade
+
+  // Quiz/assignment are no longer single flag+total pairs here — a session
+  // can have any number of each (e.g. 2 quizzes in one class), each its own
+  // Assessment row with its own total. "Does this session have a quiz" is
+  // now `assessments.some(a => a.type === "QUIZ")`.
+  assessments Assessment[]
 
   attendance Attendance[]
   scores     ScoreRecord[]
   feedback   SessionFeedback[]
+}
+
+// One quiz or assignment instance within a session — a session has as many
+// of these as a TA added (commonly zero or one, but two quizzes in the same
+// class is exactly what this enables). Each is scored independently via
+// ScoreRecord.assessmentId.
+model Assessment {
+  id        String         @id @default(cuid())
+  sessionId String
+  session   Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  type      AssessmentType
+  label     String? // optional custom name, e.g. "Quiz 1" — shown once a session has more than one of this type; falls back to a numbered default otherwise
+  maxScore  Int            @default(100)
+  order     Int            @default(0) // display order among assessments of the same type within a session
+
+  scores ScoreRecord[]
 }
 
 model Attendance {
@@ -295,12 +315,21 @@ model ScoreRecord {
   enrollmentId   String
   enrollment     Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   category       ScoreCategory
+  // Set for QUIZ/ASSIGNMENT scores, which now belong to a specific
+  // Assessment instance (a session can have more than one of each) — always
+  // null for MIDTERM_READING/MIDTERM_LISTENING/FINAL, which stay exactly
+  // one-per-session and are still deduped by (sessionId, enrollmentId,
+  // category) alone. That's a partial unique index the schema DSL can't
+  // express directly — see migration 20260921130000_add_assessments:
+  //   CREATE UNIQUE INDEX ... ON "ScoreRecord"("sessionId","enrollmentId","category") WHERE "assessmentId" IS NULL;
+  assessmentId   String?
+  assessment     Assessment?   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   originalScore  Float? // null = missed / not yet entered
   retakeScore    Float? // 補考 — if present, use this instead of originalScore
   retakeMaxScore Float? // the retake's own total possible points — can differ per student, unlike the main quiz's total
   note           String?
 
-  @@unique([sessionId, enrollmentId, category])
+  @@unique([assessmentId, enrollmentId])
 }
 
 model Evaluation {

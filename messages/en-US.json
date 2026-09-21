@@ -55,6 +55,9 @@
     "scanQr": "Scan QR code to join a course",
     "scanQrTitle": "Scan QR code to join a course",
     "scanQrHelp": "Point your camera at the QR code your teacher is sharing.",
+    "uploadQrImage": "Upload a photo instead",
+    "qrImageNotFound": "No QR code found in that image.",
+    "qrImageError": "Couldn't read that image. Please try another one.",
     "cameraError": "Couldn't access the camera. Check your browser's camera permission and try again.",
     "cameraUnsupported": "Camera scanning isn't supported in this browser.",
     "qrUnrecognized": "That QR code isn't a ClassKeeper link."
@@ -126,7 +129,6 @@
     "addStudents": "Add students",
     "attendance": "Attendance",
     "score": "Score",
-    "capReached": "This course already has 30 students, the maximum allowed.",
     "removeStudent": "Remove from course",
     "editStudent": "Edit student",
     "invite": "Invite",
@@ -166,12 +168,17 @@
     "feedback": "Feedback",
     "empty": "No classes yet — use the \"{button}\" button to add one.",
     "exportPdf": "Export PDF",
-    "attendanceNotePlaceholder": "Note (e.g. 10 min late)"
+    "attendanceNotePlaceholder": "Note (e.g. 10 min late)",
+    "quizzes": "Quizzes",
+    "assignments": "Assignments",
+    "addQuiz": "Add quiz",
+    "addAssignment": "Add assignment",
+    "labelOptional": "Label (optional)"
   },
   "grid": {
     "title": "Session grid",
     "student": "Student",
-    "retake": "retake"
+    "retake": "Retake"
   },
   "attendanceStatus": {
     "PRESENT": "Present",

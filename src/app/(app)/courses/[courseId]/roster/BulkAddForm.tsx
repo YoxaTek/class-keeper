@@ -7,7 +7,7 @@ import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, cardClass } from "@/components/ui/styles";
 
-export function BulkAddForm({ courseId, remaining }: { courseId: string; remaining: number }) {
+export function BulkAddForm({ courseId }: { courseId: string }) {
   const t = useTranslations("roster");
   const router = useRouter();
   const [text, setText] = useState("");
@@ -42,9 +42,7 @@ export function BulkAddForm({ courseId, remaining }: { courseId: string; remaini
 
   return (
     <form onSubmit={onSubmit} className={`${cardClass} space-y-2 p-4`}>
-      <label className={labelClass}>
-        {t("bulkPaste")} <span className="tabular text-zinc-400 dark:text-zinc-600">({remaining} left)</span>
-      </label>
+      <label className={labelClass}>{t("bulkPaste")}</label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}

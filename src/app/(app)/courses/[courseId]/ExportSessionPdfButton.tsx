@@ -7,6 +7,7 @@ import { Printer } from "lucide-react";
 import type { Session } from "@prisma/client";
 import {
   ClassAttendancePdfTable,
+  type PdfAssessment,
   type PdfAttendance,
   type PdfEnrollment,
   type PdfFeedback,
@@ -26,24 +27,15 @@ import {
 export function ExportSessionPdfButton({
   title,
   session,
+  assessments,
   enrollments,
   attendance,
   scores,
   sessionFeedback,
 }: {
   title: string;
-  session: Pick<
-    Session,
-    | "hasQuiz"
-    | "quizMaxScore"
-    | "hasAssignment"
-    | "assignmentMaxScore"
-    | "hasMidterm"
-    | "midtermMaxScore"
-    | "hasFinal"
-    | "finalMaxScore"
-    | "hasFeedback"
-  >;
+  session: Pick<Session, "hasMidterm" | "midtermMaxScore" | "hasFinal" | "finalMaxScore" | "hasFeedback">;
+  assessments: PdfAssessment[];
   enrollments: PdfEnrollment[];
   attendance: PdfAttendance[];
   scores: PdfScore[];
@@ -84,6 +76,7 @@ export function ExportSessionPdfButton({
             <ClassAttendancePdfTable
               title={title}
               session={session}
+              assessments={assessments}
               enrollments={enrollments}
               attendance={attendance}
               scores={scores}

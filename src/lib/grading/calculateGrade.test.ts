@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateGrade, type GradingInput, type CourseGradingSettings } from "./calculateGrade";
+import { calculateGrade, type GradingInput, type CourseGradingSettings, type AssessmentInput } from "./calculateGrade";
 
 const baseSettings: CourseGradingSettings = {
   maxExcusedAbsences: 3,
@@ -13,7 +13,7 @@ const baseSettings: CourseGradingSettings = {
   finalExamSessionId: null,
 };
 
-const noFlags = { hasQuiz: false, hasAssignment: false, hasMidterm: false, hasFinal: false };
+const noFlags = { hasMidterm: false, hasFinal: false };
 
 describe("calculateGrade — attendance (professor's worked example)", () => {
   // 24 total sessions. Student joined at week 3 (4 sessions before that are
@@ -32,6 +32,7 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
     const result = calculateGrade({
       attendance,
       sessions: [],
+      assessments: [],
       scores: [],
       impressionScore: 0,
       settings: baseSettings,
@@ -44,6 +45,7 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
     const result = calculateGrade({
       attendance,
       sessions: [],
+      assessments: [],
       scores: [],
       impressionScore: 0,
       settings: baseSettings,
@@ -64,6 +66,7 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
     const result = calculateGrade({
       attendance: withExcessExcused,
       sessions: [],
+      assessments: [],
       scores: [],
       impressionScore: 0,
       settings: baseSettings,
@@ -75,36 +78,38 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
 });
 
 describe("calculateGrade — assignment", () => {
-  const sessions = [
-    { id: "s1", ...noFlags, hasAssignment: true },
-    { id: "s2", ...noFlags, hasAssignment: true },
+  const assessments: AssessmentInput[] = [
+    { id: "a1", sessionId: "s1", type: "ASSIGNMENT", maxScore: 100 },
+    { id: "a2", sessionId: "s2", type: "ASSIGNMENT", maxScore: 100 },
   ];
 
   it("averages assignment scores (out of 100 by default) and treats a missing record as 0", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions,
-      scores: [{ sessionId: "s1", category: "ASSIGNMENT", originalScore: 80, retakeScore: null }],
+      sessions: [],
+      assessments,
+      scores: [{ sessionId: "s1", assessmentId: "a1", category: "ASSIGNMENT", originalScore: 80, retakeScore: null }],
       impressionScore: 0,
       settings: baseSettings,
     });
 
-    // s1 = 80, s2 = missing -> 0. Average = 40.
+    // a1 = 80, a2 = missing -> 0. Average = 40.
     expect(result.assignment.average).toBeCloseTo(40, 5);
     expect(result.assignment.score).toBeCloseTo((40 / 100) * 15, 5);
   });
 
-  it("normalizes against each class's own assignment total", () => {
+  it("normalizes against each assessment's own total", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions: [
-        { id: "s1", ...noFlags, hasAssignment: true, assignmentMaxScore: 20 },
-        { id: "s2", ...noFlags, hasAssignment: true, assignmentMaxScore: 10 },
+      sessions: [],
+      assessments: [
+        { id: "a1", sessionId: "s1", type: "ASSIGNMENT", maxScore: 20 },
+        { id: "a2", sessionId: "s2", type: "ASSIGNMENT", maxScore: 10 },
       ],
-      // s1: 16/20 = 80%. s2: 8/10 = 80%. Average = 80%.
+      // a1: 16/20 = 80%. a2: 8/10 = 80%. Average = 80%.
       scores: [
-        { sessionId: "s1", category: "ASSIGNMENT", originalScore: 16, retakeScore: null },
-        { sessionId: "s2", category: "ASSIGNMENT", originalScore: 8, retakeScore: null },
+        { sessionId: "s1", assessmentId: "a1", category: "ASSIGNMENT", originalScore: 16, retakeScore: null },
+        { sessionId: "s2", assessmentId: "a2", category: "ASSIGNMENT", originalScore: 8, retakeScore: null },
       ],
       impressionScore: 0,
       settings: baseSettings,
@@ -116,9 +121,32 @@ describe("calculateGrade — assignment", () => {
   it("normalizes an assignment retake against its own total", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions: [{ id: "s1", ...noFlags, hasAssignment: true, assignmentMaxScore: 20 }],
-      // retake 9/12 = 75%, not the session's 20.
-      scores: [{ sessionId: "s1", category: "ASSIGNMENT", originalScore: 5, retakeScore: 9, retakeMaxScore: 12 }],
+      sessions: [],
+      assessments: [{ id: "a1", sessionId: "s1", type: "ASSIGNMENT", maxScore: 20 }],
+      // retake 9/12 = 75%, not the assessment's 20.
+      scores: [
+        { sessionId: "s1", assessmentId: "a1", category: "ASSIGNMENT", originalScore: 5, retakeScore: 9, retakeMaxScore: 12 },
+      ],
+      impressionScore: 0,
+      settings: baseSettings,
+    });
+
+    expect(result.assignment.average).toBeCloseTo(75, 5);
+  });
+
+  it("averages 2 assignments given in the same session", () => {
+    const result = calculateGrade({
+      attendance: [],
+      sessions: [],
+      assessments: [
+        { id: "a1", sessionId: "s1", type: "ASSIGNMENT", maxScore: 10 },
+        { id: "a2", sessionId: "s1", type: "ASSIGNMENT", maxScore: 10 },
+      ],
+      // a1: 10/10 = 100%. a2: 5/10 = 50%. Average = 75%.
+      scores: [
+        { sessionId: "s1", assessmentId: "a1", category: "ASSIGNMENT", originalScore: 10, retakeScore: null },
+        { sessionId: "s1", assessmentId: "a2", category: "ASSIGNMENT", originalScore: 5, retakeScore: null },
+      ],
       impressionScore: 0,
       settings: baseSettings,
     });
@@ -128,18 +156,19 @@ describe("calculateGrade — assignment", () => {
 });
 
 describe("calculateGrade — quiz", () => {
-  const sessions = [
-    { id: "s1", ...noFlags, hasQuiz: true },
-    { id: "s2", ...noFlags, hasQuiz: true },
+  const assessments: AssessmentInput[] = [
+    { id: "q1", sessionId: "s1", type: "QUIZ", maxScore: 100 },
+    { id: "q2", sessionId: "s2", type: "QUIZ", maxScore: 100 },
   ];
 
   it("uses the retake score over the original when present", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions,
+      sessions: [],
+      assessments,
       scores: [
-        { sessionId: "s1", category: "QUIZ", originalScore: 50, retakeScore: 90 },
-        { sessionId: "s2", category: "QUIZ", originalScore: 70, retakeScore: null },
+        { sessionId: "s1", assessmentId: "q1", category: "QUIZ", originalScore: 50, retakeScore: 90 },
+        { sessionId: "s2", assessmentId: "q2", category: "QUIZ", originalScore: 70, retakeScore: null },
       ],
       impressionScore: 0,
       settings: baseSettings,
@@ -151,20 +180,21 @@ describe("calculateGrade — quiz", () => {
   });
 });
 
-describe("calculateGrade — quiz with a per-session total and a per-student retake total", () => {
-  const sessions = [
-    { id: "s1", ...noFlags, hasQuiz: true, quizMaxScore: 10 },
-    { id: "s2", ...noFlags, hasQuiz: true, quizMaxScore: 20 },
+describe("calculateGrade — quiz with a per-assessment total and a per-student retake total", () => {
+  const assessments: AssessmentInput[] = [
+    { id: "q1", sessionId: "s1", type: "QUIZ", maxScore: 10 },
+    { id: "q2", sessionId: "s2", type: "QUIZ", maxScore: 20 },
   ];
 
-  it("normalizes the main quiz score against the session's own total", () => {
+  it("normalizes the main quiz score against the assessment's own total", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions,
-      // s1: 8/10 = 80%. s2: 15/20 = 75%. Average = 77.5%.
+      sessions: [],
+      assessments,
+      // q1: 8/10 = 80%. q2: 15/20 = 75%. Average = 77.5%.
       scores: [
-        { sessionId: "s1", category: "QUIZ", originalScore: 8, retakeScore: null },
-        { sessionId: "s2", category: "QUIZ", originalScore: 15, retakeScore: null },
+        { sessionId: "s1", assessmentId: "q1", category: "QUIZ", originalScore: 8, retakeScore: null },
+        { sessionId: "s2", assessmentId: "q2", category: "QUIZ", originalScore: 15, retakeScore: null },
       ],
       impressionScore: 0,
       settings: baseSettings,
@@ -173,15 +203,16 @@ describe("calculateGrade — quiz with a per-session total and a per-student ret
     expect(result.quiz.average).toBeCloseTo(77.5, 5);
   });
 
-  it("normalizes a retake against its own total instead of the session's", () => {
+  it("normalizes a retake against its own total instead of the assessment's", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions,
-      // s1 retake: 9/12 = 75% (its own total, not the session's 10).
-      // s2: no retake, uses original 15/20 = 75%.
+      sessions: [],
+      assessments,
+      // q1 retake: 9/12 = 75% (its own total, not the assessment's 10).
+      // q2: no retake, uses original 15/20 = 75%.
       scores: [
-        { sessionId: "s1", category: "QUIZ", originalScore: 5, retakeScore: 9, retakeMaxScore: 12 },
-        { sessionId: "s2", category: "QUIZ", originalScore: 15, retakeScore: null },
+        { sessionId: "s1", assessmentId: "q1", category: "QUIZ", originalScore: 5, retakeScore: 9, retakeMaxScore: 12 },
+        { sessionId: "s2", assessmentId: "q2", category: "QUIZ", originalScore: 15, retakeScore: null },
       ],
       impressionScore: 0,
       settings: baseSettings,
@@ -190,17 +221,38 @@ describe("calculateGrade — quiz with a per-session total and a per-student ret
     expect(result.quiz.average).toBeCloseTo(75, 5);
   });
 
-  it("falls back to the session's total when a retake omits its own", () => {
+  it("falls back to the assessment's total when a retake omits its own", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions: [{ id: "s1", ...noFlags, hasQuiz: true, quizMaxScore: 10 }],
-      // retake 9, no retakeMaxScore given -> falls back to session total of 10 -> 90%.
-      scores: [{ sessionId: "s1", category: "QUIZ", originalScore: 5, retakeScore: 9 }],
+      sessions: [],
+      assessments: [{ id: "q1", sessionId: "s1", type: "QUIZ", maxScore: 10 }],
+      // retake 9, no retakeMaxScore given -> falls back to assessment total of 10 -> 90%.
+      scores: [{ sessionId: "s1", assessmentId: "q1", category: "QUIZ", originalScore: 5, retakeScore: 9 }],
       impressionScore: 0,
       settings: baseSettings,
     });
 
     expect(result.quiz.average).toBeCloseTo(90, 5);
+  });
+
+  it("averages 2 quizzes given in the same session", () => {
+    const result = calculateGrade({
+      attendance: [],
+      sessions: [],
+      assessments: [
+        { id: "q1", sessionId: "s1", type: "QUIZ", maxScore: 10 },
+        { id: "q2", sessionId: "s1", type: "QUIZ", maxScore: 10 },
+      ],
+      // q1: 10/10 = 100%. q2: 4/10 = 40%. Average = 70%.
+      scores: [
+        { sessionId: "s1", assessmentId: "q1", category: "QUIZ", originalScore: 10, retakeScore: null },
+        { sessionId: "s1", assessmentId: "q2", category: "QUIZ", originalScore: 4, retakeScore: null },
+      ],
+      impressionScore: 0,
+      settings: baseSettings,
+    });
+
+    expect(result.quiz.average).toBeCloseTo(70, 5);
   });
 });
 
@@ -209,6 +261,7 @@ describe("calculateGrade — midterm", () => {
     const result = calculateGrade({
       attendance: [],
       sessions: [{ id: "s1", ...noFlags, hasMidterm: true, midtermMaxScore: 200 }],
+      assessments: [],
       scores: [
         { sessionId: "s1", category: "MIDTERM_READING", originalScore: 90, retakeScore: null },
         { sessionId: "s1", category: "MIDTERM_LISTENING", originalScore: 80, retakeScore: null },
@@ -226,6 +279,7 @@ describe("calculateGrade — midterm", () => {
     const result = calculateGrade({
       attendance: [],
       sessions: [{ id: "s1", ...noFlags, hasMidterm: true, midtermMaxScore: 200 }],
+      assessments: [],
       // reading: 90/100 = 90%. listening retake: 40/50 = 80% (its own total, not the session's half of 100).
       // normalized = (90 + 80) / 2 = 85.
       scores: [
@@ -245,6 +299,7 @@ describe("calculateGrade — final exam", () => {
     const result = calculateGrade({
       attendance: [],
       sessions: [{ id: "final-session", ...noFlags, hasFinal: true, finalMaxScore: 100 }],
+      assessments: [],
       scores: [{ sessionId: "final-session", category: "FINAL", originalScore: 88, retakeScore: null }],
       impressionScore: 0,
       settings: baseSettings,
@@ -253,12 +308,13 @@ describe("calculateGrade — final exam", () => {
     expect(result.final.score).toBeCloseTo((88 / 100) * 15, 5);
   });
 
-  it("uses the override session's ASSIGNMENT score, normalized against that class's assignment total", () => {
+  it("uses the override session's ASSIGNMENT assessment, normalized against that assessment's total", () => {
     const result = calculateGrade({
       attendance: [],
-      sessions: [{ id: "project-session", ...noFlags, hasAssignment: true, assignmentMaxScore: 100 }],
+      sessions: [{ id: "project-session", ...noFlags }],
+      assessments: [{ id: "proj", sessionId: "project-session", type: "ASSIGNMENT", maxScore: 100 }],
       scores: [
-        { sessionId: "project-session", category: "ASSIGNMENT", originalScore: 95, retakeScore: null },
+        { sessionId: "project-session", assessmentId: "proj", category: "ASSIGNMENT", originalScore: 95, retakeScore: null },
         { sessionId: "elsewhere", category: "FINAL", originalScore: 10, retakeScore: null },
       ],
       impressionScore: 0,
@@ -278,14 +334,16 @@ describe("calculateGrade — total and passing threshold", () => {
       ...Array(2).fill({ status: "ABSENT" as const }),
     ],
     sessions: [
-      { id: "a1", ...noFlags, hasAssignment: true },
-      { id: "q1", ...noFlags, hasQuiz: true },
       { id: "mid", ...noFlags, hasMidterm: true },
       { id: "final", ...noFlags, hasFinal: true },
     ],
+    assessments: [
+      { id: "a1", sessionId: "a1", type: "ASSIGNMENT", maxScore: 100 },
+      { id: "q1", sessionId: "q1", type: "QUIZ", maxScore: 100 },
+    ],
     scores: [
-      { sessionId: "a1", category: "ASSIGNMENT", originalScore: 90, retakeScore: null },
-      { sessionId: "q1", category: "QUIZ", originalScore: 85, retakeScore: null },
+      { sessionId: "a1", assessmentId: "a1", category: "ASSIGNMENT", originalScore: 90, retakeScore: null },
+      { sessionId: "q1", assessmentId: "q1", category: "QUIZ", originalScore: 85, retakeScore: null },
       { sessionId: "mid", category: "MIDTERM_READING", originalScore: 45, retakeScore: null },
       { sessionId: "mid", category: "MIDTERM_LISTENING", originalScore: 40, retakeScore: null },
       { sessionId: "final", category: "FINAL", originalScore: 88, retakeScore: null },

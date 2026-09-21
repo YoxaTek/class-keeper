@@ -1,21 +1,31 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { AttendanceStatus, ScoreCategory, Session } from "@prisma/client";
+import type { AssessmentType, AttendanceStatus, ScoreCategory, Session } from "@prisma/client";
+import { assessmentDisplayLabel } from "@/lib/assessmentLabel";
 
 export type PdfEnrollment = {
   id: string;
   student: { name: string; chineseName: string | null; studentId: string | null };
 };
 export type PdfAttendance = { enrollmentId: string; status: AttendanceStatus; note: string | null };
+export type PdfAssessment = { id: string; type: AssessmentType; label: string | null; maxScore: number; order: number };
 export type PdfScore = {
   enrollmentId: string;
   category: ScoreCategory;
+  assessmentId: string | null;
   originalScore: number | null;
   retakeScore: number | null;
   retakeMaxScore: number | null;
 };
 export type PdfFeedback = { enrollmentId: string; note: string };
+
+const attendanceStatusLabel: Record<AttendanceStatus, string> = {
+  PRESENT: "出席",
+  EXCUSED: "請假",
+  ABSENT: "缺席",
+  NOT_ENROLLED: "尚未加入",
+};
 
 /**
  * The class roster + attendance export — shared by the class detail page's
@@ -27,6 +37,7 @@ export type PdfFeedback = { enrollmentId: string; note: string };
 export function ClassAttendancePdfTable({
   title,
   session,
+  assessments,
   enrollments,
   attendance,
   scores,
@@ -34,18 +45,9 @@ export function ClassAttendancePdfTable({
 }: {
   /** e.g. "114-2 生活華語進階班學生紀錄簿（Week12-115.05.26）" — see buildClassRecordTitle. */
   title: string;
-  session: Pick<
-    Session,
-    | "hasQuiz"
-    | "quizMaxScore"
-    | "hasAssignment"
-    | "assignmentMaxScore"
-    | "hasMidterm"
-    | "midtermMaxScore"
-    | "hasFinal"
-    | "finalMaxScore"
-    | "hasFeedback"
-  >;
+  session: Pick<Session, "hasMidterm" | "midtermMaxScore" | "hasFinal" | "finalMaxScore" | "hasFeedback">;
+  /** This session's quiz/assignment instances — any number of each, not just zero-or-one. */
+  assessments: PdfAssessment[];
   enrollments: PdfEnrollment[];
   attendance: PdfAttendance[];
   scores: PdfScore[];
@@ -54,10 +56,21 @@ export function ClassAttendancePdfTable({
   const t = useTranslations();
 
   const attendanceByEnrollment = new Map(attendance.map((a) => [a.enrollmentId, a]));
-  const scoresByEnrollment = new Map<string, Map<ScoreCategory, PdfScore>>();
+  // The actual recorded status, not a "present unless noted" default — a
+  // note (e.g. why late/excused) is appended alongside it when there is one.
+  const attendanceCell = (a: PdfAttendance | undefined) => {
+    if (!a) return "—";
+    const status = attendanceStatusLabel[a.status];
+    return a.note ? `${status}（${a.note}）` : status;
+  };
+  // Keyed by enrollment + (assessmentId, for QUIZ/ASSIGNMENT) or category
+  // (for MIDTERM_READING/MIDTERM_LISTENING/FINAL) — a session can have more
+  // than one QUIZ/ASSIGNMENT score now, so category alone no longer
+  // uniquely identifies a column's value.
+  const scoreKey = (enrollmentId: string, key: string) => `${enrollmentId}:${key}`;
+  const scoresByEnrollment = new Map<string, PdfScore>();
   for (const s of scores) {
-    if (!scoresByEnrollment.has(s.enrollmentId)) scoresByEnrollment.set(s.enrollmentId, new Map());
-    scoresByEnrollment.get(s.enrollmentId)!.set(s.category, s);
+    scoresByEnrollment.set(scoreKey(s.enrollmentId, s.assessmentId ?? s.category), s);
   }
   const feedbackByEnrollment = new Map(sessionFeedback.map((f) => [f.enrollmentId, f.note]));
 
@@ -67,23 +80,26 @@ export function ClassAttendancePdfTable({
   // total rather than a retake's possibly-different one. A blank score
   // shows a category-appropriate placeholder instead of a bare "—/max".
   const scoreColumns: { header: string; get: (enrollmentId: string) => string }[] = [];
-  const scoreCell = (category: ScoreCategory, enrollmentId: string, max: number, emptyLabel: string) => {
-    const s = scoresByEnrollment.get(enrollmentId)?.get(category);
+  const scoreCell = (key: string, enrollmentId: string, max: number, emptyLabel: string) => {
+    const s = scoresByEnrollment.get(scoreKey(enrollmentId, key));
     const raw = s?.retakeScore ?? s?.originalScore ?? null;
     return raw !== null ? `${raw} / ${max}` : emptyLabel;
   };
-  if (session.hasQuiz) {
+
+  const quizzes = assessments.filter((a) => a.type === "QUIZ").sort((a, b) => a.order - b.order);
+  quizzes.forEach((a, i) => {
     scoreColumns.push({
-      header: "小考成績",
-      get: (id) => scoreCell("QUIZ", id, session.quizMaxScore, "未小考"),
+      header: assessmentDisplayLabel("小考成績", a, i, quizzes.length),
+      get: (id) => scoreCell(a.id, id, a.maxScore, "未小考"),
     });
-  }
-  if (session.hasAssignment) {
+  });
+  const classAssignments = assessments.filter((a) => a.type === "ASSIGNMENT").sort((a, b) => a.order - b.order);
+  classAssignments.forEach((a, i) => {
     scoreColumns.push({
-      header: t("sessions.assignment"),
-      get: (id) => scoreCell("ASSIGNMENT", id, session.assignmentMaxScore, "—"),
+      header: assessmentDisplayLabel(t("sessions.assignment"), a, i, classAssignments.length),
+      get: (id) => scoreCell(a.id, id, a.maxScore, "—"),
     });
-  }
+  });
   if (session.hasMidterm) {
     scoreColumns.push(
       { header: "閱讀", get: (id) => scoreCell("MIDTERM_READING", id, session.midtermMaxScore / 2, "—") },
@@ -101,43 +117,62 @@ export function ClassAttendancePdfTable({
     <>
       {/* Scoped here rather than in globals.css — this table is wide, but
           that's no reason to force landscape on some unrelated print
-          feature elsewhere in the app. */}
-      <style>{"@page { size: landscape; }"}</style>
-      <p className="mb-2 text-lg font-bold">{title}</p>
-      <table className="w-full border-collapse text-sm">
+          feature elsewhere in the app. margin: 0 also discourages Chrome
+          from re-adding its own date/title/URL header+footer when the
+          print destination is "Save as PDF" — the padding below stands in
+          for the page margin we just zeroed out. That's the only lever
+          the page itself has; the reliable way to drop them is still the
+          print dialog's own "Headers and footers" checkbox, which no page
+          can toggle for the user. */}
+      <style>
+        {"@page { size: landscape; margin: 0; } table, th, td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }"}
+      </style>
+      <div className="p-8">
+      <p className="mb-2 text-center text-xl font-bold">{title}</p>
+      {/* table-fixed with every column pinned to a width except 回答狀況,
+          which is meant to be the widest — it absorbs whatever's left over
+          (keeping the table w-full with no blank space on the right)
+          instead of a fixed cap, but still wraps onto multiple lines so a
+          long note doesn't force the fixed columns to shrink. */}
+      <table className="w-full table-fixed border-collapse text-sm">
         <thead>
-          <tr className="border-b border-black text-center">
-            <th className="px-2 py-1">#</th>
-            <th className="px-2 py-1">{t("join.studentId")}</th>
-            <th className="px-2 py-1">{t("common.name")}</th>
-            <th className="px-2 py-1">{t("common.chineseName")}</th>
-            <th className="px-2 py-1">出席狀況</th>
+          <tr className="text-center">
+            <th className="w-8 border border-zinc-500 px-2 py-3">#</th>
+            <th className="w-24 border border-zinc-500 px-2 py-3">{t("join.studentId")}</th>
+            <th className="w-32 border border-zinc-500 px-2 py-3">{t("common.name")}</th>
+            <th className="w-20 border border-zinc-500 px-2 py-3">{t("common.chineseName")}</th>
+            <th className="w-28 border border-zinc-500 px-2 py-3">出席狀況</th>
             {scoreColumns.map((col) => (
-              <th key={col.header} className="px-2 py-1">
+              <th key={col.header} className="w-24 border border-zinc-500 px-2 py-3">
                 {col.header}
               </th>
             ))}
-            {session.hasFeedback && <th className="px-2 py-1">回答狀況</th>}
+            {session.hasFeedback && <th className="border border-zinc-500 px-2 py-3 text-left">回答狀況</th>}
           </tr>
         </thead>
         <tbody>
           {enrollments.map((row, i) => (
-            <tr key={row.id} className="border-b border-zinc-300 text-center">
-              <td className="tabular px-2 py-1">{i + 1}</td>
-              <td className="tabular px-2 py-1">{row.student.studentId || "-"}</td>
-              <td className="px-2 py-1">{row.student.name}</td>
-              <td className="px-2 py-1">{row.student.chineseName || "-"}</td>
-              <td className="px-2 py-1">{attendanceByEnrollment.get(row.id)?.note || "完整"}</td>
+            <tr key={row.id} className="text-center">
+              <td className="tabular border border-zinc-500 px-2 py-1">{i + 1}</td>
+              <td className="tabular border border-zinc-500 px-2 py-1">{row.student.studentId || "-"}</td>
+              <td className="border border-zinc-500 px-2 py-1">{row.student.name}</td>
+              <td className="border border-zinc-500 px-2 py-1">{row.student.chineseName || "-"}</td>
+              <td className="border border-zinc-500 px-2 py-1 break-words">{attendanceCell(attendanceByEnrollment.get(row.id))}</td>
               {scoreColumns.map((col) => (
-                <td key={col.header} className="tabular px-2 py-1">
+                <td key={col.header} className="tabular border border-zinc-500 px-2 py-1">
                   {col.get(row.id)}
                 </td>
               ))}
-              {session.hasFeedback && <td className="px-2 py-1">{feedbackByEnrollment.get(row.id) || "—"}</td>}
+              {session.hasFeedback && (
+                <td className="whitespace-normal break-words border border-zinc-500 px-2 py-1 text-left">
+                  {feedbackByEnrollment.get(row.id) || "—"}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </>
   );
 }

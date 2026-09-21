@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { useTranslations } from "next-intl";
-import { QrCode } from "lucide-react";
+import { QrCode, ImageUp } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 
@@ -21,13 +21,12 @@ export function QrScannerButton() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const frameRef = useRef<number>(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-
-    let cancelled = false;
-
-    function onDecoded(data: string) {
+  // Shared by both the live camera loop and an uploaded image — same rule
+  // either way for what counts as one of ours.
+  const onDecoded = useCallback(
+    (data: string) => {
       // The QR codes this app generates always encode an absolute
       // http(s) link (see JoinLinkCard) — anything else isn't ours.
       if (/^https?:\/\//i.test(data)) {
@@ -35,7 +34,14 @@ export function QrScannerButton() {
       } else {
         setError(t("qrUnrecognized"));
       }
-    }
+    },
+    [t]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+
+    let cancelled = false;
 
     function tick() {
       const video = videoRef.current;
@@ -89,7 +95,42 @@ export function QrScannerButton() {
       streamRef.current?.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     };
-  }, [open, t]);
+  }, [open, t, onDecoded]);
+
+  async function onFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow picking the same file again if it fails
+    if (!file) return;
+    setError(null);
+
+    const imageUrl = URL.createObjectURL(file);
+    try {
+      const image = new Image();
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error("image failed to load"));
+        image.src = imageUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("no 2d context");
+      ctx.drawImage(image, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code?.data) {
+        onDecoded(code.data);
+      } else {
+        setError(t("qrImageNotFound"));
+      }
+    } catch {
+      setError(t("qrImageError"));
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
+  }
 
   if (!open) {
     return (
@@ -115,6 +156,25 @@ export function QrScannerButton() {
           <video ref={videoRef} muted playsInline className="h-full w-full object-cover" />
         </div>
         <canvas ref={canvasRef} className="hidden" />
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={onFileSelected}
+          className="hidden"
+        />
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full"
+        >
+          <ImageUp className="h-3.5 w-3.5" aria-hidden />
+          {t("uploadQrImage")}
+        </Button>
+
         {error ? (
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         ) : (

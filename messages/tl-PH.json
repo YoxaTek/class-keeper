@@ -55,6 +55,9 @@
     "scanQr": "I-scan ang QR code para sumali sa kurso",
     "scanQrTitle": "I-scan ang QR code para sumali sa kurso",
     "scanQrHelp": "Itutok ang iyong camera sa QR code na ibinahagi ng iyong guro.",
+    "uploadQrImage": "Mag-upload na lang ng larawan",
+    "qrImageNotFound": "Walang nahanap na QR code sa larawang iyon.",
+    "qrImageError": "Hindi mabasa ang larawang iyon. Pakisubukan ang iba.",
     "cameraError": "Hindi ma-access ang camera. Suriin ang pahintulot sa camera ng iyong browser at subukan muli.",
     "cameraUnsupported": "Hindi suportado ang pag-scan ng camera sa browser na ito.",
     "qrUnrecognized": "Ang QR code na iyon ay hindi isang link ng ClassKeeper."
@@ -126,7 +129,6 @@
     "addStudents": "Magdagdag ng mga Estudyante",
     "attendance": "Pagdalo",
     "score": "Marka",
-    "capReached": "Umabot na ang course na ito sa pinakamataas na 30 estudyante.",
     "removeStudent": "Tanggalin sa course",
     "editStudent": "I-edit ang mag-aaral",
     "invite": "Mag-imbita",
@@ -166,12 +168,17 @@
     "feedback": "Feedback",
     "empty": "Wala pang klase. Gamitin ang button na \"{button}\" para magdagdag.",
     "exportPdf": "I-export bilang PDF",
-    "attendanceNotePlaceholder": "Tala (hal. 10 minutong huli)"
+    "attendanceNotePlaceholder": "Tala (hal. 10 minutong huli)",
+    "quizzes": "Mga pagsusulit",
+    "assignments": "Mga takdang-aralin",
+    "addQuiz": "Magdagdag ng pagsusulit",
+    "addAssignment": "Magdagdag ng takdang-aralin",
+    "labelOptional": "Label (opsyonal)"
   },
   "grid": {
     "title": "Talahanayan ng Marka",
     "student": "Estudyante",
-    "retake": "muling pagkuha"
+    "retake": "Muling pagkuha"
   },
   "attendanceStatus": {
     "PRESENT": "Present",

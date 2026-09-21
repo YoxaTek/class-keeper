@@ -55,6 +55,9 @@
     "scanQr": "掃描 QR code 加入課程",
     "scanQrTitle": "掃描 QR code 加入課程",
     "scanQrHelp": "將相機對準老師分享的 QR code。",
+    "uploadQrImage": "改為上傳照片",
+    "qrImageNotFound": "在該圖片中找不到 QR code。",
+    "qrImageError": "無法讀取該圖片，請嘗試其他圖片。",
     "cameraError": "無法存取相機，請檢查瀏覽器的相機權限後再試一次。",
     "cameraUnsupported": "此瀏覽器不支援相機掃描。",
     "qrUnrecognized": "該 QR code 不是 ClassKeeper 的連結。"
@@ -126,7 +129,6 @@
     "addStudents": "新增學生",
     "attendance": "出席率",
     "score": "成績",
-    "capReached": "此課程已達 30 人上限。",
     "removeStudent": "自課程移除",
     "editStudent": "編輯學生",
     "invite": "邀請",
@@ -166,7 +168,12 @@
     "feedback": "回饋",
     "empty": "目前沒有課堂，請使用「{button}」按鈕新增。",
     "exportPdf": "匯出 PDF",
-    "attendanceNotePlaceholder": "備註（例如：遲到10分鐘）"
+    "attendanceNotePlaceholder": "備註（例如：遲到10分鐘）",
+    "quizzes": "小考",
+    "assignments": "作業",
+    "addQuiz": "新增小考",
+    "addAssignment": "新增作業",
+    "labelOptional": "標籤（選填）"
   },
   "grid": {
     "title": "成績總表",

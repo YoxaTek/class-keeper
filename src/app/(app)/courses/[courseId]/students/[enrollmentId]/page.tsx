@@ -32,26 +32,28 @@ export default async function StudentDetailPage({
         evaluation: true,
       },
     }),
-    prisma.session.findMany({ where: { courseId } }),
+    prisma.session.findMany({ where: { courseId }, include: { assessments: true } }),
   ]);
   if (!enrollment) notFound();
+
+  const assessments = sessions.flatMap((s) =>
+    s.assessments.map((a) => ({ id: a.id, sessionId: a.sessionId, type: a.type, maxScore: a.maxScore }))
+  );
 
   const grade = calculateGrade({
     attendance: enrollment.attendance.map((a) => ({ status: a.status })),
     sessions: sessions.map((s) => ({
       id: s.id,
-      hasQuiz: s.hasQuiz,
-      quizMaxScore: s.quizMaxScore,
-      hasAssignment: s.hasAssignment,
-      assignmentMaxScore: s.assignmentMaxScore,
       hasMidterm: s.hasMidterm,
       midtermMaxScore: s.midtermMaxScore,
       hasFinal: s.hasFinal,
       finalMaxScore: s.finalMaxScore,
     })),
+    assessments,
     scores: enrollment.scores.map((s) => ({
       sessionId: s.sessionId,
       category: s.category,
+      assessmentId: s.assessmentId,
       originalScore: s.originalScore,
       retakeScore: s.retakeScore,
       retakeMaxScore: s.retakeMaxScore,

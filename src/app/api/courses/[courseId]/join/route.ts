@@ -4,8 +4,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureAttendanceForEnrollment } from "@/lib/attendanceDefaults";
 
-const MAX_PER_COURSE = 30;
-
 const schema = z.object({
   name: z.string().min(1),
   chineseName: z.string().min(1).optional(),
@@ -90,14 +88,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
   });
 
   if (!enrollment) {
-    const currentCount = await prisma.enrollment.count({ where: { courseId } });
-    if (currentCount >= MAX_PER_COURSE) {
-      return NextResponse.json(
-        { error: `Course is capped at ${MAX_PER_COURSE} students (currently ${currentCount}).` },
-        { status: 400 }
-      );
-    }
-
     enrollment = await prisma.enrollment.create({ data: { courseId, studentId: student.id } });
     await ensureAttendanceForEnrollment(enrollment.id, courseId, enrollment.joinedAt);
   }

@@ -55,6 +55,9 @@
     "scanQr": "Pindai kode QR untuk bergabung ke kursus",
     "scanQrTitle": "Pindai kode QR untuk bergabung ke kursus",
     "scanQrHelp": "Arahkan kamera Anda ke kode QR yang dibagikan guru Anda.",
+    "uploadQrImage": "Unggah foto sebagai gantinya",
+    "qrImageNotFound": "Tidak ditemukan kode QR pada gambar tersebut.",
+    "qrImageError": "Tidak dapat membaca gambar itu. Silakan coba gambar lain.",
     "cameraError": "Tidak dapat mengakses kamera. Periksa izin kamera browser Anda dan coba lagi.",
     "cameraUnsupported": "Pemindaian kamera tidak didukung di browser ini.",
     "qrUnrecognized": "Kode QR itu bukan tautan ClassKeeper."
@@ -126,7 +129,6 @@
     "addStudents": "Tambah siswa",
     "attendance": "Kehadiran",
     "score": "Nilai",
-    "capReached": "Semester ini sudah mencapai batas maksimum 30 siswa.",
     "removeStudent": "Keluarkan dari semester",
     "editStudent": "Edit siswa",
     "invite": "Undang",
@@ -166,12 +168,17 @@
     "feedback": "Umpan balik",
     "empty": "Belum ada kelas. Gunakan tombol \"{button}\" untuk menambahkannya.",
     "exportPdf": "Ekspor PDF",
-    "attendanceNotePlaceholder": "Catatan (mis. terlambat 10 menit)"
+    "attendanceNotePlaceholder": "Catatan (mis. terlambat 10 menit)",
+    "quizzes": "Kuis",
+    "assignments": "Tugas",
+    "addQuiz": "Tambah kuis",
+    "addAssignment": "Tambah tugas",
+    "labelOptional": "Label (opsional)"
   },
   "grid": {
     "title": "Tabel nilai",
     "student": "Siswa",
-    "retake": "ulang"
+    "retake": "Ulang"
   },
   "attendanceStatus": {
     "PRESENT": "Hadir",

@@ -7,6 +7,7 @@ import { calculateGrade } from "@/lib/grading/calculateGrade";
 import { cardClass } from "@/components/ui/styles";
 import { GradeBreakdownCard } from "@/components/GradeBreakdownCard";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { assessmentDisplayLabel } from "@/lib/assessmentLabel";
 import { FeedbackForm } from "../FeedbackForm";
 
 function effectiveScore(record: { originalScore: number | null; retakeScore: number | null } | undefined) {
@@ -29,7 +30,7 @@ export default async function MyCoursePage({ params }: { params: Promise<{ enrol
     where: { id: enrollmentId },
     include: {
       student: true,
-      course: { include: { subject: true, sessions: true } },
+      course: { include: { subject: true, sessions: { include: { assessments: true } } } },
       attendance: true,
       scores: true,
       evaluation: true,
@@ -44,22 +45,23 @@ export default async function MyCoursePage({ params }: { params: Promise<{ enrol
   if (!enrollment || enrollment.student.userId !== user.id) notFound();
 
   const { course } = enrollment;
+  const assessments = course.sessions.flatMap((s) =>
+    s.assessments.map((a) => ({ id: a.id, sessionId: a.sessionId, type: a.type, maxScore: a.maxScore }))
+  );
   const grade = calculateGrade({
     attendance: enrollment.attendance.map((a) => ({ status: a.status })),
     sessions: course.sessions.map((s) => ({
       id: s.id,
-      hasQuiz: s.hasQuiz,
-      quizMaxScore: s.quizMaxScore,
-      hasAssignment: s.hasAssignment,
-      assignmentMaxScore: s.assignmentMaxScore,
       hasMidterm: s.hasMidterm,
       midtermMaxScore: s.midtermMaxScore,
       hasFinal: s.hasFinal,
       finalMaxScore: s.finalMaxScore,
     })),
+    assessments,
     scores: enrollment.scores.map((s) => ({
       sessionId: s.sessionId,
       category: s.category,
+      assessmentId: s.assessmentId,
       originalScore: s.originalScore,
       retakeScore: s.retakeScore,
       retakeMaxScore: s.retakeMaxScore,
@@ -83,8 +85,9 @@ export default async function MyCoursePage({ params }: { params: Promise<{ enrol
   const attendanceBySession = new Map(enrollment.attendance.map((a) => [a.sessionId, a.status]));
   const byCategoryAndSession = (category: string) =>
     new Map(enrollment.scores.filter((s) => s.category === category).map((s) => [s.sessionId, s]));
-  const quizBySession = byCategoryAndSession("QUIZ");
-  const assignmentBySession = byCategoryAndSession("ASSIGNMENT");
+  const scoreByAssessment = new Map(
+    enrollment.scores.filter((s): s is typeof s & { assessmentId: string } => !!s.assessmentId).map((s) => [s.assessmentId, s])
+  );
   const midtermReadingBySession = byCategoryAndSession("MIDTERM_READING");
   const midtermListeningBySession = byCategoryAndSession("MIDTERM_LISTENING");
   const finalBySession = byCategoryAndSession("FINAL");
@@ -96,7 +99,7 @@ export default async function MyCoursePage({ params }: { params: Promise<{ enrol
   const cardSessions = course.sessions
     .filter(
       (s) =>
-        ((s.hasQuiz || s.hasAssignment || s.hasMidterm || s.hasFinal) && attendanceBySession.get(s.id) === "PRESENT") ||
+        ((s.assessments.length > 0 || s.hasMidterm || s.hasFinal) && attendanceBySession.get(s.id) === "PRESENT") ||
         feedbackBySession.has(s.id)
     )
     .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -144,18 +147,20 @@ export default async function MyCoursePage({ params }: { params: Promise<{ enrol
               // appear either way (see cardSessions above).
               const items: { label: string; value: string }[] = [];
               if (attendanceBySession.get(s.id) === "PRESENT") {
-                if (s.hasQuiz) {
+                const quizzes = s.assessments.filter((a) => a.type === "QUIZ").sort((a, b) => a.order - b.order);
+                quizzes.forEach((a, i) => {
                   items.push({
-                    label: tSessions("quiz"),
-                    value: `${effectiveScore(quizBySession.get(s.id)) ?? "—"} / ${s.quizMaxScore}`,
+                    label: assessmentDisplayLabel(tSessions("quiz"), a, i, quizzes.length),
+                    value: `${effectiveScore(scoreByAssessment.get(a.id)) ?? "—"} / ${a.maxScore}`,
                   });
-                }
-                if (s.hasAssignment) {
+                });
+                const classAssignments = s.assessments.filter((a) => a.type === "ASSIGNMENT").sort((a, b) => a.order - b.order);
+                classAssignments.forEach((a, i) => {
                   items.push({
-                    label: tSessions("assignment"),
-                    value: `${effectiveScore(assignmentBySession.get(s.id)) ?? "—"} / ${s.assignmentMaxScore}`,
+                    label: assessmentDisplayLabel(tSessions("assignment"), a, i, classAssignments.length),
+                    value: `${effectiveScore(scoreByAssessment.get(a.id)) ?? "—"} / ${a.maxScore}`,
                   });
-                }
+                });
                 if (s.hasMidterm) {
                   items.push({
                     label: "閱讀",

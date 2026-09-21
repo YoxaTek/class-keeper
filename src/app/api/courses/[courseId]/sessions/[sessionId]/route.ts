@@ -4,20 +4,25 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canWriteCourse } from "@/lib/permissions";
 import { ensureAttendanceForSession } from "@/lib/attendanceDefaults";
+import { syncAssessments } from "@/lib/assessmentSync";
+
+const assessmentSchema = z.object({
+  id: z.string().optional(),
+  label: z.string().nullable().optional(),
+  maxScore: z.number().int().min(1).default(100),
+});
 
 const sessionSchema = z.object({
   date: z.string(),
   label: z.string().nullable().optional(),
   hasAttendance: z.boolean(),
-  hasQuiz: z.boolean(),
-  quizMaxScore: z.number().int().min(1).default(100),
-  hasAssignment: z.boolean(),
-  assignmentMaxScore: z.number().int().min(1).default(100),
   hasMidterm: z.boolean(),
   midtermMaxScore: z.number().int().min(1).default(100),
   hasFinal: z.boolean(),
   finalMaxScore: z.number().int().min(1).default(100),
   hasFeedback: z.boolean(),
+  quizzes: z.array(assessmentSchema).default([]),
+  assignments: z.array(assessmentSchema).default([]),
 });
 
 async function checkAccess(courseId: string) {
@@ -39,11 +44,14 @@ export async function PATCH(
 
   const body = sessionSchema.safeParse(await request.json());
   if (!body.success) return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
+  const { quizzes, assignments, ...sessionFields } = body.data;
 
   const updated = await prisma.session.update({
     where: { id: sessionId, courseId },
-    data: { ...body.data, date: new Date(body.data.date) },
+    data: { ...sessionFields, date: new Date(sessionFields.date) },
   });
+  await syncAssessments(sessionId, "QUIZ", quizzes);
+  await syncAssessments(sessionId, "ASSIGNMENT", assignments);
   await ensureAttendanceForSession(updated.id);
 
   return NextResponse.json(updated);

@@ -2,46 +2,64 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck2, HelpCircle, ClipboardList, GraduationCap, Award } from "lucide-react";
+import { CalendarCheck2, GraduationCap, Award, Plus, X } from "lucide-react";
 import { DateInput } from "@/components/ui/DateInput";
-import { inputClass, labelClass } from "@/components/ui/styles";
+import { inputClass, labelClass, buttonClass } from "@/components/ui/styles";
+
+export interface AssessmentFormValue {
+  /** Present when editing an existing assessment; absent for one just added in this form. */
+  id?: string;
+  label: string;
+  maxScore: number | "";
+}
 
 export interface SessionFormValues {
   date: string;
   label: string;
   hasAttendance: boolean;
-  hasQuiz: boolean;
-  hasAssignment: boolean;
   hasMidterm: boolean;
   hasFinal: boolean;
   hasFeedback: boolean;
-  quizMaxScore: number | "";
-  assignmentMaxScore: number | "";
   midtermMaxScore: number | "";
   finalMaxScore: number | "";
+  // Any number of each — a session can have e.g. 2 quizzes, not just zero or one.
+  quizzes: AssessmentFormValue[];
+  assignments: AssessmentFormValue[];
 }
 
 // Feedback isn't in this list — unlike the others, it's not an optional
 // category a teacher opts into per class; every session always has it
-// (see the hardcoded hasFeedback: true below).
+// (see the hardcoded hasFeedback: true below). Quiz/assignment aren't
+// here either — they're repeatable lists below, not a single toggle.
 const FLAGS: { key: keyof SessionFormValues; labelKey: string; Icon: typeof CalendarCheck2 }[] = [
   { key: "hasAttendance", labelKey: "sessions.attendance", Icon: CalendarCheck2 },
-  { key: "hasQuiz", labelKey: "sessions.quiz", Icon: HelpCircle },
-  { key: "hasAssignment", labelKey: "sessions.assignment", Icon: ClipboardList },
   { key: "hasMidterm", labelKey: "sessions.midterm", Icon: GraduationCap },
   { key: "hasFinal", labelKey: "sessions.final", Icon: Award },
 ];
 
 const MAX_SCORE_FIELDS: {
-  flagKey: "hasQuiz" | "hasAssignment" | "hasMidterm" | "hasFinal";
-  maxKey: "quizMaxScore" | "assignmentMaxScore" | "midtermMaxScore" | "finalMaxScore";
+  flagKey: "hasMidterm" | "hasFinal";
+  maxKey: "midtermMaxScore" | "finalMaxScore";
   labelKey: string;
 }[] = [
-  { flagKey: "hasQuiz", maxKey: "quizMaxScore", labelKey: "sessions.quizMaxScore" },
-  { flagKey: "hasAssignment", maxKey: "assignmentMaxScore", labelKey: "sessions.assignmentMaxScore" },
   { flagKey: "hasMidterm", maxKey: "midtermMaxScore", labelKey: "sessions.midtermMaxScore" },
   { flagKey: "hasFinal", maxKey: "finalMaxScore", labelKey: "sessions.finalMaxScore" },
 ];
+
+function emptyValues(): SessionFormValues {
+  return {
+    date: "",
+    label: "",
+    hasAttendance: true,
+    hasMidterm: false,
+    hasFinal: false,
+    hasFeedback: true,
+    midtermMaxScore: 100,
+    finalMaxScore: 100,
+    quizzes: [],
+    assignments: [],
+  };
+}
 
 export function SessionForm({
   courseId,
@@ -60,22 +78,8 @@ export function SessionForm({
   onSubmittingChange?: (submitting: boolean) => void;
 }) {
   const t = useTranslations();
-  const [values, setValues] = useState<SessionFormValues>(
-    initial ?? {
-      date: "",
-      label: "",
-      hasAttendance: true,
-      hasQuiz: false,
-      hasAssignment: false,
-      hasMidterm: false,
-      hasFinal: false,
-      hasFeedback: true,
-      quizMaxScore: 100,
-      assignmentMaxScore: 100,
-      midtermMaxScore: 100,
-      finalMaxScore: 100,
-    }
-  );
+  const [values, setValues] = useState<SessionFormValues>(initial ?? emptyValues());
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSubmittingChange?.(true);
@@ -93,6 +97,8 @@ export function SessionForm({
     for (const { maxKey } of MAX_SCORE_FIELDS) {
       if (payload[maxKey] === "") payload[maxKey] = undefined;
     }
+    payload.quizzes = values.quizzes.map((q) => ({ ...q, maxScore: q.maxScore === "" ? 100 : q.maxScore }));
+    payload.assignments = values.assignments.map((a) => ({ ...a, maxScore: a.maxScore === "" ? 100 : a.maxScore }));
 
     const res = await fetch(url, {
       method,
@@ -102,6 +108,25 @@ export function SessionForm({
 
     onSubmittingChange?.(false);
     if (res.ok) onSaved();
+  }
+
+  function updateAssessment(
+    listKey: "quizzes" | "assignments",
+    index: number,
+    patch: Partial<AssessmentFormValue>
+  ) {
+    setValues((v) => ({
+      ...v,
+      [listKey]: v[listKey].map((item, i) => (i === index ? { ...item, ...patch } : item)),
+    }));
+  }
+
+  function addAssessment(listKey: "quizzes" | "assignments") {
+    setValues((v) => ({ ...v, [listKey]: [...v[listKey], { label: "", maxScore: 100 }] }));
+  }
+
+  function removeAssessment(listKey: "quizzes" | "assignments", index: number) {
+    setValues((v) => ({ ...v, [listKey]: v[listKey].filter((_, i) => i !== index) }));
   }
 
   return (
@@ -167,7 +192,95 @@ export function SessionForm({
             ))}
           </div>
         )}
+
+        <AssessmentListEditor
+          titleKey="sessions.quizzes"
+          addLabelKey="sessions.addQuiz"
+          maxScoreLabelKey="sessions.quizMaxScore"
+          items={values.quizzes}
+          onAdd={() => addAssessment("quizzes")}
+          onRemove={(i) => removeAssessment("quizzes", i)}
+          onChange={(i, patch) => updateAssessment("quizzes", i, patch)}
+          t={t}
+        />
+
+        <AssessmentListEditor
+          titleKey="sessions.assignments"
+          addLabelKey="sessions.addAssignment"
+          maxScoreLabelKey="sessions.assignmentMaxScore"
+          items={values.assignments}
+          onAdd={() => addAssessment("assignments")}
+          onRemove={(i) => removeAssessment("assignments", i)}
+          onChange={(i, patch) => updateAssessment("assignments", i, patch)}
+          t={t}
+        />
       </div>
     </form>
+  );
+}
+
+// A repeatable list editor shared by quizzes and assignments — a session
+// can have any number of each, so this is "add row" / "remove row" rather
+// than the single toggle+total the other categories still use.
+function AssessmentListEditor({
+  titleKey,
+  addLabelKey,
+  maxScoreLabelKey,
+  items,
+  onAdd,
+  onRemove,
+  onChange,
+  t,
+}: {
+  titleKey: string;
+  addLabelKey: string;
+  maxScoreLabelKey: string;
+  items: AssessmentFormValue[];
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+  onChange: (index: number, patch: Partial<AssessmentFormValue>) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className={labelClass}>{t(titleKey)}</label>
+      <div className="space-y-2">
+        {items.map((item, i) => (
+          <div key={i} className="flex items-end gap-2">
+            <div className="flex-1 space-y-1">
+              <label className={labelClass}>{t("sessions.labelOptional")}</label>
+              <input
+                value={item.label}
+                onChange={(e) => onChange(i, { label: e.target.value })}
+                placeholder={`${t(titleKey)} ${i + 1}`}
+                className={inputClass}
+              />
+            </div>
+            <div className="w-28 space-y-1">
+              <label className={labelClass}>{t(maxScoreLabelKey)}</label>
+              <input
+                type="number"
+                min={1}
+                value={item.maxScore}
+                onChange={(e) => onChange(i, { maxScore: e.target.value === "" ? "" : Number(e.target.value) })}
+                className={inputClass}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => onRemove(i)}
+              title={t("common.delete")}
+              className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-red-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-red-400"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button type="button" onClick={onAdd} className={buttonClass("secondary", "sm")}>
+        <Plus className="h-3.5 w-3.5" aria-hidden />
+        {t(addLabelKey)}
+      </button>
+    </div>
   );
 }

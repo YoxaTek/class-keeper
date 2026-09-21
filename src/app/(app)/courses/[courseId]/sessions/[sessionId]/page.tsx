@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { requireCourseAccess } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { buildClassRecordTitle } from "@/lib/classRecordTitle";
+import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
 import { ClassDetailTable } from "./ClassDetailTable";
 
 export default async function ClassDetailPage({
@@ -16,8 +16,8 @@ export default async function ClassDetailPage({
   const t = await getTranslations();
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
 
-  const [session, enrollments, courseSessionIds] = await Promise.all([
-    prisma.session.findUnique({ where: { id: sessionId, courseId } }),
+  const [session, enrollments] = await Promise.all([
+    prisma.session.findUnique({ where: { id: sessionId, courseId }, include: { assessments: true } }),
     prisma.enrollment.findMany({
       where: { courseId },
       include: {
@@ -28,18 +28,14 @@ export default async function ClassDetailPage({
       },
       orderBy: { student: { name: "asc" } },
     }),
-    // Just for the PDF title's week number — this session's 1-based
-    // position among the course's own sessions, ordered by date.
-    prisma.session.findMany({ where: { courseId }, orderBy: { date: "asc" }, select: { id: true } }),
   ]);
   if (!session) notFound();
 
   const sessionLabel = session.label ?? dateFmt.format(session.date);
-  const weekNumber = courseSessionIds.findIndex((s) => s.id === sessionId) + 1;
   const pdfTitle = buildClassRecordTitle({
     courseName: course.name,
     subjectName: course.subject.name,
-    weekNumber,
+    weekNumber: courseWeekNumber(course.startDate, session.date),
     date: session.date,
   });
 
@@ -54,7 +50,13 @@ export default async function ClassDetailPage({
         </div>
       </div>
 
-      <ClassDetailTable sessionId={sessionId} pdfTitle={pdfTitle} session={session} enrollments={enrollments} />
+      <ClassDetailTable
+        sessionId={sessionId}
+        pdfTitle={pdfTitle}
+        session={session}
+        assessments={session.assessments}
+        enrollments={enrollments}
+      />
     </div>
   );
 }
