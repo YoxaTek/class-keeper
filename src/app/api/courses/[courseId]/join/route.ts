@@ -57,12 +57,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
     const existing = await prisma.student.findUnique({ where: { studentId: body.data.studentId } });
 
     if (existing) {
-      if (existing.userId) {
-        return NextResponse.json(
-          { error: "This student ID is already linked to another account." },
-          { status: 409 }
-        );
-      }
+      // The student ID is the authoritative match, full stop — whoever
+      // shows up with it is treated as that same roster row, even if it
+      // was already linked to a different account (a prior mistaken join,
+      // a teacher re-entering it, etc.). Update in place rather than ever
+      // creating a second row for the same ID.
       student = await prisma.student.update({
         where: { id: existing.id },
         data: { userId: session.user.id, email: existing.email ?? user.email },

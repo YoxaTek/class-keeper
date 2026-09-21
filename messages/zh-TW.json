@@ -212,6 +212,7 @@
   "onboarding": {
     "title": "設定您的帳號",
     "bootstrapSubtitle": "開始使用前，還需要填寫幾項資料。",
+    "bootstrapStudentHint": "想以學生身份加入課程嗎？完成此步驟會建立老師帳號——請改用老師分享給您的加入連結。",
     "name": "您的姓名",
     "institution": "任職機構",
     "optional": "選填",

@@ -212,6 +212,7 @@
   "onboarding": {
     "title": "Thiết lập tài khoản của bạn",
     "bootstrapSubtitle": "Chỉ còn vài thông tin nữa trước khi bạn bắt đầu.",
+    "bootstrapStudentHint": "Bạn đang muốn tham gia lớp học với tư cách học viên? Hoàn tất bước này sẽ tạo tài khoản giáo viên — hãy dùng liên kết tham gia mà giáo viên đã chia sẻ với bạn.",
     "name": "Tên của bạn",
     "institution": "Cơ sở giảng dạy",
     "optional": "không bắt buộc",

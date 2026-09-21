@@ -212,6 +212,7 @@
   "onboarding": {
     "title": "Set up your account",
     "bootstrapSubtitle": "Just a couple of details before you get started.",
+    "bootstrapStudentHint": "Trying to join a class as a student instead? Completing this sets up a teacher account — use the join link your teacher shared with you instead.",
     "name": "Your name",
     "institution": "Institution",
     "optional": "optional",

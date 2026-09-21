@@ -106,6 +106,16 @@ export default async function OnboardingPage({
           {!inviteToken && <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("bootstrapSubtitle")}</p>}
         </div>
 
+        {/* This form only ever creates a TEACHER account — a student who
+            reached here (e.g. after a join attempt didn't complete) has no
+            other way to tell that apart, so say so up front rather than
+            let them complete it by accident. */}
+        {!inviteToken && (
+          <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
+            {t("bootstrapStudentHint")}
+          </p>
+        )}
+
         {inviteError && (
           <div className="space-y-2">
             <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">

@@ -212,6 +212,7 @@
   "onboarding": {
     "title": "Siapkan akun Anda",
     "bootstrapSubtitle": "Beberapa detail lagi sebelum Anda mulai.",
+    "bootstrapStudentHint": "Mencoba bergabung ke kelas sebagai siswa? Menyelesaikan ini akan membuat akun guru — gunakan tautan bergabung yang dibagikan guru Anda sebagai gantinya.",
     "name": "Nama Anda",
     "institution": "Institusi",
     "optional": "opsional",

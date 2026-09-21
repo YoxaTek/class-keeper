@@ -212,6 +212,7 @@
   "onboarding": {
     "title": "I-set up ang iyong account",
     "bootstrapSubtitle": "Ilang detalye na lang bago ka magsimula.",
+    "bootstrapStudentHint": "Sinusubukan bang sumali sa klase bilang isang estudyante? Ang pagkumpleto nito ay gagawa ng account ng guro — gamitin sa halip ang join link na ibinahagi ng iyong guro.",
     "name": "Iyong pangalan",
     "institution": "Institusyon",
     "optional": "opsyonal",
