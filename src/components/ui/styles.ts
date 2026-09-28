@@ -22,18 +22,25 @@ export const cardClass =
 export const linkClass = "text-[#0f6e56] hover:underline dark:text-teal-400";
 
 export function buttonClass(
-  variant: "primary" | "secondary" | "danger" | "ghost" = "secondary",
-  size: "sm" | "md" = "md"
+  variant: "primary" | "secondary" | "danger" | "ghost" | "accent" = "secondary",
+  size: "sm" | "md" | "lg" = "md",
+  rounded: "md" | "full" = "md"
 ) {
-  const base =
-    "inline-flex items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
-  const sizes = size === "sm" ? "px-2.5 py-1.5 text-xs" : "px-3 py-2 text-sm";
+  const base = `inline-flex items-center justify-center gap-1.5 ${rounded === "full" ? "rounded-full" : "rounded-md"} font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50`;
+  // "lg" only widens the button (more horizontal room, same height as
+  // "md") — it's for a button that needs to stand out by taking up more
+  // space on the row, not one that needs to be physically taller.
+  const sizes = size === "sm" ? "px-2.5 py-1.5 text-xs" : size === "lg" ? "px-8 py-2 text-[13.5px]" : "px-3 py-2 text-sm";
   const variants = {
     primary: "bg-[#0f6e56] text-white hover:bg-[#0c5d49]",
     secondary:
       "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800",
     danger: "border border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950",
     ghost: "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+    // A second prominent color, distinct from the teal accent — for an
+    // action (like exporting) that sits next to a primary button and needs
+    // its own visual weight rather than reading as a lesser/secondary one.
+    accent: "bg-blue-800 text-white hover:bg-blue-900",
   };
   return `${base} ${sizes} ${variants[variant]}`;
 }

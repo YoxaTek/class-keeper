@@ -111,6 +111,26 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Mobile bottom sheet (Drawer below the `sm` breakpoint) — slides up from
+   the bottom instead of in from the side. */
+@keyframes drawer-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawer-sheet-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
 /* Left-anchored drawer (mobile nav) — same idea, mirrored direction. */
 @keyframes drawer-slide-in-left {
   from {
@@ -127,6 +147,49 @@ input[type="date"].date-input::-webkit-calendar-picker-indicator {
   }
   to {
     transform: translateX(-100%);
+  }
+}
+
+/* Attendance status "roll" flash (see RollingSubtitle in ClassDetailTable)
+   — tapping an attendance icon rolls the card's subtitle up to briefly show
+   the just-picked status, then rolls it up again back to its normal text.
+   The outgoing text rolls up and out (text-roll-out) while the incoming
+   text rolls up into its place from below (text-roll-in) at the same
+   time — an odometer digit, not a fade. */
+@keyframes text-roll-in {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes text-roll-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+/* "Unsaved changes" dot (see ClassDetailTable) — a ripple/wave that
+   expands out from the dot and fades, rather than the dot itself pulsing
+   in place. The Save button stays plain/static; only this small dot
+   carries the "this still needs your attention" cue. */
+@keyframes dot-wave {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
   }
 }
 

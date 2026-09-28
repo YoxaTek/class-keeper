@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { requireCourseAccess } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
-import { Breadcrumb } from "@/components/Breadcrumb";
 import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
 import { ClassDetailTable } from "./ClassDetailTable";
+import { SessionHeader } from "./SessionHeader";
 
 export default async function ClassDetailPage({
   params,
@@ -13,7 +12,6 @@ export default async function ClassDetailPage({
 }) {
   const { courseId, sessionId } = await params;
   const { course } = await requireCourseAccess(courseId);
-  const t = await getTranslations();
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
 
   const [session, enrollments] = await Promise.all([
@@ -40,23 +38,22 @@ export default async function ClassDetailPage({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="print:hidden">
-        <Breadcrumb items={[{ label: t("sessions.title"), href: `/courses/${courseId}` }, { label: sessionLabel }]} />
+    // min-h-full + flex-col, with ClassDetailTable's own root doing the same
+    // and its sticky Save bar pinned via mt-auto — so the bar sits flush at
+    // the bottom of the screen even when the roster is short enough that
+    // the page doesn't scroll, not just while scrolling a long one.
+    <div className="flex min-h-full flex-col gap-4">
+      <SessionHeader backHref={`/courses/${courseId}`} title={sessionLabel} subtitle={dateFmt.format(session.date)} />
 
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{sessionLabel}</h2>
-          <p className="tabular text-sm text-zinc-500 dark:text-zinc-500">{dateFmt.format(session.date)}</p>
-        </div>
+      <div className="flex flex-1 flex-col">
+        <ClassDetailTable
+          sessionId={sessionId}
+          pdfTitle={pdfTitle}
+          session={session}
+          assessments={session.assessments}
+          enrollments={enrollments}
+        />
       </div>
-
-      <ClassDetailTable
-        sessionId={sessionId}
-        pdfTitle={pdfTitle}
-        session={session}
-        assessments={session.assessments}
-        enrollments={enrollments}
-      />
     </div>
   );
 }

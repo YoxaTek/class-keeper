@@ -6,14 +6,17 @@ import { X } from "lucide-react";
 const ANIMATION_MS = 200;
 
 /**
- * A side panel over a dimmed backdrop, for focused create/edit forms (or
- * mobile nav) that don't need a full page. Closes on Escape or a backdrop
- * click. Full-width below the `sm` breakpoint so it reads as a full-screen
- * sheet on phones rather than a narrow strip.
+ * A panel over a dimmed backdrop, for focused create/edit forms that don't
+ * need a full page. Closes on Escape or a backdrop click.
+ *
+ * Below the `sm` breakpoint it's a bottom sheet sized to its own content
+ * (capped at 85vh, scrolling internally past that) instead of a full-height
+ * drawer — a short form no longer leaves a wall of empty space below it. At
+ * `sm` and up it's the original full-height side panel from `side`.
  *
  * `footer` (if given) is pinned below the scrollable body instead of
  * flowing with `children` — a tall form's Save/Cancel bar otherwise scrolls
- * out of view on short mobile viewports.
+ * out of view.
  *
  * The parent controls mounting (open && <Drawer/>), which would normally
  * unmount this instantly on close with no time for an exit animation to
@@ -57,13 +60,20 @@ export function Drawer({
 
   // Tailwind's scanner only picks up complete literal class strings from the
   // source text — it can't resolve `` `[animation:${x}]` `` interpolation,
-  // so each side/state combination has to appear here as a full literal.
-  const slideInClass =
-    side === "left" ? "[animation:drawer-slide-in-left_0.2s_ease-out]" : "[animation:drawer-slide-in_0.2s_ease-out]";
-  const slideOutClass =
+  // so each side/closing combination appears here as a full literal: the
+  // base (mobile, bottom sheet) animation together with its sm: (desktop,
+  // side panel) override.
+  const animationClass =
     side === "left"
-      ? "[animation:drawer-slide-out-left_0.2s_ease-in_forwards]"
-      : "[animation:drawer-slide-out_0.2s_ease-in_forwards]";
+      ? closing
+        ? "[animation:drawer-sheet-out_0.2s_ease-in_forwards] sm:[animation:drawer-slide-out-left_0.2s_ease-in_forwards]"
+        : "[animation:drawer-sheet-in_0.2s_ease-out] sm:[animation:drawer-slide-in-left_0.2s_ease-out]"
+      : closing
+        ? "[animation:drawer-sheet-out_0.2s_ease-in_forwards] sm:[animation:drawer-slide-out_0.2s_ease-in_forwards]"
+        : "[animation:drawer-sheet-in_0.2s_ease-out] sm:[animation:drawer-slide-in_0.2s_ease-out]";
+  // Same reasoning — the desktop side (left vs right) has to be a complete
+  // literal per branch, not built from a template-interpolated prefix.
+  const desktopSideClass = side === "left" ? "sm:left-0 sm:border-r" : "sm:right-0 sm:border-l";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -80,10 +90,11 @@ export function Drawer({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`absolute inset-y-0 ${side === "left" ? "left-0 border-r" : "right-0 border-l"} flex w-full flex-col overflow-x-hidden border-zinc-200 bg-white shadow-xl sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900 ${
-          closing ? slideOutClass : slideInClass
-        }`}
+        className={`absolute inset-x-0 bottom-0 flex max-h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl border-t border-zinc-200 bg-white shadow-xl sm:inset-x-auto sm:inset-y-0 sm:h-full sm:max-h-none sm:max-w-md sm:rounded-none sm:border-t-0 dark:border-zinc-800 dark:bg-zinc-900 ${desktopSideClass} ${animationClass}`}
       >
+        <div className="flex justify-center pb-1 pt-2 sm:hidden" aria-hidden>
+          <div className="h-1 w-9 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+        </div>
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</h2>
           <button

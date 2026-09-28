@@ -151,6 +151,7 @@ export function SessionForm({
 
         <div className="space-y-1.5">
           <label className={labelClass}>{t("sessions.covers")}</label>
+          <p className="text-xs text-zinc-500 dark:text-zinc-500">{t("sessions.coversHint")}</p>
           <div className="flex flex-wrap gap-2">
             {FLAGS.map(({ key, labelKey, Icon }) => {
               const active = values[key] as boolean;
@@ -193,27 +194,33 @@ export function SessionForm({
           </div>
         )}
 
-        <AssessmentListEditor
-          titleKey="sessions.quizzes"
-          addLabelKey="sessions.addQuiz"
-          maxScoreLabelKey="sessions.quizMaxScore"
-          items={values.quizzes}
-          onAdd={() => addAssessment("quizzes")}
-          onRemove={(i) => removeAssessment("quizzes", i)}
-          onChange={(i, patch) => updateAssessment("quizzes", i, patch)}
-          t={t}
-        />
+        {/* Side by side while both lists are empty — it's just two "add" buttons,
+            no reason to spend two full-width rows on them. The moment either
+            list gets a row (label + score + remove control), that's too
+            cramped in a half-width column, so both drop to full width. */}
+        <div className={values.quizzes.length === 0 && values.assignments.length === 0 ? "flex gap-3" : "space-y-5"}>
+          <AssessmentListEditor
+            titleKey="sessions.quizzes"
+            addLabelKey="sessions.addQuiz"
+            maxScoreLabelKey="sessions.quizMaxScore"
+            items={values.quizzes}
+            onAdd={() => addAssessment("quizzes")}
+            onRemove={(i) => removeAssessment("quizzes", i)}
+            onChange={(i, patch) => updateAssessment("quizzes", i, patch)}
+            t={t}
+          />
 
-        <AssessmentListEditor
-          titleKey="sessions.assignments"
-          addLabelKey="sessions.addAssignment"
-          maxScoreLabelKey="sessions.assignmentMaxScore"
-          items={values.assignments}
-          onAdd={() => addAssessment("assignments")}
-          onRemove={(i) => removeAssessment("assignments", i)}
-          onChange={(i, patch) => updateAssessment("assignments", i, patch)}
-          t={t}
-        />
+          <AssessmentListEditor
+            titleKey="sessions.assignments"
+            addLabelKey="sessions.addAssignment"
+            maxScoreLabelKey="sessions.assignmentMaxScore"
+            items={values.assignments}
+            onAdd={() => addAssessment("assignments")}
+            onRemove={(i) => removeAssessment("assignments", i)}
+            onChange={(i, patch) => updateAssessment("assignments", i, patch)}
+            t={t}
+          />
+        </div>
       </div>
     </form>
   );
@@ -242,7 +249,7 @@ function AssessmentListEditor({
   t: ReturnType<typeof useTranslations>;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className="min-w-0 flex-1 space-y-1.5">
       <label className={labelClass}>{t(titleKey)}</label>
       <div className="space-y-2">
         {items.map((item, i) => (

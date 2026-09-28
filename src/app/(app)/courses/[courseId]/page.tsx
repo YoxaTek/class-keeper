@@ -12,6 +12,12 @@ import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle"
 
 type Filter = "all" | "upcoming" | "past";
 
+// A session's own turnout isn't tied to any per-student passing threshold
+// (that's a whole-course, whole-term concept) — this is just "did most of
+// the class show up that day", flagged the same red the rest of the app
+// uses for anything below par.
+const LOW_ATTENDANCE_THRESHOLD = 50;
+
 export default async function SessionsListPage({
   params,
   searchParams,
@@ -93,9 +99,16 @@ export default async function SessionsListPage({
       {sessions.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {sessions.map((s) => {
-            const countable = s.attendance.filter((a) => a.status !== "NOT_ENROLLED");
-            const present = countable.filter((a) => a.status === "PRESENT").length;
-            const turnout = countable.length ? `${Math.round((present / countable.length) * 100)}%` : "—";
+            // The denominator is the roster actually enrolled as of this
+            // session's date, not "however many Attendance rows happen to
+            // exist" — a student missing a backfilled row (e.g. enrolled
+            // before ensureAttendanceForSession existed) would otherwise
+            // silently drop out of the denominator and inflate turnout.
+            const enrolledCount = rosterEnrollments.filter((e) => e.joinedAt <= s.date).length;
+            const present = s.attendance.filter((a) => a.status === "PRESENT").length;
+            const turnoutPct = enrolledCount ? Math.round((present / enrolledCount) * 100) : null;
+            const turnout = turnoutPct === null ? "—" : `${turnoutPct}%`;
+            const turnoutLow = s.hasAttendance && turnoutPct !== null && turnoutPct < LOW_ATTENDANCE_THRESHOLD;
             const assessmentsById = new Map(s.assessments.map((a) => [a.id, a]));
             const scoreAvg = s.scores.length
               ? `${(
@@ -125,7 +138,9 @@ export default async function SessionsListPage({
                   <div className="flex gap-4 text-sm">
                     <p>
                       <span className="text-zinc-500 dark:text-zinc-500">{t("sessions.attendanceTurnout")}: </span>
-                      <span className="tabular text-zinc-700 dark:text-zinc-300">
+                      <span
+                        className={`tabular font-medium ${turnoutLow ? "text-red-600 dark:text-red-400" : "text-zinc-700 dark:text-zinc-300"}`}
+                      >
                         {s.hasAttendance ? turnout : "—"}
                       </span>
                     </p>

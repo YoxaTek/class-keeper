@@ -80,11 +80,11 @@ export function StudentFormDrawer({
       onClose={() => setOpen(false)}
       footer={
         <div className="flex gap-2">
-          <Button type="submit" form="student-form" variant="primary" disabled={submitting}>
-            {t("common.save")}
-          </Button>
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             {t("common.cancel")}
+          </Button>
+          <Button type="submit" form="student-form" variant="primary" disabled={submitting}>
+            {t("common.save")}
           </Button>
         </div>
       }

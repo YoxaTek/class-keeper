@@ -145,7 +145,7 @@ export function CourseFormDrawer(props: Props) {
     return (
       <Button variant="primary" onClick={() => setOpen(true)} className="shrink-0 whitespace-nowrap">
         <Plus className="h-4 w-4" aria-hidden />
-        {t("newCourse")}
+        <span className="text-[12.5px]">{t("newCourse")}</span>
       </Button>
     );
   }
@@ -156,11 +156,11 @@ export function CourseFormDrawer(props: Props) {
       onClose={() => setOpen(false)}
       footer={
         <div className="flex gap-2">
-          <Button type="submit" form="course-form" variant="primary" disabled={submitting || !!dateRangeError || !!weightError}>
-            {tc("save")}
-          </Button>
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             {tc("cancel")}
+          </Button>
+          <Button type="submit" form="course-form" variant="primary" disabled={submitting || !!dateRangeError || !!weightError}>
+            {tc("save")}
           </Button>
         </div>
       }

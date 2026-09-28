@@ -70,8 +70,13 @@ export function RosterTable({ courseId, rows }: { courseId: string; rows: Row[] 
             </div>
 
             <div className="flex items-center gap-4 text-xs">
-              <span className="tabular text-zinc-500 dark:text-zinc-500">
-                {t("roster.attendance")}: <span className="font-medium text-zinc-700 dark:text-zinc-300">{row.attendancePct}%</span>
+              {/* Same red/passing treatment as score below — a student flagged as
+                  not passing should read as flagged everywhere their stats show,
+                  not just next to the score. */}
+              <span
+                className={`tabular font-medium ${row.passing ? "text-zinc-700 dark:text-zinc-300" : "text-red-600 dark:text-red-400"}`}
+              >
+                {t("roster.attendance")}: {row.attendancePct}%
               </span>
               <span
                 className={`tabular font-medium ${row.passing ? "text-[#0f6e56] dark:text-teal-400" : "text-red-600 dark:text-red-400"}`}

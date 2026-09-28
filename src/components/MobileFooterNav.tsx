@@ -91,7 +91,7 @@ export function MobileFooterNav({
           <li key={tab.href}>
             <Link
               href={tab.href}
-              className={`flex min-h-14 flex-col items-center justify-center rounded-md px-1 text-[11px] leading-tight ${
+              className={`flex min-h-14 flex-col items-center justify-center rounded-md px-1 text-[10.5px] leading-tight ${
                 tab.active
                   ? "text-[#0f6e56] dark:text-teal-400"
                   : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"

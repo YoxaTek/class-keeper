@@ -64,7 +64,7 @@ export function AppShell({
         </div>
         <main
           className="flex min-w-0 flex-1 flex-col overflow-y-auto px-3 py-5 lg:pb-5 print:overflow-visible print:!p-0"
-          style={footerHeight ? { paddingBottom: footerHeight + 16 } : undefined}
+          style={footerHeight ? { paddingBottom: footerHeight } : undefined}
         >
           {children}
         </main>
