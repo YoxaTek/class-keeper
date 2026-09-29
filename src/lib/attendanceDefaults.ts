@@ -6,13 +6,13 @@ import { prisma } from "@/lib/prisma";
 // turnout/grade calculations silently skip.
 
 // Called after creating or editing a class session: backfills ABSENT rows
-// for every student already enrolled by that session's date.
+// for every student already enrolled in the course.
 export async function ensureAttendanceForSession(sessionId: string) {
   const classSession = await prisma.session.findUniqueOrThrow({ where: { id: sessionId } });
   if (!classSession.hasAttendance) return;
 
   const enrollments = await prisma.enrollment.findMany({
-    where: { courseId: classSession.courseId, joinedAt: { lte: classSession.date } },
+    where: { courseId: classSession.courseId },
     select: { id: true },
   });
   if (enrollments.length === 0) return;
@@ -24,10 +24,10 @@ export async function ensureAttendanceForSession(sessionId: string) {
 }
 
 // Called after enrolling a student: backfills ABSENT rows for every
-// attendance-taking session on or after the day they joined.
-export async function ensureAttendanceForEnrollment(enrollmentId: string, courseId: string, joinedAt: Date) {
+// attendance-taking session in the course.
+export async function ensureAttendanceForEnrollment(enrollmentId: string, courseId: string) {
   const sessions = await prisma.session.findMany({
-    where: { courseId, hasAttendance: true, date: { gte: joinedAt } },
+    where: { courseId, hasAttendance: true },
     select: { id: true },
   });
   if (sessions.length === 0) return;

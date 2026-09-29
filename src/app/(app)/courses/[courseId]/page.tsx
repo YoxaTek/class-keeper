@@ -103,7 +103,7 @@ export default async function SessionsListPage({
             // exist" — a student missing a backfilled row (e.g. enrolled
             // before ensureAttendanceForSession existed) would otherwise
             // silently drop out of the denominator and inflate turnout.
-            const enrolledCount = rosterEnrollments.filter((e) => e.joinedAt <= s.date).length;
+            const enrolledCount = rosterEnrollments.length;
             const present = s.attendance.filter((a) => a.status === "PRESENT").length;
             const turnoutPct = enrolledCount ? Math.round((present / enrolledCount) * 100) : null;
             const turnout = turnoutPct === null ? "—" : `${turnoutPct}%`;

@@ -113,7 +113,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
 
   if (!enrollment) {
     enrollment = await prisma.enrollment.create({ data: { courseId, studentId: student.id } });
-    await ensureAttendanceForEnrollment(enrollment.id, courseId, enrollment.joinedAt);
+    await ensureAttendanceForEnrollment(enrollment.id, courseId);
   }
 
   // Finalize the account as a student either way — reopening the same

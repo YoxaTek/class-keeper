@@ -27,14 +27,14 @@ export async function computeGradesForCourse(courseId: string) {
 
   const results = enrollments.map((enrollment) => {
     // One entry per session this student was actually enrolled for
-    // (hasAttendance, on/after they joined), defaulting to ABSENT when no
+    // (hasAttendance), defaulting to ABSENT when no
     // Attendance row exists — not just whatever rows happen to be in the
     // DB. A missing row (e.g. a historical enrollment never backfilled by
     // ensureAttendanceForSession) would otherwise silently drop out of the
     // denominator and inflate this student's attendance percentage.
     const attendanceBySessionId = new Map(enrollment.attendance.map((a) => [a.sessionId, a.status]));
     const attendanceForGrading = sessions
-      .filter((s) => s.hasAttendance && s.date >= enrollment.joinedAt)
+      .filter((s) => s.hasAttendance)
       .map((s) => ({ status: attendanceBySessionId.get(s.id) ?? ("ABSENT" as const) }));
 
     const grade = calculateGrade({

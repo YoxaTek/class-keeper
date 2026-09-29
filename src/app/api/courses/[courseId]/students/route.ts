@@ -29,7 +29,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ cou
       data: { courseId, studentId: student.id },
       include: { student: true },
     });
-    await ensureAttendanceForEnrollment(enrollment.id, courseId, enrollment.joinedAt);
+    await ensureAttendanceForEnrollment(enrollment.id, courseId);
     created.push(enrollment);
   }
 
