@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Mail } from "lucide-react";
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
 import { SignOutButton } from "@/components/SignOutButton";
@@ -24,7 +24,7 @@ export default async function AccountPage() {
   const roleLabel = tCommon(`role.${user.role}`);
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
+    <div className="mx-auto w-full max-w-xl space-y-6">
       <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
 
       <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
@@ -58,6 +58,14 @@ export default async function AccountPage() {
           {tBilling("title")}
         </Link>
       )}
+
+      <Link
+        href="/invites"
+        className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+      >
+        <Mail className="h-4 w-4" aria-hidden />
+        {t("haveInvite")}
+      </Link>
 
       <DeleteAccountSection email={user.email} hasPassword={!!passwordHash} />
     </div>

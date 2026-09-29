@@ -66,9 +66,12 @@ export function ExportSessionPdfButton({
         type="button"
         onClick={() => setPrinting(true)}
         title={t("exportPdf")}
-        className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        className="flex items-center gap-1 rounded p-1.5 text-[9.5px] font-bold text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
       >
         <Printer className="h-3.5 w-3.5" aria-hidden />
+        {/* "PDF" isn't translated — it's a file-format name, not a phrase,
+            same in every locale this app ships. */}
+        PDF
       </button>
       {printing &&
         createPortal(

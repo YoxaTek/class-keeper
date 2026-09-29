@@ -28,7 +28,7 @@ export default async function BillingPage({
   const hasSubscription = getEffectiveSubscription(user) !== null;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-6">
       <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
 
       {checkout === "success" && (

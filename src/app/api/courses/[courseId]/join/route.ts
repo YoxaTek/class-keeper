@@ -10,6 +10,30 @@ const schema = z.object({
   studentId: z.string().min(1),
 });
 
+// Read-only preview for the QR scanner's in-place join dialog — the course
+// name/institute to show, the same "already teaches somewhere" check the
+// POST below enforces (so the dialog can say so upfront), and a name to
+// prefill the form with.
+export async function GET(_request: Request, { params }: { params: Promise<{ courseId: string }> }) {
+  const session = await auth();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { courseId } = await params;
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { id: true, name: true, institute: true, subject: { select: { name: true } } },
+  });
+  if (!course) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: session.user.id },
+    select: { name: true, _count: { select: { coursesTaught: true, taAssignments: true } } },
+  });
+  const alreadyTeaches = user._count.coursesTaught > 0 || user._count.taAssignments > 0;
+
+  return NextResponse.json({ course, alreadyTeaches, initialName: user.name ?? "" });
+}
+
 // Authenticated self-serve join: the signed-in user is enrolled directly,
 // no teacher approval step. Replaces the old JoinRequest queue — the join
 // link itself (shared only with the actual class) is the access control.

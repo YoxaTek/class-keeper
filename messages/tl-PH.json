@@ -55,12 +55,17 @@
     "scanQr": "I-scan ang QR code para sumali sa kurso",
     "scanQrTitle": "I-scan ang QR code para sumali sa kurso",
     "scanQrHelp": "Itutok ang iyong camera sa QR code na ibinahagi ng iyong guro.",
+    "scannedBanner": "Na-scan ang code — mag-sign in para magpatuloy."
+  },
+  "qrScanner": {
     "uploadQrImage": "Mag-upload na lang ng larawan",
     "qrImageNotFound": "Walang nahanap na QR code sa larawang iyon.",
     "qrImageError": "Hindi mabasa ang larawang iyon. Pakisubukan ang iba.",
     "cameraError": "Hindi ma-access ang camera. Suriin ang pahintulot sa camera ng iyong browser at subukan muli.",
     "cameraUnsupported": "Hindi suportado ang pag-scan ng camera sa browser na ito.",
-    "qrUnrecognized": "Ang QR code na iyon ay hindi isang link ng ClassKeeper."
+    "qrUnrecognized": "Ang QR code na iyon ay hindi isang link ng ClassKeeper.",
+    "scanAgain": "I-scan ulit",
+    "recognized": "Nakilala ang QR code"
   },
   "signup": {
     "title": "Gumawa ng iyong account",
@@ -93,6 +98,9 @@
     "title": "Mga Course",
     "subtitle": "{count} kurso sa termino na ito",
     "newCourse": "Magdagdag",
+    "acceptInvite": "Tanggapin ang imbitasyon",
+    "acceptInviteTitle": "I-scan ang QR code ng imbitasyon",
+    "acceptInviteHelp": "Itutok ang iyong camera sa QR code ng imbitasyon o pagsali na natanggap mo.",
     "subject": "Asignatura",
     "term": "Course",
     "course": "Course",
@@ -228,21 +236,29 @@
   "onboarding": {
     "title": "I-set up ang iyong account",
     "bootstrapSubtitle": "Ilang detalye na lang bago ka magsimula.",
-    "bootstrapStudentHint": "Sinusubukan bang sumali sa klase bilang isang estudyante? Ang pagkumpleto nito ay gagawa ng account ng guro — gamitin sa halip ang join link na ibinahagi ng iyong guro.",
     "name": "Iyong pangalan",
     "institution": "Institusyon",
     "optional": "opsyonal",
     "institutionPlaceholder": "hal. Lincoln High School",
     "submit": "Magpatuloy",
-    "genericError": "May nangyaring mali. Subukan muli.",
+    "genericError": "May nangyaring mali. Subukan muli."
+  },
+  "invites": {
     "inviteBanner": "Inanyayahan ka ni {name} na sumali bilang {role}",
-    "inviteError": {
+    "accept": "Tanggapin ang imbitasyon",
+    "genericError": "May nangyaring mali. Subukan muli.",
+    "error": {
       "not_found": "Hindi valid ang invite link na ito.",
       "expired": "Nag-expire na ang invite na ito. Humingi ng bago.",
       "already_accepted": "Nagamit na ang invite na ito.",
       "email_mismatch": "Ipinadala ang invite na ito sa ibang email address. Mag-sign in gamit ang email na iyon.",
       "already_onboarded": "Naka-set up na ang iyong account."
-    }
+    },
+    "entryTitle": "May invite o join link ka?",
+    "entrySubtitle": "I-paste ito sa ibaba para magpatuloy.",
+    "entryPlaceholder": "I-paste ang iyong invite o join link ng klase",
+    "entrySubmit": "Magpatuloy",
+    "entryError": "Hindi ito mukhang valid na invite o join link."
   },
   "invite": {
     "title": "Naimbitahan ka",
@@ -250,6 +266,7 @@
   },
   "account": {
     "title": "Mga Setting",
+    "haveInvite": "Tanggapin ang imbitasyon",
     "deleteAccount": "Burahin ang account",
     "deleteWarning": "Permanenteng bubura ang iyong account. Kung may course kang tinuturuan, mabubura rin ang lahat dito — roster, attendance, at grades. Hindi na ito mababawi.",
     "confirmEmailLabel": "I-type ang {email} para kumpirmahin",

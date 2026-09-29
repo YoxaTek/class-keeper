@@ -55,12 +55,17 @@
     "scanQr": "掃描 QR code 加入課程",
     "scanQrTitle": "掃描 QR code 加入課程",
     "scanQrHelp": "將相機對準老師分享的 QR code。",
+    "scannedBanner": "已掃描代碼——請登入以繼續。"
+  },
+  "qrScanner": {
     "uploadQrImage": "改為上傳照片",
     "qrImageNotFound": "在該圖片中找不到 QR code。",
     "qrImageError": "無法讀取該圖片，請嘗試其他圖片。",
     "cameraError": "無法存取相機，請檢查瀏覽器的相機權限後再試一次。",
     "cameraUnsupported": "此瀏覽器不支援相機掃描。",
-    "qrUnrecognized": "該 QR code 不是 ClassKeeper 的連結。"
+    "qrUnrecognized": "該 QR code 不是 ClassKeeper 的連結。",
+    "scanAgain": "重新掃描",
+    "recognized": "已辨識 QR code"
   },
   "signup": {
     "title": "建立帳號",
@@ -93,6 +98,9 @@
     "title": "課程",
     "subtitle": "本學期 {count} 門課程",
     "newCourse": "新增",
+    "acceptInvite": "接受邀請",
+    "acceptInviteTitle": "掃描邀請 QR code",
+    "acceptInviteHelp": "將相機對準您收到的邀請或加入 QR code。",
     "subject": "科目",
     "term": "學期",
     "course": "課程",
@@ -228,21 +236,29 @@
   "onboarding": {
     "title": "設定您的帳號",
     "bootstrapSubtitle": "開始使用前，還需要填寫幾項資料。",
-    "bootstrapStudentHint": "想以學生身份加入課程嗎？完成此步驟會建立老師帳號——請改用老師分享給您的加入連結。",
     "name": "您的姓名",
     "institution": "任職機構",
     "optional": "選填",
     "institutionPlaceholder": "例如：林肯高中",
     "submit": "繼續",
-    "genericError": "發生錯誤，請再試一次。",
+    "genericError": "發生錯誤，請再試一次。"
+  },
+  "invites": {
     "inviteBanner": "{name} 邀請您以「{role}」身份加入",
-    "inviteError": {
+    "accept": "接受邀請",
+    "genericError": "發生錯誤，請再試一次。",
+    "error": {
       "not_found": "此邀請連結無效。",
       "expired": "此邀請已過期，請索取新的邀請連結。",
       "already_accepted": "此邀請已被使用。",
       "email_mismatch": "此邀請寄送給另一個電子郵件地址，請改用該信箱登入。",
       "already_onboarded": "您的帳號已完成設定。"
-    }
+    },
+    "entryTitle": "有邀請連結或加入連結嗎？",
+    "entrySubtitle": "請將連結貼在下方以繼續。",
+    "entryPlaceholder": "貼上您的邀請或課程加入連結",
+    "entrySubmit": "繼續",
+    "entryError": "這似乎不是有效的邀請或加入連結。"
   },
   "invite": {
     "title": "您已收到邀請",
@@ -250,6 +266,7 @@
   },
   "account": {
     "title": "設定",
+    "haveInvite": "接受邀請",
     "deleteAccount": "刪除帳號",
     "deleteWarning": "將永久刪除您的帳號。如果您有任教的班期，其中的名單、出席與成績也會一併刪除，此動作無法復原。",
     "confirmEmailLabel": "輸入 {email} 以確認",

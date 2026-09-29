@@ -3,27 +3,11 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import type { Role } from "@prisma/client";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
 
-interface InviteContext {
-  role: Role;
-  invitedByName: string;
-  context: string;
-}
-
-export function OnboardingForm({
-  initialName,
-  inviteToken,
-  invite,
-}: {
-  initialName: string;
-  inviteToken?: string;
-  invite: InviteContext | null;
-}) {
+export function OnboardingForm({ initialName }: { initialName: string }) {
   const t = useTranslations("onboarding");
-  const tRole = useTranslations("common.role");
   const { update } = useSession();
 
   const [name, setName] = useState(initialName);
@@ -39,11 +23,7 @@ export function OnboardingForm({
     const res = await fetch("/api/onboarding", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        inviteToken,
-        ...(inviteToken ? {} : { institutionName: institutionName || undefined }),
-      }),
+      body: JSON.stringify({ name, institutionName: institutionName || undefined }),
     });
 
     if (res.ok) {
@@ -66,13 +46,6 @@ export function OnboardingForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      {invite && (
-        <div className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
-          {t("inviteBanner", { name: invite.invitedByName, role: tRole(invite.role) })}
-          {invite.context && <div className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">{invite.context}</div>}
-        </div>
-      )}
-
       <div className="space-y-1">
         <label htmlFor="name" className={labelClass}>
           {t("name")}
@@ -80,20 +53,18 @@ export function OnboardingForm({
         <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       </div>
 
-      {!inviteToken && (
-        <div className="space-y-1">
-          <label htmlFor="institution" className={labelClass}>
-            {t("institution")} <span className="text-zinc-400 dark:text-zinc-600">({t("optional")})</span>
-          </label>
-          <input
-            id="institution"
-            value={institutionName}
-            onChange={(e) => setInstitutionName(e.target.value)}
-            placeholder={t("institutionPlaceholder")}
-            className={inputClass}
-          />
-        </div>
-      )}
+      <div className="space-y-1">
+        <label htmlFor="institution" className={labelClass}>
+          {t("institution")} <span className="text-zinc-400 dark:text-zinc-600">({t("optional")})</span>
+        </label>
+        <input
+          id="institution"
+          value={institutionName}
+          onChange={(e) => setInstitutionName(e.target.value)}
+          placeholder={t("institutionPlaceholder")}
+          className={inputClass}
+        />
+      </div>
 
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 

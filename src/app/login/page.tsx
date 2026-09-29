@@ -13,6 +13,12 @@ export default async function LoginPage({
   const t = await getTranslations("login");
   const tCommon = await getTranslations("common");
   const { callbackUrl } = await searchParams;
+  const safeUrl = safeCallbackUrl(callbackUrl);
+  // Arriving here is itself the result of a successful scan (see
+  // QrScanner's unauthenticated fallback) — showing the same "Scan QR
+  // code" button again reads as if nothing happened, and there's nothing
+  // left to scan for since the target is already baked into callbackUrl.
+  const fromScan = safeUrl.startsWith("/invites");
 
   return (
     <AuthShell appName={tCommon("appName")}>
@@ -22,7 +28,13 @@ export default async function LoginPage({
           <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
         </div>
 
-        <LoginForm providers={providers} callbackUrl={safeCallbackUrl(callbackUrl)} />
+        {fromScan && (
+          <p className="rounded-md border border-[#0f6e56]/20 bg-[#0f6e56]/5 p-3 text-sm text-[#0f6e56] dark:border-teal-400/20 dark:bg-teal-400/5 dark:text-teal-400">
+            {t("scannedBanner")}
+          </p>
+        )}
+
+        <LoginForm providers={providers} callbackUrl={safeUrl} hideQrScan={fromScan} />
       </div>
     </AuthShell>
   );

@@ -5,11 +5,19 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
 
-export function JoinForm({ courseId, initialName }: { courseId: string; initialName: string }) {
+export function JoinForm({
+  courseId,
+  initialName,
+  initialStudentId = "",
+}: {
+  courseId: string;
+  initialName: string;
+  initialStudentId?: string;
+}) {
   const t = useTranslations("join");
   const [name, setName] = useState(initialName);
   const [chineseName, setChineseName] = useState("");
-  const [studentId, setStudentId] = useState("");
+  const [studentId, setStudentId] = useState(initialStudentId);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

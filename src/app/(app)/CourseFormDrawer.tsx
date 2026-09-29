@@ -156,10 +156,16 @@ export function CourseFormDrawer(props: Props) {
       onClose={() => setOpen(false)}
       footer={
         <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="flex-1">
             {tc("cancel")}
           </Button>
-          <Button type="submit" form="course-form" variant="primary" disabled={submitting || !!dateRangeError || !!weightError}>
+          <Button
+            type="submit"
+            form="course-form"
+            variant="primary"
+            disabled={submitting || !!dateRangeError || !!weightError}
+            className="flex-1"
+          >
             {tc("save")}
           </Button>
         </div>

@@ -55,12 +55,17 @@
     "scanQr": "Scan QR code to join a course",
     "scanQrTitle": "Scan QR code to join a course",
     "scanQrHelp": "Point your camera at the QR code your teacher is sharing.",
+    "scannedBanner": "Code scanned — sign in to continue."
+  },
+  "qrScanner": {
     "uploadQrImage": "Upload a photo instead",
     "qrImageNotFound": "No QR code found in that image.",
     "qrImageError": "Couldn't read that image. Please try another one.",
     "cameraError": "Couldn't access the camera. Check your browser's camera permission and try again.",
     "cameraUnsupported": "Camera scanning isn't supported in this browser.",
-    "qrUnrecognized": "That QR code isn't a ClassKeeper link."
+    "qrUnrecognized": "That QR code isn't a ClassKeeper link.",
+    "scanAgain": "Scan again",
+    "recognized": "QR code recognized"
   },
   "signup": {
     "title": "Create your account",
@@ -93,6 +98,9 @@
     "title": "Courses",
     "subtitle": "{count} courses this term",
     "newCourse": "Add",
+    "acceptInvite": "Accept an invite",
+    "acceptInviteTitle": "Scan an invite QR code",
+    "acceptInviteHelp": "Point your camera at the invite or join QR code you were sent.",
     "subject": "Subject",
     "term": "Term",
     "course": "Course",
@@ -228,21 +236,29 @@
   "onboarding": {
     "title": "Set up your account",
     "bootstrapSubtitle": "Just a couple of details before you get started.",
-    "bootstrapStudentHint": "Trying to join a class as a student instead? Completing this sets up a teacher account — use the join link your teacher shared with you instead.",
     "name": "Your name",
     "institution": "Institution",
     "optional": "optional",
     "institutionPlaceholder": "e.g. Lincoln High School",
     "submit": "Continue",
-    "genericError": "Something went wrong. Please try again.",
+    "genericError": "Something went wrong. Please try again."
+  },
+  "invites": {
     "inviteBanner": "{name} invited you to join as a {role}",
-    "inviteError": {
+    "accept": "Accept invite",
+    "genericError": "Something went wrong. Please try again.",
+    "error": {
       "not_found": "This invite link isn't valid.",
       "expired": "This invite has expired. Ask for a new one.",
       "already_accepted": "This invite has already been used.",
       "email_mismatch": "This invite was sent to a different email address. Sign in with that email instead.",
       "already_onboarded": "Your account is already set up."
-    }
+    },
+    "entryTitle": "Have an invite or join link?",
+    "entrySubtitle": "Paste it below to continue.",
+    "entryPlaceholder": "Paste your invite or class join link",
+    "entrySubmit": "Continue",
+    "entryError": "That doesn't look like a valid invite or join link."
   },
   "invite": {
     "title": "You've been invited",
@@ -250,6 +266,7 @@
   },
   "account": {
     "title": "Settings",
+    "haveInvite": "Accept an invite",
     "deleteAccount": "Delete account",
     "deleteWarning": "Permanently deletes your account. If you teach any courses, everything in them — rosters, attendance, and grades — is deleted too. This cannot be undone.",
     "confirmEmailLabel": "Type {email} to confirm",

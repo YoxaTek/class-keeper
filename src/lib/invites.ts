@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client";
+import type { Role, User } from "@prisma/client";
 import { prisma } from "./prisma";
 import { assertCanAddTA } from "./subscriptions/gate";
 
@@ -37,17 +37,32 @@ export function validateInvite(
 }
 
 /**
+ * A TEACHER account that completed bootstrap onboarding but never actually
+ * did anything with it (no courses created) — the common shape of "signed
+ * up before their TA/student invite arrived." Safe to let an invite convert,
+ * unlike an account with real state, since there's nothing to lose.
+ */
+export async function isEmptyTeacherAccount(user: Pick<User, "role" | "onboardingComplete" | "id">): Promise<boolean> {
+  if (user.role !== "TEACHER" || !user.onboardingComplete) return false;
+  const coursesTaught = await prisma.course.count({ where: { teacherId: user.id } });
+  return coursesTaught === 0;
+}
+
+/**
  * Applies an accepted invite to the accepting user's own account: sets
  * their role, links them to the org/course/student roster row the invite
  * carries, and marks onboarding complete. Refuses to touch an
  * already-onboarded account — role changes for an established user are an
  * admin action, not something a stray invite link should be able to do.
  *
- * The one exception is a TA accepting another TA invite: a teacher can
- * assign the same TA to several of their courses, each as its own invite, so
- * an existing TA picking up one more course isn't a role change at all —
- * just another CourseAssistant row. That's the only case that skips the
- * already-onboarded refusal and the role/onboardingComplete write below.
+ * Two exceptions, both applied directly with no extra confirmation step:
+ * - A TA accepting another TA invite: a teacher can assign the same TA to
+ *   several of their courses, each as its own invite, so an existing TA
+ *   picking up one more course isn't a role change at all — just another
+ *   CourseAssistant row.
+ * - An empty TEACHER account (see isEmptyTeacherAccount): there's nothing
+ *   real being lost, so this converts it the same way a fresh signup would
+ *   have, instead of refusing.
  */
 export async function acceptInvite(userId: string, userEmail: string, token: string): Promise<void> {
   const invite = await prisma.invite.findUnique({ where: { token } });
@@ -56,7 +71,9 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
   const isAdditionalTaCourse = invite!.role === "TA" && user.role === "TA" && user.onboardingComplete;
-  if (user.onboardingComplete && !isAdditionalTaCourse) throw new InviteError("already_onboarded");
+  if (user.onboardingComplete && !isAdditionalTaCourse && !(await isEmptyTeacherAccount(user))) {
+    throw new InviteError("already_onboarded");
+  }
 
   if (invite!.role === "TA" && invite!.courseId) {
     // Re-check the plan limit at acceptance time too, not just when the
@@ -95,6 +112,90 @@ export async function acceptInvite(userId: string, userEmail: string, token: str
       await tx.student.update({ where: { id: invite!.studentId }, data: { userId } });
     }
   });
+}
+
+const courseLabel = (c: { name: string; institute: string | null; subject: { name: string } }) =>
+  [c.subject.name, c.name, c.institute].filter(Boolean).join(" · ");
+
+export interface InviteContext {
+  role: Role;
+  invitedByName: string;
+  context: string;
+}
+
+/**
+ * The human-readable side of an invite — who sent it and what it's for —
+ * without touching acceptance eligibility at all. Shared by the /invites
+ * page and the QR-scanner's in-place preview (GET /api/invites/[token]),
+ * so both describe the same invite the same way.
+ */
+export async function loadInviteContext(
+  token: string,
+  acceptingEmail: string
+): Promise<{ invite: InviteContext; error: null } | { invite: null; error: InviteRejectionReason }> {
+  const invite = await prisma.invite.findUnique({
+    where: { token },
+    include: {
+      invitedBy: { select: { name: true, email: true } },
+      organization: { select: { name: true } },
+      course: { select: { name: true, institute: true, subject: { select: { name: true } } } },
+      student: {
+        select: {
+          enrollments: {
+            take: 1,
+            select: { course: { select: { name: true, institute: true, subject: { select: { name: true } } } } },
+          },
+        },
+      },
+    },
+  });
+
+  const validation = validateInvite(invite, acceptingEmail);
+  if (!invite || !validation.ok) {
+    return { invite: null, error: !validation.ok ? validation.reason : "not_found" };
+  }
+
+  let context: string;
+  if (invite.role === "TEACHER") {
+    context = invite.organization?.name ?? "";
+  } else if (invite.role === "TA") {
+    context = invite.course ? courseLabel(invite.course) : "";
+  } else {
+    const enrollment = invite.student?.enrollments[0];
+    context = enrollment ? courseLabel(enrollment.course) : "";
+  }
+
+  return {
+    invite: { role: invite.role, invitedByName: invite.invitedBy.name ?? invite.invitedBy.email, context },
+    error: null,
+  };
+}
+
+/**
+ * loadInviteContext plus the same eligibility rule acceptInvite() enforces
+ * (already-onboarded refusal, with its two exceptions) — read-only, so it's
+ * safe to call just to decide what to show before the user has clicked
+ * anything, unlike tryAcceptAdditionalTaCourse which mutates as a side
+ * effect. The actual accept always happens through acceptInvite() itself.
+ */
+export async function getAcceptableInviteContext(
+  token: string,
+  userId: string,
+  userEmail: string
+): Promise<{ invite: InviteContext } | { error: InviteRejectionReason }> {
+  const { invite, error } = await loadInviteContext(token, userEmail);
+  if (error) return { error };
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: { id: true, role: true, onboardingComplete: true },
+  });
+  const isAdditionalTaCourse = invite.role === "TA" && user.role === "TA" && user.onboardingComplete;
+  if (user.onboardingComplete && !isAdditionalTaCourse && !(await isEmptyTeacherAccount(user))) {
+    return { error: "already_onboarded" };
+  }
+
+  return { invite };
 }
 
 /**

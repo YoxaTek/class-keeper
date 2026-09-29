@@ -55,12 +55,17 @@
     "scanQr": "Quét mã QR để tham gia khóa học",
     "scanQrTitle": "Quét mã QR để tham gia khóa học",
     "scanQrHelp": "Hướng camera của bạn vào mã QR mà giáo viên chia sẻ.",
+    "scannedBanner": "Đã quét mã — đăng nhập để tiếp tục."
+  },
+  "qrScanner": {
     "uploadQrImage": "Tải ảnh lên thay thế",
     "qrImageNotFound": "Không tìm thấy mã QR trong ảnh đó.",
     "qrImageError": "Không thể đọc ảnh đó. Vui lòng thử ảnh khác.",
     "cameraError": "Không thể truy cập camera. Kiểm tra quyền camera của trình duyệt và thử lại.",
     "cameraUnsupported": "Trình duyệt này không hỗ trợ quét bằng camera.",
-    "qrUnrecognized": "Mã QR đó không phải là liên kết ClassKeeper."
+    "qrUnrecognized": "Mã QR đó không phải là liên kết ClassKeeper.",
+    "scanAgain": "Quét lại",
+    "recognized": "Đã nhận diện mã QR"
   },
   "signup": {
     "title": "Tạo tài khoản của bạn",
@@ -93,6 +98,9 @@
     "title": "Học kỳ",
     "subtitle": "{count} khóa học trong học kỳ này",
     "newCourse": "Thêm",
+    "acceptInvite": "Chấp nhận lời mời",
+    "acceptInviteTitle": "Quét mã QR lời mời",
+    "acceptInviteHelp": "Hướng camera của bạn vào mã QR mời hoặc tham gia mà bạn nhận được.",
     "subject": "Môn học",
     "term": "Học kỳ",
     "course": "Học kỳ",
@@ -228,21 +236,29 @@
   "onboarding": {
     "title": "Thiết lập tài khoản của bạn",
     "bootstrapSubtitle": "Chỉ còn vài thông tin nữa trước khi bạn bắt đầu.",
-    "bootstrapStudentHint": "Bạn đang muốn tham gia lớp học với tư cách học viên? Hoàn tất bước này sẽ tạo tài khoản giáo viên — hãy dùng liên kết tham gia mà giáo viên đã chia sẻ với bạn.",
     "name": "Tên của bạn",
     "institution": "Cơ sở giảng dạy",
     "optional": "không bắt buộc",
     "institutionPlaceholder": "vd: Trường THPT Lincoln",
     "submit": "Tiếp tục",
-    "genericError": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "genericError": "Đã xảy ra lỗi. Vui lòng thử lại."
+  },
+  "invites": {
     "inviteBanner": "{name} đã mời bạn tham gia với vai trò {role}",
-    "inviteError": {
+    "accept": "Chấp nhận lời mời",
+    "genericError": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "error": {
       "not_found": "Liên kết mời này không hợp lệ.",
       "expired": "Lời mời này đã hết hạn. Hãy yêu cầu một lời mời mới.",
       "already_accepted": "Lời mời này đã được sử dụng.",
       "email_mismatch": "Lời mời này được gửi đến một địa chỉ email khác. Hãy đăng nhập bằng email đó.",
       "already_onboarded": "Tài khoản của bạn đã được thiết lập."
-    }
+    },
+    "entryTitle": "Bạn có liên kết mời hoặc tham gia?",
+    "entrySubtitle": "Dán vào bên dưới để tiếp tục.",
+    "entryPlaceholder": "Dán liên kết mời hoặc tham gia lớp học của bạn",
+    "entrySubmit": "Tiếp tục",
+    "entryError": "Liên kết này có vẻ không phải là liên kết mời hoặc tham gia hợp lệ."
   },
   "invite": {
     "title": "Bạn đã được mời",
@@ -250,6 +266,7 @@
   },
   "account": {
     "title": "Cài đặt",
+    "haveInvite": "Chấp nhận lời mời",
     "deleteAccount": "Xóa tài khoản",
     "deleteWarning": "Xóa vĩnh viễn tài khoản của bạn. Nếu bạn dạy bất kỳ học kỳ nào, mọi thứ trong đó — danh sách lớp, điểm danh và điểm số — cũng sẽ bị xóa. Không thể hoàn tác.",
     "confirmEmailLabel": "Nhập {email} để xác nhận",

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ChevronRight } from "lucide-react";
 import { requireCourseAccess } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -55,6 +54,8 @@ export default async function SessionsListPage({
   const pastSessions = allSessions.filter((s) => s.date < today);
   const sessions = filter === "upcoming" ? upcomingSessions : filter === "past" ? pastSessions : allSessions;
 
+  // One pill per cover rather than a joined string — scannable at a glance
+  // instead of read word by word.
   const covers = (s: (typeof sessions)[number]) =>
     [
       s.hasAttendance && t("sessions.attendance"),
@@ -63,9 +64,7 @@ export default async function SessionsListPage({
       s.hasMidterm && t("sessions.midterm"),
       s.hasFinal && t("sessions.final"),
       s.hasFeedback && t("sessions.feedback"),
-    ]
-      .filter(Boolean)
-      .join(", ");
+    ].filter((label): label is string => Boolean(label));
 
   const filters: { key: Filter; label: string; count: number }[] = [
     { key: "all", label: t("sessions.filterAll"), count: allSessions.length },
@@ -83,10 +82,10 @@ export default async function SessionsListPage({
             <Link
               key={f.key}
               href={f.key === "all" ? `/courses/${courseId}` : `/courses/${courseId}?filter=${f.key}`}
-              className={`tabular rounded-md px-2.5 py-1.5 text-sm ${
+              className={`tabular rounded-md px-2.5 py-1.5 text-[11.5px] ${
                 filter === f.key
-                  ? "bg-[#0f6e56]/10 font-medium text-[#0f6e56] dark:text-teal-400"
-                  : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:bg-zinc-900"
+                  ? "bg-[#0f6e56]/10 font-bold text-[#0f6e56] dark:text-teal-400"
+                  : "font-semibold text-zinc-500 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:bg-zinc-900"
               }`}
             >
               {f.label} ({f.count})
@@ -118,81 +117,98 @@ export default async function SessionsListPage({
               : "—";
 
             const href = `/courses/${courseId}/sessions/${s.id}`;
+            const coverLabels = covers(s);
 
             return (
               <article
                 key={s.id}
-                className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+                className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800"
               >
-                <Link href={href} className="block space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="tabular text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                        {dateFmt.format(s.date)}
-                      </p>
-                      {s.label && <p className="text-sm text-zinc-700 dark:text-zinc-300">{s.label}</p>}
-                    </div>
-                    <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
-                  </div>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-500">{covers(s) || "—"}</p>
-                  <div className="flex gap-4 text-sm">
-                    <p>
-                      <span className="text-zinc-500 dark:text-zinc-500">{t("sessions.attendanceTurnout")}: </span>
-                      <span
-                        className={`tabular font-medium ${turnoutLow ? "text-red-600 dark:text-red-400" : "text-zinc-700 dark:text-zinc-300"}`}
-                      >
-                        {s.hasAttendance ? turnout : "—"}
-                      </span>
+                <div className="flex items-start justify-between gap-2">
+                  <Link href={href} className="min-w-0 flex-1">
+                    <p className="tabular text-[15px] font-bold text-zinc-900 dark:text-zinc-100">
+                      {dateFmt.format(s.date)}
                     </p>
-                    <p>
-                      <span className="text-zinc-500 dark:text-zinc-500">{t("sessions.scoreAverage")}: </span>
-                      <span className="tabular text-zinc-700 dark:text-zinc-300">{scoreAvg}</span>
-                    </p>
-                  </div>
-                </Link>
-
-                <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-900">
-                  <ExportSessionPdfButton
-                    title={buildClassRecordTitle({
-                      courseName: course.name,
-                      subjectName: course.subject.name,
-                      weekNumber: weekNumberBySessionId.get(s.id)!,
-                      date: s.date,
-                    })}
-                    session={s}
-                    assessments={s.assessments}
-                    enrollments={pdfEnrollments}
-                    attendance={s.attendance}
-                    scores={s.scores}
-                    sessionFeedback={s.feedback}
-                  />
-                  <div className="flex items-center gap-1">
-                  <ClassFormDrawer
-                    mode="edit"
-                    courseId={courseId}
-                    sessionId={s.id}
-                    initial={{
-                      date: s.date.toISOString().slice(0, 10),
-                      label: s.label ?? "",
-                      hasAttendance: s.hasAttendance,
-                      hasMidterm: s.hasMidterm,
-                      midtermMaxScore: s.midtermMaxScore,
-                      hasFinal: s.hasFinal,
-                      finalMaxScore: s.finalMaxScore,
-                      hasFeedback: s.hasFeedback,
-                      quizzes: s.assessments
-                        .filter((a) => a.type === "QUIZ")
-                        .sort((a, b) => a.order - b.order)
-                        .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
-                      assignments: s.assessments
-                        .filter((a) => a.type === "ASSIGNMENT")
-                        .sort((a, b) => a.order - b.order)
-                        .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
-                    }}
-                  />
-                  <ClassDeleteButton courseId={courseId} sessionId={s.id} />
+                    {s.label && <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-500">{s.label}</p>}
+                  </Link>
+                  {/* Actions live in the header now, not a separate footer row — no
+                      room left for the old chevron-as-affordance once PDF/edit/delete
+                      moved up here, so the card itself (below) carries that instead. */}
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    <ExportSessionPdfButton
+                      title={buildClassRecordTitle({
+                        courseName: course.name,
+                        subjectName: course.subject.name,
+                        weekNumber: weekNumberBySessionId.get(s.id)!,
+                        date: s.date,
+                      })}
+                      session={s}
+                      assessments={s.assessments}
+                      enrollments={pdfEnrollments}
+                      attendance={s.attendance}
+                      scores={s.scores}
+                      sessionFeedback={s.feedback}
+                    />
+                    <ClassFormDrawer
+                      mode="edit"
+                      courseId={courseId}
+                      sessionId={s.id}
+                      initial={{
+                        date: s.date.toISOString().slice(0, 10),
+                        label: s.label ?? "",
+                        hasAttendance: s.hasAttendance,
+                        hasMidterm: s.hasMidterm,
+                        midtermMaxScore: s.midtermMaxScore,
+                        hasFinal: s.hasFinal,
+                        finalMaxScore: s.finalMaxScore,
+                        hasFeedback: s.hasFeedback,
+                        quizzes: s.assessments
+                          .filter((a) => a.type === "QUIZ")
+                          .sort((a, b) => a.order - b.order)
+                          .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
+                        assignments: s.assessments
+                          .filter((a) => a.type === "ASSIGNMENT")
+                          .sort((a, b) => a.order - b.order)
+                          .map((a) => ({ id: a.id, label: a.label ?? "", maxScore: a.maxScore })),
+                      }}
+                    />
+                    <ClassDeleteButton courseId={courseId} sessionId={s.id} />
                   </div>
                 </div>
+
+                <Link href={href} className="mt-2.5 block space-y-2.5">
+                  {coverLabels.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {coverLabels.map((label) => (
+                        <span
+                          key={label}
+                          className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                        >
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-500">—</p>
+                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Healthy turnout gets the same teal tint as an active filter
+                        pill, not a neutral gray — a session with no attendance
+                        problem is still worth reading as "good", not "no signal". */}
+                    <span
+                      className={`tabular rounded-full px-2 py-0.5 text-[12px] font-bold ${
+                        turnoutLow
+                          ? "bg-red-50 text-red-700 dark:bg-red-400/10 dark:text-red-400"
+                          : "bg-[#0f6e56]/10 text-[#0f6e56] dark:text-teal-400"
+                      }`}
+                    >
+                      {s.hasAttendance ? `${turnout} ${t("sessions.attendanceTurnout").toLowerCase()}` : "—"}
+                    </span>
+                    <span className="tabular text-[12px] text-zinc-500 dark:text-zinc-500">
+                      {scoreAvg} {t("sessions.scoreAverage").toLowerCase()}
+                    </span>
+                  </div>
+                </Link>
               </article>
             );
           })}

@@ -28,7 +28,7 @@ export default async function MePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
+    <div className="mx-auto w-full max-w-4xl space-y-4">
       <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("myCourses")}</h1>
 
       {student.enrollments.length > 0 ? (

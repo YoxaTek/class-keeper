@@ -5,6 +5,7 @@ import { Bookmark, CalendarDays, Users, UserPlus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
 import { computeGradesForCourse } from "@/lib/grading/computeCourseGrades";
+import { QrScannerButton } from "@/components/QrScanner";
 import { CourseFormDrawer } from "./CourseFormDrawer";
 import { CourseDeleteButton } from "./CourseDeleteButton";
 
@@ -42,17 +43,25 @@ export default async function DashboardPage() {
   const dateFmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
+    <div className="mx-auto w-full max-w-4xl space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <h1 className="text-[19px] font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
           <p className="text-[12px] text-zinc-500 dark:text-zinc-500">{t("subtitle", { count: courses.length })}</p>
         </div>
-        {role === "TEACHER" && <CourseFormDrawer mode="create" />}
+        <div className="flex shrink-0 items-center gap-2">
+          <QrScannerButton
+            triggerLabel={t("acceptInvite")}
+            title={t("acceptInviteTitle")}
+            helpText={t("acceptInviteHelp")}
+            className="shrink-0 whitespace-nowrap"
+          />
+          {role === "TEACHER" && <CourseFormDrawer mode="create" />}
+        </div>
       </div>
 
       {courses.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           {courses.map((course) => {
             const summary = gradeSummaries.get(course.id)!;
             return (

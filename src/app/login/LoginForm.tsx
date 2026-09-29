@@ -11,7 +11,15 @@ import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, linkClass } from "@/components/ui/styles";
 import type { AuthProviderId } from "@/lib/authProviders";
 
-export function LoginForm({ providers, callbackUrl = "/" }: { providers: AuthProviderId[]; callbackUrl?: string }) {
+export function LoginForm({
+  providers,
+  callbackUrl = "/",
+  hideQrScan = false,
+}: {
+  providers: AuthProviderId[];
+  callbackUrl?: string;
+  hideQrScan?: boolean;
+}) {
   const t = useTranslations("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -135,9 +143,11 @@ export function LoginForm({ providers, callbackUrl = "/" }: { providers: AuthPro
         {t("noAccount")} <Link href={signupHref} className={linkClass}>{t("createOne")}</Link>
       </p>
 
-      <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
-        <QrScannerButton />
-      </div>
+      {!hideQrScan && (
+        <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <QrScannerButton triggerLabel={t("scanQr")} title={t("scanQrTitle")} helpText={t("scanQrHelp")} />
+        </div>
+      )}
     </div>
   );
 }
