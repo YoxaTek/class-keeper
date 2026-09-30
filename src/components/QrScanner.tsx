@@ -349,7 +349,7 @@ export function QrScannerButton({
       <div className="space-y-3">
         {view.kind === "scan" && (
           <>
-            <div className="aspect-square overflow-hidden rounded-md border border-zinc-200 bg-black dark:border-zinc-800">
+            <div className="mx-auto aspect-square w-full max-w-[min(100%,36dvh)] overflow-hidden rounded-md border border-zinc-200 bg-black dark:border-zinc-800">
               <video ref={videoRef} muted playsInline className="h-full w-full object-cover" />
             </div>
             <canvas ref={canvasRef} className="hidden" />
