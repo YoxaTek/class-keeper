@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { CreditCard, Mail } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { getCurrentUser } from "@/lib/currentUser";
-import { prisma } from "@/lib/prisma";
+import { QrScannerButton } from "@/components/QrScanner";
 import { SignOutButton } from "@/components/SignOutButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DeleteAccountSection } from "./DeleteAccountSection";
@@ -13,11 +13,7 @@ export default async function AccountPage() {
   const t = await getTranslations("account");
   const tCommon = await getTranslations("common");
   const tBilling = await getTranslations("billing");
-
-  const { passwordHash } = await prisma.user.findUniqueOrThrow({
-    where: { id: user.id },
-    select: { passwordHash: true },
-  });
+  const tDashboard = await getTranslations("dashboard");
 
   const displayName = user.name || user.email;
   const initial = displayName.charAt(0).toUpperCase();
@@ -59,15 +55,15 @@ export default async function AccountPage() {
         </Link>
       )}
 
-      <Link
-        href="/invites"
-        className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
-      >
-        <Mail className="h-4 w-4" aria-hidden />
-        {t("haveInvite")}
-      </Link>
+      <QrScannerButton
+        triggerLabel={t("haveInvite")}
+        title={tDashboard("acceptInviteTitle")}
+        helpText={tDashboard("acceptInviteHelp")}
+        variant="ghost"
+        className="w-full justify-start gap-2 rounded-lg border border-zinc-200 bg-white p-4 text-sm font-normal text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+      />
 
-      <DeleteAccountSection email={user.email} hasPassword={!!passwordHash} />
+      <DeleteAccountSection email={user.email} />
     </div>
   );
 }

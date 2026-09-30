@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
   confirmEmail: z.string(),
-  password: z.string().optional(),
 });
 
 export async function DELETE(request: Request) {
@@ -15,20 +13,15 @@ export async function DELETE(request: Request) {
 
   const body = schema.safeParse(await request.json());
   if (!body.success) return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
-  const { confirmEmail, password } = body.data;
+  const { confirmEmail } = body.data;
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: session.user.id },
-    select: { email: true, passwordHash: true },
+    select: { email: true },
   });
 
   if (confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()) {
     return NextResponse.json({ error: "confirm_email_mismatch" }, { status: 400 });
-  }
-
-  if (user.passwordHash) {
-    const valid = typeof password === "string" && (await bcrypt.compare(password, user.passwordHash));
-    if (!valid) return NextResponse.json({ error: "wrong_password" }, { status: 401 });
   }
 
   // ponytail: no PayPal cancellation here — Subscription.userId is set null

@@ -6,11 +6,9 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cardClass, inputClass, labelClass } from "@/components/ui/styles";
 
-export function DeleteAccountSection({ email, hasPassword }: { email: string; hasPassword: boolean }) {
+export function DeleteAccountSection({ email }: { email: string }) {
   const t = useTranslations("account");
-  const tLogin = useTranslations("login");
   const [confirmEmail, setConfirmEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -23,12 +21,11 @@ export function DeleteAccountSection({ email, hasPassword }: { email: string; ha
     const res = await fetch("/api/account", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirmEmail, password: hasPassword ? password : undefined }),
+      body: JSON.stringify({ confirmEmail }),
     });
 
     if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      setError(body?.error === "wrong_password" ? t("wrongPassword") : t("error"));
+        setError(t("error"));
       setDeleting(false);
       return;
     }
@@ -56,27 +53,12 @@ export function DeleteAccountSection({ email, hasPassword }: { email: string; ha
         />
       </div>
 
-      {hasPassword && (
-        <div className="space-y-1">
-          <label htmlFor="password" className={labelClass}>
-            {tLogin("password")}
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-      )}
-
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <Button
         type="button"
         variant="danger"
-        disabled={deleting || !emailMatches || (hasPassword && password === "")}
+        disabled={deleting || !emailMatches}
         onClick={onDelete}
       >
         {deleting ? t("deleting") : t("deleteAccount")}

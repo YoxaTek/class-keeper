@@ -104,7 +104,7 @@ export default async function SessionsListPage({
             // before ensureAttendanceForSession existed) would otherwise
             // silently drop out of the denominator and inflate turnout.
             const enrolledCount = rosterEnrollments.length;
-            const present = s.attendance.filter((a) => a.status === "PRESENT").length;
+            const present = s.attendance.filter((a) => a.status === "PRESENT" || a.status === "EXCUSED").length;
             const turnoutPct = enrolledCount ? Math.round((present / enrolledCount) * 100) : null;
             const turnout = turnoutPct === null ? "—" : `${turnoutPct}%`;
             const turnoutLow = s.hasAttendance && turnoutPct !== null && turnoutPct < LOW_ATTENDANCE_THRESHOLD;
@@ -204,9 +204,11 @@ export default async function SessionsListPage({
                     >
                       {s.hasAttendance ? `${turnout} ${t("sessions.attendanceTurnout").toLowerCase()}` : "—"}
                     </span>
-                    <span className="tabular text-[12px] text-zinc-500 dark:text-zinc-500">
-                      {scoreAvg} {t("sessions.scoreAverage").toLowerCase()}
-                    </span>
+                    {(s.assessments.length > 0 || s.hasMidterm || s.hasFinal) && (
+                      <span className="tabular text-[12px] text-zinc-500 dark:text-zinc-500">
+                        {scoreAvg} {t("sessions.scoreAverage").toLowerCase()}
+                      </span>
+                    )}
                   </div>
                 </Link>
               </article>

@@ -34,7 +34,7 @@ export function AppShell({
   const [footerHeight, setFooterHeight] = useState(0);
 
   return (
-    <div className="flex h-screen flex-col print:block print:h-auto">
+    <div className="flex h-dvh flex-col print:block print:h-auto">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 print:hidden dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">

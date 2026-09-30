@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import jsQR from "jsqr";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { QrCode, ImageUp, ArrowLeft, CircleCheck } from "lucide-react";
@@ -10,6 +9,10 @@ import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { inputClass, labelClass } from "@/components/ui/styles";
 import { parseInviteLink, buildInvitesLoginRedirect } from "@/lib/parseInviteLink";
+
+// jsQR is only needed once a scan actually starts — keep it out of the
+// initial bundle of every page that merely renders the scan button (login).
+const loadJsQR = () => import("jsqr").then((m) => m.default);
 
 interface InviteContext {
   role: Role;
@@ -73,6 +76,9 @@ export function QrScannerButton({
   const streamRef = useRef<MediaStream | null>(null);
   const frameRef = useRef<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [pasted, setPasted] = useState("");
+  const [pasteError, setPasteError] = useState(false);
 
   const [joinName, setJoinName] = useState("");
   const [joinChineseName, setJoinChineseName] = useState("");
@@ -165,6 +171,7 @@ export function QrScannerButton({
     if (!open || view.kind !== "scan") return;
 
     let cancelled = false;
+    let jsQR: Awaited<ReturnType<typeof loadJsQR>>;
 
     function tick() {
       const video = videoRef.current;
@@ -192,6 +199,7 @@ export function QrScannerButton({
         return;
       }
       try {
+        jsQR = await loadJsQR();
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { ideal: "environment" } },
         });
@@ -241,7 +249,7 @@ export function QrScannerButton({
       if (!ctx) throw new Error("no 2d context");
       ctx.drawImage(image, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      const code = (await loadJsQR())(imageData.data, imageData.width, imageData.height);
       if (code?.data) {
         await onDecoded(code.data);
       } else {
@@ -252,6 +260,18 @@ export function QrScannerButton({
     } finally {
       URL.revokeObjectURL(imageUrl);
     }
+  }
+
+  // Typed/pasted link instead of a scan — same resolution path as a decoded QR.
+  function onPasteSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed = parseInviteLink(pasted, window.location.origin);
+    if (!parsed) {
+      setPasteError(true);
+      return;
+    }
+    const path = parsed.param === "token" ? "invite" : "join";
+    onDecoded(new URL(`/${path}/${encodeURIComponent(parsed.value)}`, window.location.origin).href);
   }
 
   async function onAcceptInvite(token: string) {
@@ -339,6 +359,22 @@ export function QrScannerButton({
               <ImageUp className="h-3.5 w-3.5" aria-hidden />
               {t("uploadQrImage")}
             </Button>
+
+            <form onSubmit={onPasteSubmit} className="space-y-2">
+              <input
+                value={pasted}
+                onChange={(e) => {
+                  setPasted(e.target.value);
+                  setPasteError(false);
+                }}
+                placeholder={tInvites("entryPlaceholder")}
+                className={inputClass}
+              />
+              {pasteError && <p className="text-sm text-red-600 dark:text-red-400">{tInvites("entryError")}</p>}
+              <Button type="submit" variant="secondary" size="sm" className="w-full">
+                {tInvites("entrySubmit")}
+              </Button>
+            </form>
 
             <p className="text-xs text-zinc-500 dark:text-zinc-500">{helpText}</p>
           </>
