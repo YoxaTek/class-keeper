@@ -42,18 +42,3 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
     },
   });
 });
-
-/**
- * The courses a staff (teacher/TA) user can switch between, for the header's
- * course selector and course-scoped breadcrumbs. Wrapped in cache() so the
- * layout and the page it renders share one query per request.
- */
-export const getStaffCourses = cache(async (): Promise<{ id: string; label: string }[]> => {
-  const user = await getCurrentUser();
-  const courses = await prisma.course.findMany({
-    where: user.role === "TEACHER" ? { teacherId: user.id } : { assistants: { some: { userId: user.id } } },
-    include: { subject: true },
-    orderBy: { startDate: "desc" },
-  });
-  return courses.map((course) => ({ id: course.id, label: `${course.name} · ${course.subject.name}` }));
-});

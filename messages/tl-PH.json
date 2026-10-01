@@ -184,7 +184,8 @@
     "syncsAcross": "Sync sa desktop at mobile",
     "createFirstCourseShort": "Gawin ang Unang Kurso",
     "step4Title": "Itala ang quiz at assignment",
-    "step4Body": "Ilagay ang marka sa quiz, assignment, midterm, at final nang hiwalay sa araw-araw na roll call."
+    "step4Body": "Ilagay ang marka sa quiz, assignment, midterm, at final nang hiwalay sa araw-araw na roll call.",
+    "classTimes": "Oras ng klase"
   },
   "roster": {
     "title": "Listahan ng Estudyante",

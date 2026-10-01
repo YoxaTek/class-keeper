@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateSubjectId } from "@/lib/getOrCreateSubject";
+import { scheduleDays } from "@/lib/schedule";
 import { courseInputSchema, validateCourseDateRange } from "@/lib/validation/course";
 
 // Only the owning teacher can edit a course's settings — mirrors the DELETE
@@ -51,9 +52,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ co
       code: data.code || null,
       section: data.section || null,
       room: data.room || null,
-      weekdays: data.weekdays,
-      startTime: data.startTime || null,
-      endTime: data.endTime || null,
+      weekdays: scheduleDays(data.schedule),
+      schedule: data.schedule,
       plannedSessions: data.plannedSessions,
       color: data.color,
     },

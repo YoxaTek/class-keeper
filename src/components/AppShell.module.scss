@@ -75,48 +75,6 @@
   gap: 0.75rem;
 }
 
-.courseName {
-  display: flex;
-  min-width: 0;
-  max-width: 45vw;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 700;
-  color: var(--accent-text);
-
-  @include mixins.lg {
-    max-width: none;
-  }
-
-  svg {
-    flex-shrink: 0;
-    width: 0.875rem;
-    height: 0.875rem;
-  }
-
-  span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-// On mobile the footer's Settings tab covers this everywhere.
-.profile {
-  display: none;
-
-  @include mixins.lg {
-    display: block;
-  }
-
-  // Outside a course the header carries the account menu at every width.
-  &.always {
-    display: block;
-  }
-}
-
 .ad,
 .sidebar {
   @include mixins.print {

@@ -184,7 +184,8 @@
     "syncsAcross": "電腦與手機同步",
     "createFirstCourseShort": "建立第一門課程",
     "step4Title": "登錄小考與作業",
-    "step4Body": "獨立於每日點名之外，輸入小考、作業、期中考與期末成績。"
+    "step4Body": "獨立於每日點名之外，輸入小考、作業、期中考與期末成績。",
+    "classTimes": "上課時間"
   },
   "roster": {
     "title": "學生",

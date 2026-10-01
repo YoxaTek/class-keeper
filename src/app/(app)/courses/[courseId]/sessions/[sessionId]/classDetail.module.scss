@@ -161,7 +161,10 @@
   color: var(--text-faint);
   transition: background-color 0.15s, color 0.15s;
 
-  &:hover {
+  // Not while selected: the pointer is still over the button right after a
+  // click, and the hover color would otherwise cover the status fill until
+  // the pointer moves away.
+  &:hover:not(.on) {
     background: var(--status-btn-bg-hover);
   }
 
@@ -313,7 +316,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: auto -0.75rem 0;
+  // -1.25rem cancels the page area's bottom padding, so the bar sits flush
+  // against the screen (or the mobile tab bar) with no gap beneath it.
+  margin: auto -0.75rem -1.25rem;
   border-top: 1px solid var(--border);
   background: var(--bg-bar);
   padding: 0.75rem;

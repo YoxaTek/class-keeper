@@ -1,16 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import {
   ArrowRight,
   BookOpen,
   BookOpenCheck,
-  CalendarDays,
   ClipboardCheck,
   ListChecks,
   Sparkles,
   Clock,
-  MapPin,
   NotebookPen,
   TriangleAlert,
   TrendingUp,
@@ -25,6 +23,7 @@ import { CourseFormDrawer } from "./CourseFormDrawer";
 import { CourseDeleteButton } from "./CourseDeleteButton";
 import { courseFormInitial } from "@/lib/courseForm";
 import { cardHoverClass } from "@/components/ui/styles";
+import { CourseSummary, courseStripeClass } from "@/components/CourseSummary";
 import s from "./dashboard.module.scss";
 
 const MAX_AVATARS = 3;
@@ -80,10 +79,6 @@ export default async function DashboardPage() {
   );
 
   const t = await getTranslations("dashboard");
-  const locale = await getLocale();
-  const dayShort = (day: number) =>
-    new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" }).format(new Date(Date.UTC(2024, 0, 7 + day)));
-  const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
   const firstName = (name ?? "").trim().split(/\s+/)[0] || t("teacherFallback");
   const enrolledTotal = courses.reduce((sum, c) => sum + c._count.enrollments, 0);
@@ -206,71 +201,16 @@ export default async function DashboardPage() {
                 const summary = summaries.get(course.id)!;
                 const conducted = course.sessions.filter((x) => x.date.toISOString().slice(0, 10) <= todayKey).length;
                 const planned = Math.max(course.plannedSessions, course.sessions.length);
-                const progress = planned > 0 ? Math.min(100, Math.round((conducted / planned) * 100)) : 0;
-                const days = WEEK_ORDER.filter((d) => course.weekdays.includes(d))
-                  .map(dayShort)
-                  .join(", ");
-                const time =
-                  course.startTime && course.endTime ? `${course.startTime} - ${course.endTime}` : course.startTime;
-                const schedule = [days, time].filter(Boolean).join(" ");
-                const label = [course.code, course.name].filter(Boolean).join(" · ");
 
                 return (
-                  <article key={course.id} className={`${cardHoverClass} ${s.card} ${s[course.color] ?? s.terracotta}`}>
+                  <article key={course.id} className={`${cardHoverClass} ${courseStripeClass(course.color)}`}>
                     <Link href={`/courses/${course.id}`} className={s.cardLink}>
-                      <div className={s.top}>
-                        <div className={s.info}>
-                          <p className={s.term}>{label}</p>
-                          <h2 className={`${s.ellipsis} ${s.subject}`}>
-                            {course.subject.name}
-                            {course.section && <span className={s.section}> · {course.section}</span>}
-                          </h2>
-                        </div>
-                        <span className={s.enrolled}>
-                          <Users aria-hidden />
-                          {t("enrolledBadge", { count: course._count.enrollments })}
-                        </span>
-                      </div>
-
-                      <div className={s.meta}>
-                        <span>
-                          <CalendarDays aria-hidden />
-                          <span className="tabular">
-                            {schedule ||
-                              new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(
-                                course.startDate,
-                              ) +
-                                " – " +
-                                new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(
-                                  course.endDate,
-                                )}
-                          </span>
-                        </span>
-                        {course.room && (
-                          <span>
-                            <MapPin aria-hidden />
-                            {course.room}
-                          </span>
-                        )}
-                        {course.startTime && !days && (
-                          <span>
-                            <Clock aria-hidden />
-                            {time}
-                          </span>
-                        )}
-                      </div>
-
-                      {planned > 0 && (
-                        <div className={s.progress}>
-                          <div className={s.progressLabel}>
-                            <span>{t("classesConducted", { done: conducted, total: planned })}</span>
-                            <span className="tabular">{progress}%</span>
-                          </div>
-                          <div className={s.bar}>
-                            <div className={s.fill} style={{ width: `${progress}%` }} />
-                          </div>
-                        </div>
-                      )}
+                      <CourseSummary
+                        course={course}
+                        enrolled={course._count.enrollments}
+                        conducted={conducted}
+                        planned={planned}
+                      />
 
                       {!summary.hasStudents ? (
                         <p className={s.invitePill}>

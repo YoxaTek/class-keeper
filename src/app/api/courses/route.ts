@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assertCanCreateCourse, PlanLimitError } from "@/lib/subscriptions/gate";
 import { getOrCreateSubjectId } from "@/lib/getOrCreateSubject";
+import { scheduleDays } from "@/lib/schedule";
 import { plannedSessionDates } from "@/lib/plannedSessions";
 import { courseInputSchema, validateCourseDateRange } from "@/lib/validation/course";
 
@@ -80,9 +81,8 @@ export async function POST(request: Request) {
       code: data.code || null,
       section: data.section || null,
       room: data.room || null,
-      weekdays: data.weekdays,
-      startTime: data.startTime || null,
-      endTime: data.endTime || null,
+      weekdays: scheduleDays(data.schedule),
+      schedule: data.schedule,
       plannedSessions: data.plannedSessions,
       color: data.color,
     },
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 
   // Pre-create the planned class meetings (attendance on, so each one is
   // ready to take roll) — one per planned date on the chosen weekdays.
-  const dates = plannedSessionDates(startDate, endDate, data.weekdays, data.plannedSessions);
+  const dates = plannedSessionDates(startDate, endDate, scheduleDays(data.schedule), data.plannedSessions);
   if (dates.length > 0) {
     await prisma.session.createMany({
       data: dates.map((date) => ({ courseId: course.id, date, hasAttendance: true })),

@@ -1,13 +1,8 @@
 import { z } from "zod";
+import { scheduleSchema } from "@/lib/schedule";
 
 export const COURSE_COLORS = ["terracotta", "teal", "clay", "rust"] as const;
 export type CourseColor = (typeof COURSE_COLORS)[number];
-
-const timeSchema = z
-  .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM")
-  .nullable()
-  .optional();
 
 export const courseInputSchema = z
   .object({
@@ -27,9 +22,7 @@ export const courseInputSchema = z
     code: z.string().nullable().optional(),
     section: z.string().nullable().optional(),
     room: z.string().nullable().optional(),
-    weekdays: z.array(z.number().int().min(0).max(6)).default([]),
-    startTime: timeSchema,
-    endTime: timeSchema,
+    schedule: scheduleSchema.default([]),
     plannedSessions: z.number().int().min(0).max(200).default(0),
     color: z.enum(COURSE_COLORS).default("terracotta"),
   })

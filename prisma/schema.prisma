@@ -201,9 +201,8 @@ model Course {
   code            String? // e.g. "CHI-101"
   section         String? // e.g. "Cohort A (Day)"
   room            String? // e.g. "Room 402 • Language Hall"
-  weekdays        Int[]   @default([]) // meeting days, 0 = Sunday … 6 = Saturday
-  startTime       String? // "HH:MM", 24h
-  endTime         String? // "HH:MM", 24h
+  weekdays        Int[]   @default([]) // meeting days, 0 = Sunday … 6 = Saturday (derived from `schedule`; what the class-date generator reads)
+  schedule        Json    @default("[]") // [{ day, startTime, endTime }] — each weekday has its own times
   plannedSessions Int     @default(0) // how many class meetings the course is planned for (sessions are pre-created from this at creation)
   color           String  @default("terracotta") // binder stripe color key: terracotta | teal | clay | rust
 

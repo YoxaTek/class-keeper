@@ -10,6 +10,7 @@ import { Drawer } from "@/components/ui/Drawer";
 import { inputClass, inputClassSm, labelClass, iconButtonClass } from "@/components/ui/styles";
 import f from "@/components/ui/form.module.scss";
 import { COURSE_COLORS } from "@/lib/validation/course";
+import { scheduleDays, sortSchedule, type ScheduleSlot } from "@/lib/schedule";
 import { countPlannedSessions } from "@/lib/plannedSessions";
 import { EMPTY_COURSE_FORM, type CourseFormFields } from "@/lib/courseForm";
 import s from "./CourseFormDrawer.module.scss";
@@ -51,9 +52,9 @@ export function CourseFormDrawer(props: Props) {
   const [startDate, setStartDate] = useState(initial.startDate);
   const [endDate, setEndDate] = useState(initial.endDate);
   const [plannedSessions, setPlannedSessions] = useState(initial.plannedSessions);
-  const [weekdays, setWeekdays] = useState<number[]>(initial.weekdays);
-  const [startTime, setStartTime] = useState(initial.startTime);
-  const [endTime, setEndTime] = useState(initial.endTime);
+  // One slot per meeting weekday, each with its own start/end time.
+  const [schedule, setSchedule] = useState<ScheduleSlot[]>(initial.schedule);
+  const weekdays = scheduleDays(schedule);
   const [room, setRoom] = useState(initial.room);
   const [weights, setWeights] = useState({
     weightAttendance: initial.weightAttendance,
@@ -93,10 +94,21 @@ export function CourseFormDrawer(props: Props) {
     recount(startDate, value, weekdays);
   }
 
+  // A newly added day starts with the same times as the last one picked
+  // (most courses meet at one time), and can then be changed on its own.
   function toggleWeekday(day: number) {
-    const next = weekdays.includes(day) ? weekdays.filter((d) => d !== day) : [...weekdays, day];
-    setWeekdays(next);
-    recount(startDate, endDate, next);
+    const next = weekdays.includes(day)
+      ? schedule.filter((slot) => slot.day !== day)
+      : sortSchedule([
+          ...schedule,
+          { day, startTime: schedule.at(-1)?.startTime ?? null, endTime: schedule.at(-1)?.endTime ?? null },
+        ]);
+    setSchedule(next);
+    recount(startDate, endDate, scheduleDays(next));
+  }
+
+  function setSlotTime(day: number, key: "startTime" | "endTime", value: string) {
+    setSchedule((current) => current.map((slot) => (slot.day === day ? { ...slot, [key]: value || null } : slot)));
   }
 
   function updateWeight(key: keyof typeof weights, value: number) {
@@ -129,9 +141,7 @@ export function CourseFormDrawer(props: Props) {
         code: code.trim() || null,
         section: section.trim() || null,
         room: room.trim() || null,
-        weekdays,
-        startTime: startTime || null,
-        endTime: endTime || null,
+        schedule,
         plannedSessions,
         color,
         ...weights,
@@ -307,24 +317,41 @@ export function CourseFormDrawer(props: Props) {
             </div>
           </div>
 
-          <div className={f.grid2}>
+          {schedule.length > 0 && (
             <div className={f.field}>
-              <label className={labelClass}>
-                <Clock size={12} aria-hidden /> {t("startTime")}
+              <label className={`${labelClass} ${f.iconLabel}`}>
+                <Clock size={12} aria-hidden />
+                {t("classTimes")}
               </label>
-              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={inputClass} />
+              <div className={s.slots}>
+                {schedule.map((slot) => (
+                  <div key={slot.day} className={s.slot}>
+                    <span className={s.slotDay}>{weekdayName(slot.day, "long")}</span>
+                    <input
+                      type="time"
+                      aria-label={`${weekdayName(slot.day, "long")} ${t("startTime")}`}
+                      value={slot.startTime ?? ""}
+                      onChange={(e) => setSlotTime(slot.day, "startTime", e.target.value)}
+                      className={inputClass}
+                    />
+                    <span aria-hidden>–</span>
+                    <input
+                      type="time"
+                      aria-label={`${weekdayName(slot.day, "long")} ${t("endTime")}`}
+                      value={slot.endTime ?? ""}
+                      onChange={(e) => setSlotTime(slot.day, "endTime", e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className={f.field}>
-              <label className={labelClass}>
-                <Clock size={12} aria-hidden /> {t("endTime")}
-              </label>
-              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={inputClass} />
-            </div>
-          </div>
+          )}
 
           <div className={f.field}>
-            <label className={labelClass}>
-              <MapPin size={12} aria-hidden /> {t("room")}
+            <label className={`${labelClass} ${f.iconLabel}`}>
+              <MapPin size={12} aria-hidden />
+              {t("room")}
             </label>
             <input value={room} onChange={(e) => setRoom(e.target.value)} className={inputClass} />
           </div>

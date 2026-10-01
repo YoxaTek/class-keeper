@@ -184,7 +184,8 @@
     "syncsAcross": "Đồng bộ giữa máy tính & điện thoại",
     "createFirstCourseShort": "Tạo khóa học đầu tiên",
     "step4Title": "Ghi điểm kiểm tra & bài tập",
-    "step4Body": "Nhập điểm kiểm tra, bài tập, giữa kỳ và cuối kỳ riêng với điểm danh hằng ngày."
+    "step4Body": "Nhập điểm kiểm tra, bài tập, giữa kỳ và cuối kỳ riêng với điểm danh hằng ngày.",
+    "classTimes": "Giờ học"
   },
   "roster": {
     "title": "Danh sách học viên",

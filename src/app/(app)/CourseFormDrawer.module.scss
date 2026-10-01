@@ -225,3 +225,25 @@
     box-shadow: var(--shadow-thumb);
   }
 }
+
+// One row per meeting day: the day name, then its own start and end time.
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.slot {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.slotDay {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--text-body);
+}

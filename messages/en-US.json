@@ -184,7 +184,8 @@
     "syncsAcross": "Syncs across desktop & mobile",
     "createFirstCourseShort": "Create First Course",
     "step4Title": "Record quizzes & assignments",
-    "step4Body": "Input scores for quizzes, assignments, midterm exams, and final grades separately from daily roll-call."
+    "step4Body": "Input scores for quizzes, assignments, midterm exams, and final grades separately from daily roll-call.",
+    "classTimes": "Class times"
   },
   "roster": {
     "title": "Students",

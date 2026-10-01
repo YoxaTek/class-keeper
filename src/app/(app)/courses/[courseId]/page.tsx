@@ -8,7 +8,8 @@ import { ClassDeleteButton } from "./ClassDeleteButton";
 import { ExportSessionPdfButton } from "./ExportSessionPdfButton";
 import { scoreRecordMax, pctFor } from "@/lib/grading/calculateGrade";
 import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
-import { cardHoverClass } from "@/components/ui/styles";
+import { cardClass, cardHoverClass } from "@/components/ui/styles";
+import { CourseSummary, courseStripeClass } from "@/components/CourseSummary";
 import css from "./classes.module.scss";
 
 type Filter = "all" | "upcoming" | "past";
@@ -74,8 +75,21 @@ export default async function SessionsListPage({
     { key: "past", label: t("sessions.filterPast"), count: pastSessions.length },
   ];
 
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const conducted = allSessions.filter((x) => x.date.toISOString().slice(0, 10) <= todayKey).length;
+  const planned = Math.max(course.plannedSessions, allSessions.length);
+
   return (
     <div className={css.page}>
+      <section className={`${cardClass} ${courseStripeClass(course.color)} ${css.courseCard}`}>
+        <CourseSummary
+          course={course}
+          enrolled={rosterEnrollments.length}
+          conducted={conducted}
+          planned={planned}
+        />
+      </section>
+
       <Breadcrumb items={[{ label: t("sessions.title") }]} />
 
       <div className={css.toolbar}>
@@ -107,12 +121,18 @@ export default async function SessionsListPage({
             const turnout = turnoutPct === null ? "—" : `${turnoutPct}%`;
             const turnoutLow = s.hasAttendance && turnoutPct !== null && turnoutPct < LOW_ATTENDANCE_THRESHOLD;
             const assessmentsById = new Map(s.assessments.map((a) => [a.id, a]));
-            const scoreAvg = s.scores.length
-              ? `${(
-                  s.scores.reduce((sum, r) => sum + pctFor(r, scoreRecordMax(r, s, assessmentsById)), 0) /
-                  s.scores.length
-                ).toFixed(1)}%`
-              : "—";
+            // Only scores that were actually entered count: a record with no
+            // original and no retake score is a placeholder (not a 0%), and a
+            // class that hasn't happened yet has nothing to average.
+            const enteredScores = s.scores.filter((r) => r.originalScore !== null || r.retakeScore !== null);
+            const hasHappened = s.date.toISOString().slice(0, 10) <= new Date().toISOString().slice(0, 10);
+            const scoreAvg =
+              hasHappened && enteredScores.length
+                ? `${(
+                    enteredScores.reduce((sum, r) => sum + pctFor(r, scoreRecordMax(r, s, assessmentsById)), 0) /
+                    enteredScores.length
+                  ).toFixed(1)}%`
+                : "—";
 
             const href = `/courses/${courseId}/sessions/${s.id}`;
             const coverLabels = covers(s);

@@ -184,7 +184,8 @@
     "syncsAcross": "Sinkron di desktop & seluler",
     "createFirstCourseShort": "Buat Kursus Pertama",
     "step4Title": "Catat kuis & tugas",
-    "step4Body": "Masukkan nilai kuis, tugas, UTS, dan nilai akhir terpisah dari absensi harian."
+    "step4Body": "Masukkan nilai kuis, tugas, UTS, dan nilai akhir terpisah dari absensi harian.",
+    "classTimes": "Jam kelas"
   },
   "roster": {
     "title": "Daftar siswa",

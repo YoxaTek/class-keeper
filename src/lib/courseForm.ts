@@ -1,4 +1,5 @@
 import type { Course, Subject } from "@prisma/client";
+import { parseSchedule, type ScheduleSlot } from "@/lib/schedule";
 import { COURSE_COLORS, type CourseColor } from "@/lib/validation/course";
 
 /** Everything the create/edit course form edits, as plain form values. */
@@ -19,9 +20,7 @@ export interface CourseFormFields {
   code: string;
   section: string;
   room: string;
-  weekdays: number[];
-  startTime: string;
-  endTime: string;
+  schedule: ScheduleSlot[];
   plannedSessions: number;
   color: CourseColor;
 }
@@ -43,9 +42,7 @@ export const EMPTY_COURSE_FORM: CourseFormFields = {
   code: "",
   section: "",
   room: "",
-  weekdays: [],
-  startTime: "",
-  endTime: "",
+  schedule: [],
   plannedSessions: 24,
   color: "terracotta",
 };
@@ -69,9 +66,7 @@ export function courseFormInitial(course: Course & { subject: Subject }): Course
     code: course.code ?? "",
     section: course.section ?? "",
     room: course.room ?? "",
-    weekdays: course.weekdays,
-    startTime: course.startTime ?? "",
-    endTime: course.endTime ?? "",
+    schedule: parseSchedule(course.schedule),
     plannedSessions: course.plannedSessions,
     color: (COURSE_COLORS as readonly string[]).includes(course.color) ? (course.color as CourseColor) : "terracotta",
   };

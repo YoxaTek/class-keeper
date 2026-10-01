@@ -4,20 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import s from "./MobileFooterNav.module.scss";
-import { BookOpenCheck, CalendarRange, CircleUserRound, House, Users } from "lucide-react";
+import { BookOpenCheck, CalendarRange, House, Users } from "lucide-react";
 
-export function MobileFooterNav({
-  name,
-  email,
-}: {
-  name: string | null;
-  email: string;
-}) {
+export function MobileFooterNav() {
   const t = useTranslations();
   const pathname = usePathname();
-
-  // Same "who am I" display used by the header's ProfileMenu.
-  const displayName = name || email;
 
   // Only rendered inside a course (see AppShell), so there is always one.
   const courseId = pathname.match(/^\/courses\/([^/]+)/)?.[1];
@@ -32,16 +23,11 @@ export function MobileFooterNav({
   const courseActive = pathname === `/courses/${courseId}/course`;
   const homeHref = "/";
   const homeActive = false;
-  const profileActive = pathname === "/account";
-
-  const profileTab = { href: "/account", label: displayName, icon: CircleUserRound, active: profileActive };
-
   const tabs = [
     { href: homeHref, label: t("common.home"), icon: House, active: homeActive },
     { href: courseHref, label: t("dashboard.course"), icon: BookOpenCheck, active: courseActive },
     { href: classesHref, label: t("sessions.title"), icon: CalendarRange, active: classesActive },
     { href: studentsHref, label: t("roster.title"), icon: Users, active: studentsActive },
-    profileTab,
   ];
 
   return (
