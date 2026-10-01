@@ -106,6 +106,14 @@
   }
 }
 
+// A page that ends in a sticky bar (the attendance Save bar) opts out of the
+// bottom padding with data-flush-bottom. Sticky elements can't move out of
+// their parent, so any padding beneath that parent would stay as a gap
+// under the bar.
+.main:has([data-flush-bottom]) {
+  padding-bottom: 0;
+}
+
 // The mobile tab bar is a normal flex child below <main>, not a fixed
 // overlay, so <main> already ends above it and needs no bottom padding.
 .footer {

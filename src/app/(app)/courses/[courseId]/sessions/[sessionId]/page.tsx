@@ -43,7 +43,7 @@ export default async function ClassDetailPage({
     // and its sticky Save bar pinned via mt-auto — so the bar sits flush at
     // the bottom of the screen even when the roster is short enough that
     // the page doesn't scroll, not just while scrolling a long one.
-    <div className={s.page}>
+    <div className={s.page} data-flush-bottom>
       <SessionHeader backHref={`/courses/${courseId}`} title={sessionLabel} subtitle={dateFmt.format(session.date)} />
 
       <div className={s.table}>
