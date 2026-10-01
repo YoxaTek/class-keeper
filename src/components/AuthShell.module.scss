@@ -1,0 +1,65 @@
+@use "mixins";
+
+.shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.brand {
+  display: none;
+  width: 20rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+  background: var(--brand);
+  color: var(--on-accent);
+
+  @include mixins.sm {
+    display: flex;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+
+  img {
+    border-radius: 0.125rem;
+  }
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--brand-text);
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--brand-icon);
+  }
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+
+  @include mixins.sm {
+    justify-content: flex-start;
+    padding-inline: 3rem;
+  }
+}
+
+.column {
+  width: 100%;
+  max-width: 24rem;
+}

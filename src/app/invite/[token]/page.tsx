@@ -6,6 +6,7 @@ import { getEnabledProviders } from "@/lib/authProviders";
 import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
 import { AuthShell } from "@/components/AuthShell";
 import { linkClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 // Just a token-capturing landing page — /invites owns every acceptance
 // rule (already-onboarded confirmation, an existing TA picking up another
@@ -26,20 +27,18 @@ export default async function InviteLandingPage({ params }: { params: Promise<{ 
 
   return (
     <AuthShell appName={tCommon("appName")}>
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
+      <div className={f.stack}>
+        <div className={f.field}>
+          <h1 className={f.heading}>{t("title")}</h1>
+          <p className={f.muted}>{t("subtitle")}</p>
         </div>
         <ProviderSignInButtons providers={providers} callbackUrl={target} />
 
-        <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-600">
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <div className={f.divider}>
           {tLogin("or")}
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
         </div>
 
-        <p className="text-center text-sm text-zinc-500 dark:text-zinc-500">
+        <p className={`${f.muted} ${f.center}`}>
           <Link href={`/login?${callbackParam}`} className={linkClass}>
             {tLogin("submit")}
           </Link>

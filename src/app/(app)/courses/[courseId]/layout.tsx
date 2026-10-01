@@ -1,4 +1,5 @@
 import { requireCourseAccess } from "@/lib/courseAccess";
+import s from "./layout.module.scss";
 
 export default async function CourseLayout({
   children,
@@ -10,5 +11,5 @@ export default async function CourseLayout({
   const { courseId } = await params;
   await requireCourseAccess(courseId); // access check only — nav lives in the sidebar now, breadcrumbs are per-page
 
-  return <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col">{children}</div>;
+  return <div className={s.content}>{children}</div>;
 }

@@ -8,6 +8,7 @@ import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, linkClass } from "@/components/ui/styles";
 import type { AuthProviderId } from "@/lib/authProviders";
+import f from "@/components/ui/form.module.scss";
 
 export function SignupForm({ providers, callbackUrl = "/", initialInstitution = "" }: { providers: AuthProviderId[]; callbackUrl?: string; initialInstitution?: string }) {
   const t = useTranslations("signup");
@@ -81,19 +82,17 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
   const loginHref = callbackUrl === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
 
   return (
-    <div className="space-y-5">
+    <div className={f.stack}>
       <ProviderSignInButtons providers={providers} callbackUrl={callbackUrl} />
 
       {providers.length > 0 && (
-        <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-600">
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <div className={f.divider}>
           {tLogin("or")}
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-1">
+      <form onSubmit={onSubmit} className={f.form}>
+        <div className={f.field}>
           <label htmlFor="name" className={labelClass}>
             {t("name")}
           </label>
@@ -106,7 +105,7 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
           />
         </div>
 
-        <div className="space-y-1">
+        <div className={f.field}>
           <label htmlFor="email" className={labelClass}>
             {tLogin("email")}
           </label>
@@ -120,7 +119,7 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
           />
         </div>
 
-        <div className="space-y-1">
+        <div className={f.field}>
           <label htmlFor="password" className={labelClass}>
             {tLogin("password")}
           </label>
@@ -136,10 +135,10 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
         </div>
 
         {(
-          <div className="space-y-1">
+          <div className={f.field}>
             <label htmlFor="institution" className={labelClass}>
               {tOnboarding("institution")}{" "}
-              <span className="text-zinc-400 dark:text-zinc-600">({tOnboarding("optional")})</span>
+              <span className={f.optional}>({tOnboarding("optional")})</span>
             </label>
             <input
               id="institution"
@@ -152,12 +151,13 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
         )}
 
         {showStudentId && (
-          <div className="space-y-1">
+          <div className={f.field}>
             <label htmlFor="studentId" className={labelClass}>
-              {tJoin("studentId")} <span className="text-zinc-400 dark:text-zinc-600">({tOnboarding("optional")})</span>
+              {tJoin("studentId")}
             </label>
             <input
               id="studentId"
+              required
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               className={inputClass}
@@ -165,14 +165,14 @@ export function SignupForm({ providers, callbackUrl = "/", initialInstitution = 
           </div>
         )}
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className={f.error}>{error}</p>}
 
-        <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+        <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
           {t("submit")}
         </Button>
       </form>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-500">
+      <p className={f.muted}>
         {t("haveAccount")} <Link href={loginHref} className={linkClass}>{tLogin("submit")}</Link>
       </p>
     </div>

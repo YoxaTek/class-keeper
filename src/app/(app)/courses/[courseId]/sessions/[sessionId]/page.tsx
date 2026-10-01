@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
 import { ClassDetailTable } from "./ClassDetailTable";
 import { SessionHeader } from "./SessionHeader";
+import s from "./session.module.scss";
 
 export default async function ClassDetailPage({
   params,
@@ -42,10 +43,10 @@ export default async function ClassDetailPage({
     // and its sticky Save bar pinned via mt-auto — so the bar sits flush at
     // the bottom of the screen even when the roster is short enough that
     // the page doesn't scroll, not just while scrolling a long one.
-    <div className="flex min-h-full flex-col gap-4">
+    <div className={s.page}>
       <SessionHeader backHref={`/courses/${courseId}`} title={sessionLabel} subtitle={dateFmt.format(session.date)} />
 
-      <div className="flex flex-1 flex-col">
+      <div className={s.table}>
         <ClassDetailTable
           sessionId={sessionId}
           pdfTitle={pdfTitle}

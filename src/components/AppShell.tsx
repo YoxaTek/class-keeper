@@ -2,21 +2,24 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BookOpenCheck } from "lucide-react";
 import type { Role } from "@prisma/client";
+import type { Theme } from "@/lib/theme";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { AdSlot } from "@/components/AdSlot";
+import { BackButton } from "@/components/BackButton";
 import { MobileFooterNav } from "@/components/MobileFooterNav";
+import s from "./AppShell.module.scss";
 
 export function AppShell({
   name,
   email,
   image,
   role,
+  theme,
   courses,
   children,
 }: {
@@ -24,52 +27,58 @@ export function AppShell({
   email: string;
   image: string | null;
   role: Role;
+  theme: Theme;
   courses: { id: string; label: string }[];
   children: React.ReactNode;
 }) {
   const t = useTranslations();
   const pathname = usePathname();
+  const showBack = pathname !== "/" && pathname !== "/me";
   const courseId = pathname.match(/^\/courses\/([^/]+)/)?.[1];
   const currentCourse = courseId ? courses.find((course) => course.id === courseId) : undefined;
-  const [footerHeight, setFooterHeight] = useState(0);
 
   return (
-    <div className="flex h-dvh flex-col print:block print:h-auto">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 print:hidden dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            <Image src="/icon-512.png" alt="" width={20} height={20} className="rounded-sm" />
+    <div className={s.shell}>
+      <header className={s.header}>
+        <div className={s.headerStart}>
+          {/* Back appears everywhere except the two "home" screens. It is always
+              mounted so its slot can animate open/closed, sliding the title. */}
+          <div className={`${s.backSlot} ${showBack ? s.show : ""}`} inert={!showBack}>
+            <BackButton />
+          </div>
+          <Link href="/" className={s.brand}>
+            <Image src="/icon-512.png" alt="" width={28} height={28} />
             {t("common.appName")}
           </Link>
         </div>
-        <div className="flex min-w-0 items-center gap-3">
+        <div className={s.headerEnd}>
           {currentCourse && (
-            <span className="flex min-w-0 max-w-[45vw] items-center gap-1.5 truncate text-sm font-bold text-[#0f6e56] lg:max-w-none dark:text-teal-400">
-              <BookOpenCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{currentCourse.label}</span>
+            <span className={s.courseName}>
+              <BookOpenCheck aria-hidden />
+              <span>{currentCourse.label}</span>
             </span>
           )}
-          {/* On mobile, the footer's Settings tab covers this everywhere. */}
-          <div className="hidden lg:block">
-            <ProfileMenu name={name} email={email} image={image} role={role} />
+          {/* Inside a course the footer tabs carry Profile on mobile; everywhere
+              else (course list, account, student pages) the header does. */}
+          <div className={`${s.profile} ${courseId ? "" : s.always}`}>
+            <ProfileMenu name={name} email={email} image={image} role={role} theme={theme} />
           </div>
         </div>
       </header>
-      <div className="print:hidden">
+      <div className={s.ad}>
         <AdSlot />
       </div>
-      <div className="flex min-h-0 flex-1 print:block">
-        <div className="print:hidden">
+      <div className={s.body}>
+        <div className={s.sidebar}>
           <AppSidebar />
         </div>
-        <main
-          className="flex min-w-0 flex-1 flex-col overflow-y-auto px-3 py-5 lg:pb-5 print:overflow-visible print:!p-0"
-          style={footerHeight ? { paddingBottom: footerHeight } : undefined}
-        >
-          {children}
-        </main>
+        <main className={s.main}>{children}</main>
       </div>
-      <MobileFooterNav name={name} email={email} simple={role === "STUDENT"} onHeightChange={setFooterHeight} />
+      {courseId && (
+        <div className={s.footer}>
+          <MobileFooterNav name={name} email={email} />
+        </div>
+      )}
     </div>
   );
 }

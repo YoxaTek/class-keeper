@@ -1,0 +1,168 @@
+@use "mixins";
+
+// Shared primitives: field, label, card, link, button, icon button.
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--border);
+  background: var(--bg-field);
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text);
+
+  &::placeholder {
+    color: var(--text-faint);
+  }
+
+  &:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  &.sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--text-label);
+}
+
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.link {
+  color: var(--accent-text);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.1s;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.full {
+    border-radius: 9999px;
+  }
+
+  // "lg" only widens the button (same height as "md") — for a button that
+  // needs to stand out by taking more room on its row.
+  &.sizeSm {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  &.sizeMd {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  &.sizeLg {
+    padding: 0.5rem 2rem;
+    font-size: 13.5px;
+  }
+
+  &.primary {
+    background: var(--accent);
+    color: var(--on-accent);
+    &:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: var(--shadow-md);
+    }
+  }
+  &.secondary {
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-body);
+    &:hover:not(:disabled) {
+      border-color: var(--border-strong);
+      background: var(--bg-hover);
+    }
+  }
+  &.danger {
+    border: 1.5px solid var(--danger-border);
+    color: var(--danger-text);
+    &:hover:not(:disabled) {
+      background: var(--danger-bg-hover);
+    }
+  }
+  &.ghost {
+    color: var(--text-label);
+    &:hover:not(:disabled) {
+      background: var(--bg-muted);
+    }
+  }
+  // Slate-teal solid — forward progress / confirmations, or an action
+  // (like exporting) next to a primary button.
+  &.accent {
+    background: var(--secondary);
+    color: var(--on-accent);
+    &:hover:not(:disabled) {
+      background: var(--secondary-hover);
+    }
+  }
+}
+
+// Small square icon-only button (edit / delete / remove row).
+.iconButton {
+  border-radius: 0.25rem;
+  padding: 0.375rem;
+  color: var(--text-muted);
+
+  &:hover {
+    background: var(--bg-muted);
+    color: var(--text);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  &.danger:hover {
+    background: var(--danger-bg-hover);
+    color: var(--error);
+  }
+}
+
+// A card that is itself a link/hover target (dashboard + class list).
+.cardHover {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--bg-surface);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+}

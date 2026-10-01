@@ -28,7 +28,10 @@
       "STUDENT": "học viên"
     },
     "saving": "Đang lưu…",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "close": "Đóng",
+    "mobileNav": "Điều hướng trên di động",
+    "tagline": "Quản lý điểm danh, chấm điểm và danh sách lớp cho lớp tiếng Trung."
   },
   "login": {
     "title": "Đăng nhập",
@@ -55,7 +58,8 @@
     "scanQr": "Quét mã QR để tham gia khóa học",
     "scanQrTitle": "Quét mã QR để tham gia khóa học",
     "scanQrHelp": "Hướng camera của bạn vào mã QR mà giáo viên chia sẻ.",
-    "scannedBanner": "Đã quét mã — đăng nhập để tiếp tục."
+    "scannedBanner": "Đã quét mã — đăng nhập để tiếp tục.",
+    "joinCourseBanner": "Đăng nhập để tham gia {course}."
   },
   "qrScanner": {
     "uploadQrImage": "Tải ảnh lên thay thế",
@@ -73,7 +77,8 @@
     "haveAccount": "Đã có tài khoản?",
     "name": "Tên",
     "submit": "Tạo tài khoản",
-    "error": "Không thể tạo tài khoản. Vui lòng thử lại."
+    "error": "Không thể tạo tài khoản. Vui lòng thử lại.",
+    "joinCourseBanner": "Tạo tài khoản để tham gia {course}."
   },
   "forgotPassword": {
     "title": "Quên mật khẩu?",
@@ -97,7 +102,6 @@
   "dashboard": {
     "title": "Học kỳ",
     "subtitle": "{count} khóa học trong học kỳ này",
-    "newCourse": "Thêm",
     "acceptInvite": "Chấp nhận lời mời",
     "acceptInviteTitle": "Quét mã QR lời mời",
     "acceptInviteHelp": "Hướng camera của bạn vào mã QR mời hoặc tham gia mà bạn nhận được.",
@@ -130,7 +134,57 @@
     "addStudentsPlaceholder": "Mỗi dòng một tên học viên (không bắt buộc — bạn cũng có thể thêm sau ở tab Danh sách học viên)",
     "editTitle": "Chỉnh sửa học kỳ",
     "institute": "Cơ sở đào tạo",
-    "institutePlaceholder": "vd. Trường THPT Lincoln"
+    "institutePlaceholder": "vd. Trường THPT Lincoln",
+    "createCourse": "Tạo khóa học",
+    "welcomeBack": "Chào mừng trở lại, {name}",
+    "heroSubtitle": "Sẵn sàng dẫn dắt các lớp hôm nay chưa?",
+    "activeCourses": "{count} khóa học đang mở",
+    "enrolledStudents": "{count} học sinh đã ghi danh",
+    "teacherFallback": "giáo viên",
+    "enrolledBadge": "{count} đã ghi danh",
+    "classesConducted": "Tiến độ: đã dạy {done}/{total} buổi",
+    "cohortHealth": "Tình hình lớp",
+    "avgShort": "TB",
+    "attendanceShort": "Chuyên cần",
+    "openWorkspace": "Mở không gian làm việc",
+    "quickActions": "Thao tác nhanh",
+    "markAttendance": "Điểm danh",
+    "markAttendanceHint": "Điểm danh nhanh hôm nay",
+    "gradebookEntry": "Nhập điểm",
+    "gradebookEntryHint": "Nhập điểm kiểm tra & giữa kỳ",
+    "courseDetails": "Chi tiết khóa học",
+    "courseCode": "Mã khóa học",
+    "section": "Lớp / Nhóm",
+    "binderColor": "Màu khóa học",
+    "color_terracotta": "Đất nung",
+    "color_teal": "Xanh đá",
+    "color_clay": "Đất sét",
+    "color_rust": "Nâu gỉ đậm",
+    "scheduleTitle": "Buổi học dự kiến & lịch",
+    "plannedSessions": "Tổng số buổi học",
+    "classesUnit": "Buổi",
+    "weekdays": "Ngày học hằng tuần",
+    "startTime": "Giờ bắt đầu",
+    "endTime": "Giờ kết thúc",
+    "room": "Phòng học / Cơ sở",
+    "welcomeNew": "Chào mừng, {name}",
+    "emptySubtitle": "Bạn chưa có khóa học nào. Hãy bắt đầu xây dựng nhé.",
+    "launchTitle": "Sẵn sàng mở khóa học đầu tiên?",
+    "launchBody": "Thiết lập khóa học và lịch học, hoặc chấp nhận lời mời, để bắt đầu theo dõi điểm danh và điểm số.",
+    "createFirstCourse": "Tạo khóa học đầu tiên",
+    "howItWorks": "ClassKeeper hoạt động qua 4 bước",
+    "step1Title": "Tạo khóa học",
+    "step1Body": "Đặt học kỳ, lên lịch các buổi học định kỳ và xác định tỷ trọng điểm.",
+    "step2Title": "Thêm học sinh & trợ giảng",
+    "step2Body": "Mời học sinh qua liên kết lớp hoặc mã QR, thêm tên học sinh hàng loạt và mời trợ giảng (TA) giúp quản lý lớp.",
+    "step3Title": "Điểm danh một chạm",
+    "step3Body": "Ghi nhanh có mặt, vắng hoặc nghỉ phép cho từng buổi học.",
+    "quickSetup": "Thiết lập nhanh",
+    "guideMinutes": "Hướng dẫn 4 phút",
+    "syncsAcross": "Đồng bộ giữa máy tính & điện thoại",
+    "createFirstCourseShort": "Tạo khóa học đầu tiên",
+    "step4Title": "Ghi điểm kiểm tra & bài tập",
+    "step4Body": "Nhập điểm kiểm tra, bài tập, giữa kỳ và cuối kỳ riêng với điểm danh hằng ngày."
   },
   "roster": {
     "title": "Danh sách học viên",
@@ -160,7 +214,7 @@
     "filterPast": "Đã qua",
     "label": "Nhãn",
     "covers": "Nội dung",
-  "coversHint": "Điểm danh, giữa kỳ và cuối kỳ có thể bật hoặc tắt. Thêm bao nhiêu bài kiểm tra hoặc bài tập tùy ý ở bên dưới.",
+    "coversHint": "Điểm danh, giữa kỳ và cuối kỳ có thể bật hoặc tắt. Thêm bao nhiêu bài kiểm tra hoặc bài tập tùy ý ở bên dưới.",
     "attendanceTurnout": "Điểm danh",
     "scoreAverage": "Điểm trung bình",
     "attendance": "Điểm danh",
@@ -213,7 +267,10 @@
     "narrative": "Nội dung nhận xét",
     "impressionScore": "Điểm ấn tượng",
     "attendanceHistory": "Lịch sử điểm danh",
-    "scoreHistory": "Lịch sử điểm"
+    "scoreHistory": "Lịch sử điểm",
+    "midtermAndFinal": "Giữa kỳ & cuối kỳ",
+    "noScoresYet": "Chưa có điểm nào được ghi nhận",
+    "noScoresYetHint": "Điểm kiểm tra và bài tập được nhập từ màn hình điểm danh của từng buổi học."
   },
   "belowPassing": {
     "title": "Dưới điểm đạt",
@@ -231,7 +288,10 @@
     "feedbackSubmit": "Gửi phản hồi",
     "feedbackSubmitted": "Đã gửi phản hồi vào {date}. Cảm ơn bạn!",
     "noEvaluationYet": "Chưa được viết.",
-    "sessionScores": "Điểm các buổi học"
+    "sessionScores": "Điểm các buổi học",
+    "noProfile": "Chưa có hồ sơ học sinh nào được liên kết với tài khoản này.",
+    "feedbackEdit": "Sửa phản hồi",
+    "feedbackUpdate": "Cập nhật phản hồi"
   },
   "onboarding": {
     "title": "Thiết lập tài khoản của bạn",
@@ -272,7 +332,12 @@
     "confirmEmailLabel": "Nhập {email} để xác nhận",
     "wrongPassword": "Sai mật khẩu.",
     "deleting": "Đang xóa…",
-    "error": "Không thể xóa tài khoản. Vui lòng thử lại."
+    "error": "Không thể xóa tài khoản. Vui lòng thử lại.",
+    "theme": "Giao diện",
+    "theme_system": "Hệ thống",
+    "theme_light": "Sáng",
+    "theme_dark": "Tối",
+    "feedbackLink": "Phản hồi của học sinh"
   },
   "billing": {
     "title": "Thanh toán",
@@ -302,6 +367,30 @@
     "submit": "Tham gia lớp",
     "submitting": "Đang tham gia…",
     "error": "Không thể tham gia lớp học này. Vui lòng thử lại.",
-    "alreadyTeaching": "Tài khoản này đang là giáo viên — vui lòng dùng tài khoản khác để tham gia với vai trò học sinh."
+    "alreadyTeaching": "Tài khoản này đang là giáo viên — vui lòng dùng tài khoản khác để tham gia với vai trò học sinh.",
+    "chineseName": "Tên tiếng Trung"
+  },
+  "install": {
+    "link": "Cài đặt ClassKeeper trên điện thoại",
+    "title": "Cài đặt ClassKeeper",
+    "intro": "Thêm ClassKeeper vào màn hình chính điện thoại để mở như một ứng dụng — không cần cửa hàng ứng dụng.",
+    "iosTitle": "iPhone / iPad (Safari)",
+    "iosNote": "Phải dùng Safari — các trình duyệt iOS khác không thể thêm vào màn hình chính.",
+    "ios1": "Mở ClassKeeper trong Safari và đăng nhập.",
+    "ios2": "Nhấn nút Chia sẻ (ô vuông có mũi tên hướng lên) trên thanh công cụ.",
+    "ios3": "Cuộn xuống và nhấn “Thêm vào MH chính”.",
+    "ios4": "Giữ tên “ClassKeeper” và nhấn “Thêm”.",
+    "ios5": "Mở ClassKeeper từ màn hình chính — chạy toàn màn hình như một ứng dụng.",
+    "androidTitle": "Android (Chrome)",
+    "androidNote": "Các trình duyệt khác (Edge, Samsung Internet, Firefox) có mục “Thêm vào màn hình chính” tương tự.",
+    "android1": "Mở ClassKeeper trong Chrome và đăng nhập.",
+    "android2": "Nhấn menu ⋮ ở góc trên bên phải.",
+    "android3": "Nhấn “Cài đặt ứng dụng” (hoặc “Thêm vào màn hình chính” nếu không thấy).",
+    "android4": "Nhấn “Cài đặt”, rồi xác nhận.",
+    "android5": "Mở ClassKeeper từ màn hình chính hoặc ngăn ứng dụng."
+  },
+  "feedbackList": {
+    "title": "Phản hồi của học sinh",
+    "empty": "Chưa có phản hồi nào được gửi."
   }
 }

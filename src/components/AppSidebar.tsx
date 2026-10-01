@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import s from "./AppSidebar.module.scss";
 import { LayoutGrid, Users, CalendarRange, TriangleAlert } from "lucide-react";
 
 interface NavItem {
   href: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType;
 }
 
 export function AppSidebar() {
@@ -27,35 +28,17 @@ export function AppSidebar() {
     { href: `/courses/${courseId}/below-passing`, label: t("belowPassing.title"), icon: TriangleAlert },
   ];
 
-  function nav() {
-    return (
-      <nav className="flex-1 space-y-0.5 p-2">
-        {items.map(({ href, label, icon: Icon }) => {
-          const active = href === "/" ? pathname === "/" : pathname === href;
-          return (
-            <Link
-              key={label}
-              href={href}
-              className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${
-                active
-                  ? "bg-[#0f6e56]/10 font-medium text-[#0f6e56] dark:text-teal-400"
-                  : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
-              }`}
-            >
-              <Icon className="h-4 w-4" aria-hidden />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-    );
-  }
-
-  // Mobile now uses a native-style bottom tab bar.
-  // Keep this component desktop-only for course-scoped sidebar navigation.
+  // Mobile uses the bottom tab bar (MobileFooterNav) — this is desktop-only.
   return (
-    <aside className="hidden h-full w-56 shrink-0 flex-col border-r border-zinc-200 bg-white lg:flex dark:border-zinc-800 dark:bg-zinc-950">
-      {nav()}
+    <aside className={s.sidebar}>
+      <nav className={s.nav}>
+        {items.map(({ href, label, icon: Icon }) => (
+          <Link key={label} href={href} className={`${s.item} ${pathname === href ? s.active : ""}`}>
+            <Icon aria-hidden />
+            {label}
+          </Link>
+        ))}
+      </nav>
     </aside>
   );
 }

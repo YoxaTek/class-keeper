@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AuthShell } from "@/components/AuthShell";
 import { OnboardingForm } from "./OnboardingForm";
+import f from "@/components/ui/form.module.scss";
 
 // Bootstrap-only: this always creates a TEACHER account, full stop — every
 // invite/join case (TA, student, an existing TA picking up another course,
@@ -30,10 +31,10 @@ export default async function OnboardingPage() {
 
   return (
     <AuthShell appName={tCommon("appName")}>
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("bootstrapSubtitle")}</p>
+      <div className={f.stack}>
+        <div className={f.field}>
+          <h1 className={f.heading}>{t("title")}</h1>
+          <p className={f.muted}>{t("bootstrapSubtitle")}</p>
         </div>
 
         <OnboardingForm initialName={session.user.name ?? ""} />

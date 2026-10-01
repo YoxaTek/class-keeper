@@ -1,0 +1,16 @@
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+// Print-only portal content: hidden on screen, shown when printing.
+.portal {
+  display: none;
+
+  @media print {
+    display: block;
+  }
+}

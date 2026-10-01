@@ -1,0 +1,13 @@
+// Same width as the course pages, so the record matches what staff see.
+.wrap {
+  display: flex;
+  width: 100%;
+  max-width: 72rem;
+  flex-direction: column;
+  margin-inline: auto;
+}
+
+.feedbackForm {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}

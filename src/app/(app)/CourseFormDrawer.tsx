@@ -2,15 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Plus, Pencil } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { BookOpen, CalendarDays, Check, Clock, MapPin, Minus, Pencil, Percent, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DateInput } from "@/components/ui/DateInput";
 import { Drawer } from "@/components/ui/Drawer";
-import { inputClass, inputClassSm, labelClass } from "@/components/ui/styles";
+import { inputClass, inputClassSm, labelClass, iconButtonClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import { COURSE_COLORS } from "@/lib/validation/course";
+import { countPlannedSessions } from "@/lib/plannedSessions";
+import { EMPTY_COURSE_FORM, type CourseFormFields } from "@/lib/courseForm";
+import s from "./CourseFormDrawer.module.scss";
 
-const sliderClass =
-  "themed-slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700";
+// Week starts on Monday in the picker; values are JS weekdays (0 = Sunday).
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
 function sliderFillStyle(value: number, min: number, max: number) {
   const clamped = Math.min(Math.max(value, min), max);
@@ -23,54 +28,33 @@ function sliderFillStyle(value: number, min: number, max: number) {
   };
 }
 
-interface CourseFields {
-  subjectName: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  weightAttendance: number;
-  weightAssignment: number;
-  weightQuiz: number;
-  weightMidterm: number;
-  weightFinal: number;
-  weightImpression: number;
-  maxExcusedAbsences: number;
-  passingScore: number;
-  institute: string;
-}
-
-type Props = { mode: "create" } | { mode: "edit"; courseId: string; initial: CourseFields };
+type Props =
+  | { mode: "create"; triggerLabel?: string; triggerClassName?: string }
+  | { mode: "edit"; courseId: string; initial: CourseFormFields };
 
 export function CourseFormDrawer(props: Props) {
   const t = useTranslations("dashboard");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const initial: CourseFields =
-    props.mode === "edit"
-      ? props.initial
-      : {
-          subjectName: "",
-          name: "",
-          startDate: "",
-          endDate: "",
-          weightAttendance: 15,
-          weightAssignment: 15,
-          weightQuiz: 30,
-          weightMidterm: 15,
-          weightFinal: 15,
-          weightImpression: 10,
-          maxExcusedAbsences: 3,
-          passingScore: 70,
-          institute: "",
-        };
+  const initial = props.mode === "edit" ? props.initial : EMPTY_COURSE_FORM;
 
   const [subjectName, setSubjectName] = useState(initial.subjectName);
   const [name, setName] = useState(initial.name);
+  const [code, setCode] = useState(initial.code);
+  const [section, setSection] = useState(initial.section);
+  const [color, setColor] = useState(initial.color);
+  const [institute, setInstitute] = useState(initial.institute);
   const [startDate, setStartDate] = useState(initial.startDate);
   const [endDate, setEndDate] = useState(initial.endDate);
+  const [plannedSessions, setPlannedSessions] = useState(initial.plannedSessions);
+  const [weekdays, setWeekdays] = useState<number[]>(initial.weekdays);
+  const [startTime, setStartTime] = useState(initial.startTime);
+  const [endTime, setEndTime] = useState(initial.endTime);
+  const [room, setRoom] = useState(initial.room);
   const [weights, setWeights] = useState({
     weightAttendance: initial.weightAttendance,
     weightAssignment: initial.weightAssignment,
@@ -81,12 +65,39 @@ export function CourseFormDrawer(props: Props) {
   });
   const [maxExcusedAbsences, setMaxExcusedAbsences] = useState(initial.maxExcusedAbsences);
   const [passingScore, setPassingScore] = useState(initial.passingScore);
-  const [institute, setInstitute] = useState(initial.institute);
   const [error, setError] = useState<string | null>(null);
+
   const dateRangeError =
     startDate && endDate && endDate < startDate ? "End date must be on or after start date." : null;
   const weightTotal = Object.values(weights).reduce((sum, w) => sum + w, 0);
   const weightError = weightTotal !== 100 ? `Grading weights must add up to 100 (currently ${weightTotal}).` : null;
+
+  // Weekday names from the browser's own locale data — no translation keys.
+  const weekdayName = (day: number, style: "narrow" | "long") =>
+    new Intl.DateTimeFormat(locale, { weekday: style, timeZone: "UTC" }).format(new Date(Date.UTC(2024, 0, 7 + day)));
+
+  // The class total follows the schedule: whenever the dates or the weekly
+  // days change, recount (the +/− stepper can still fine-tune it afterwards).
+  function recount(start: string, end: string, days: number[]) {
+    const count = countPlannedSessions(start, end, days);
+    if (count !== null) setPlannedSessions(count);
+  }
+
+  function changeStartDate(value: string) {
+    setStartDate(value);
+    recount(value, endDate, weekdays);
+  }
+
+  function changeEndDate(value: string) {
+    setEndDate(value);
+    recount(startDate, value, weekdays);
+  }
+
+  function toggleWeekday(day: number) {
+    const next = weekdays.includes(day) ? weekdays.filter((d) => d !== day) : [...weekdays, day];
+    setWeekdays(next);
+    recount(startDate, endDate, next);
+  }
 
   function updateWeight(key: keyof typeof weights, value: number) {
     setWeights((w) => ({ ...w, [key]: value }));
@@ -115,6 +126,14 @@ export function CourseFormDrawer(props: Props) {
         maxExcusedAbsences,
         passingScore,
         institute: institute.trim() || null,
+        code: code.trim() || null,
+        section: section.trim() || null,
+        room: room.trim() || null,
+        weekdays,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        plannedSessions,
+        color,
         ...weights,
       }),
     });
@@ -133,19 +152,15 @@ export function CourseFormDrawer(props: Props) {
   if (!open) {
     if (props.mode === "edit") {
       return (
-        <button
-          onClick={() => setOpen(true)}
-          title={tc("edit")}
-          className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-        >
-          <Pencil className="h-3.5 w-3.5" aria-hidden />
+        <button onClick={() => setOpen(true)} title={tc("edit")} className={iconButtonClass}>
+          <Pencil size={14} aria-hidden />
         </button>
       );
     }
     return (
-      <Button variant="primary" onClick={() => setOpen(true)} className="shrink-0 whitespace-nowrap">
-        <Plus className="h-4 w-4" aria-hidden />
-        <span className="text-[12.5px]">{t("newCourse")}</span>
+      <Button variant="primary" onClick={() => setOpen(true)} className={props.triggerClassName ?? s.nowrap}>
+        <Plus size={16} aria-hidden />
+        {props.triggerLabel ?? t("createCourse")}
       </Button>
     );
   }
@@ -155,8 +170,8 @@ export function CourseFormDrawer(props: Props) {
       title={props.mode === "edit" ? t("editTitle") : t("createTitle")}
       onClose={() => setOpen(false)}
       footer={
-        <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="flex-1">
+        <div className={f.actions}>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             {tc("cancel")}
           </Button>
           <Button
@@ -164,28 +179,41 @@ export function CourseFormDrawer(props: Props) {
             form="course-form"
             variant="primary"
             disabled={submitting || !!dateRangeError || !!weightError}
-            className="flex-1"
           >
             {tc("save")}
           </Button>
         </div>
       }
     >
-      <form id="course-form" onSubmit={onSubmit}>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className={labelClass}>{t("subject")}</label>
-              <input
-                required
-                value={subjectName}
-                onChange={(e) => setSubjectName(e.target.value)}
-                placeholder="e.g. Chinese — Basic"
-                className={inputClass}
-              />
-            </div>
+      <form id="course-form" onSubmit={onSubmit} className={f.form}>
+        {/* ---- 1. course details ---- */}
+        <section className={s.section}>
+          <h3 className={s.sectionTitle}>
+            <BookOpen size={16} aria-hidden />
+            {t("courseDetails")}
+          </h3>
 
-            <div className="space-y-1">
+          <div className={f.field}>
+            <label className={labelClass}>{t("subject")}</label>
+            <input
+              required
+              value={subjectName}
+              onChange={(e) => setSubjectName(e.target.value)}
+              placeholder="e.g. Chinese — Basic"
+              className={inputClass}
+            />
+          </div>
+
+          <div className={f.grid2}>
+            <div className={f.field}>
+              <label className={labelClass}>{t("courseCode")}</label>
+              <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="CHI-101" className={inputClass} />
+            </div>
+            <div className={f.field}>
+              <label className={labelClass}>{t("section")}</label>
+              <input value={section} onChange={(e) => setSection(e.target.value)} className={inputClass} />
+            </div>
+            <div className={f.field}>
               <label className={labelClass}>{t("term")}</label>
               <input
                 required
@@ -195,18 +223,166 @@ export function CourseFormDrawer(props: Props) {
                 className={inputClass}
               />
             </div>
+            <div className={f.field}>
+              <label className={labelClass}>{t("institute")}</label>
+              <input
+                value={institute}
+                onChange={(e) => setInstitute(e.target.value)}
+                placeholder={t("institutePlaceholder")}
+                className={inputClass}
+              />
+            </div>
+          </div>
 
-            <div className="min-w-0 space-y-1">
+          <div className={f.field}>
+            <label className={labelClass}>{t("binderColor")}</label>
+            <div className={s.swatches} role="radiogroup" aria-label={t("binderColor")}>
+              {COURSE_COLORS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={color === option}
+                  aria-label={t(`color_${option}`)}
+                  title={t(`color_${option}`)}
+                  onClick={() => setColor(option)}
+                  className={`${s.swatch} ${s[option]} ${color === option ? s.picked : ""}`}
+                >
+                  {color === option && <Check size={14} aria-hidden />}
+                </button>
+              ))}
+              <span className={s.swatchName}>{t(`color_${color}`)}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ---- 2. planned sessions & schedule ---- */}
+        <section className={s.section}>
+          <h3 className={s.sectionTitle}>
+            <CalendarDays size={16} aria-hidden />
+            {t("scheduleTitle")}
+          </h3>
+
+          <div className={s.counter}>
+            <span className={labelClass}>{t("plannedSessions")}</span>
+            <div className={s.counterRow}>
+              <button
+                type="button"
+                className={s.step}
+                aria-label="−"
+                onClick={() => setPlannedSessions((n) => Math.max(0, n - 1))}
+              >
+                <Minus size={16} aria-hidden />
+              </button>
+              <div className={s.count}>
+                <strong className="tabular">{plannedSessions}</strong>
+                <span>{t("classesUnit")}</span>
+              </div>
+              <button
+                type="button"
+                className={s.step}
+                aria-label="+"
+                onClick={() => setPlannedSessions((n) => Math.min(200, n + 1))}
+              >
+                <Plus size={16} aria-hidden />
+              </button>
+            </div>
+          </div>
+
+          <div className={f.field}>
+            <label className={labelClass}>{t("weekdays")}</label>
+            <div className={s.days}>
+              {WEEK_ORDER.map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  aria-pressed={weekdays.includes(day)}
+                  aria-label={weekdayName(day, "long")}
+                  onClick={() => toggleWeekday(day)}
+                  className={`${s.day} ${weekdays.includes(day) ? s.picked : ""}`}
+                >
+                  {weekdayName(day, "narrow")}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={f.grid2}>
+            <div className={f.field}>
+              <label className={labelClass}>
+                <Clock size={12} aria-hidden /> {t("startTime")}
+              </label>
+              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={inputClass} />
+            </div>
+            <div className={f.field}>
+              <label className={labelClass}>
+                <Clock size={12} aria-hidden /> {t("endTime")}
+              </label>
+              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={inputClass} />
+            </div>
+          </div>
+
+          <div className={f.field}>
+            <label className={labelClass}>
+              <MapPin size={12} aria-hidden /> {t("room")}
+            </label>
+            <input value={room} onChange={(e) => setRoom(e.target.value)} className={inputClass} />
+          </div>
+
+          <div className={f.grid2}>
+            <div className={`${f.field} ${f.minW0}`}>
               <label className={labelClass}>{t("startDate")}</label>
-              <DateInput value={startDate} onChange={setStartDate} max={endDate || undefined} required />
+              <DateInput value={startDate} onChange={changeStartDate} max={endDate || undefined} required />
             </div>
-
-            <div className="min-w-0 space-y-1">
+            <div className={`${f.field} ${f.minW0}`}>
               <label className={labelClass}>{t("endDate")}</label>
-              <DateInput value={endDate} onChange={setEndDate} min={startDate || undefined} required />
+              <DateInput value={endDate} onChange={changeEndDate} min={startDate || undefined} required />
             </div>
+          </div>
+        </section>
 
-            <div className="space-y-1">
+        {/* ---- 3. gradebook scheme ---- */}
+        <section className={s.section}>
+          <h3 className={`${s.sectionTitle} ${s.between}`}>
+            <span className={s.titleText}>
+              <Percent size={16} aria-hidden />
+              {t("weights")}
+            </span>
+            <span className={`tabular ${s.total} ${weightError ? s.bad : ""}`}>{weightTotal}/100</span>
+          </h3>
+
+          <div className={f.stackXs}>
+            {(Object.keys(weights) as (keyof typeof weights)[]).map((key) => (
+              <div key={key} className={s.weightRow}>
+                <label className={labelClass}>{t(key)}</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={weights[key]}
+                  onChange={(e) => updateWeight(key, Number(e.target.value))}
+                  className={s.slider}
+                  style={sliderFillStyle(weights[key], 0, 100)}
+                />
+                <div className={f.control}>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={weights[key]}
+                    onChange={(e) => updateWeight(key, Number(e.target.value))}
+                    className={`${inputClassSm} tabular ${f.padEnd}`}
+                  />
+                  <span className={f.suffix}>%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={f.grid2}>
+            <div className={f.field}>
               <label className={labelClass}>{t("maxExcusedAbsences")}</label>
               <input
                 type="number"
@@ -218,8 +394,7 @@ export function CourseFormDrawer(props: Props) {
                 className={inputClass}
               />
             </div>
-
-            <div className="space-y-1">
+            <div className={f.field}>
               <label className={labelClass}>{t("passingScore")}</label>
               <input
                 type="number"
@@ -231,62 +406,12 @@ export function CourseFormDrawer(props: Props) {
                 className={inputClass}
               />
             </div>
-
-            <div className="col-span-2 space-y-1">
-              <label className={labelClass}>{t("institute")}</label>
-              <input
-                value={institute}
-                onChange={(e) => setInstitute(e.target.value)}
-                placeholder={t("institutePlaceholder")}
-                className={inputClass}
-              />
-            </div>
           </div>
+        </section>
 
-          <fieldset className="space-y-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-            <legend className={`${labelClass} mb-1 flex items-center gap-2`}>
-              {t("weights")}
-              <span className={weightError ? "text-red-600 dark:text-red-400" : "text-zinc-400 dark:text-zinc-500"}>
-                ({weightTotal}/100)
-              </span>
-            </legend>
-            <div className="space-y-2">
-              {(Object.keys(weights) as (keyof typeof weights)[]).map((key) => (
-                <div key={key} className="grid grid-cols-[9rem_1fr_4.5rem] items-center gap-2">
-                  <label className={labelClass}>{t(key)}</label>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={weights[key]}
-                    onChange={(e) => updateWeight(key, Number(e.target.value))}
-                    className={sliderClass}
-                    style={sliderFillStyle(weights[key], 0, 100)}
-                  />
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={weights[key]}
-                      onChange={(e) => updateWeight(key, Number(e.target.value))}
-                      className={`${inputClassSm} tabular pr-5`}
-                    />
-                    <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-zinc-500 dark:text-zinc-400">
-                      %
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </fieldset>
-
-          {(dateRangeError ?? weightError ?? error) && (
-            <p className="text-sm text-red-600 dark:text-red-400">{dateRangeError ?? weightError ?? error}</p>
-          )}
-        </div>
+        {(dateRangeError ?? weightError ?? error) && (
+          <p className={f.error}>{dateRangeError ?? weightError ?? error}</p>
+        )}
       </form>
     </Drawer>
   );

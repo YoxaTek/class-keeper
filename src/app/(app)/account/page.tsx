@@ -1,66 +1,94 @@
 import Image from "next/image";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { CreditCard } from "lucide-react";
+import { CreditCard, MessageSquareText, Smartphone } from "lucide-react";
 import { getCurrentUser } from "@/lib/currentUser";
 import { QrScannerButton } from "@/components/QrScanner";
 import { SignOutButton } from "@/components/SignOutButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { THEME_COOKIE, isTheme } from "@/lib/theme";
 import { DeleteAccountSection } from "./DeleteAccountSection";
+import s from "./account.module.scss";
+import f from "@/components/ui/form.module.scss";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
+  const themeCookie = (await cookies()).get(THEME_COOKIE)?.value;
+  const theme = isTheme(themeCookie) ? themeCookie : "system";
   const t = await getTranslations("account");
   const tCommon = await getTranslations("common");
   const tBilling = await getTranslations("billing");
   const tDashboard = await getTranslations("dashboard");
+  const tInstall = await getTranslations("install");
 
   const displayName = user.name || user.email;
   const initial = displayName.charAt(0).toUpperCase();
   const roleLabel = tCommon(`role.${user.role}`);
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-6">
-      <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
+    <div className={s.page}>
+      <h1 className={f.pageTitle}>{t("title")}</h1>
 
-      <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex items-center gap-3">
+      <div className={`${s.row} ${s.between}`}>
+        <div className={s.who}>
           {user.image ? (
-            <Image src={user.image} alt="" width={40} height={40} className="rounded-full" />
+            <Image src={user.image} alt="" width={40} height={40} />
           ) : (
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0f6e56] text-sm font-medium text-white">
+            <span className={s.initial}>
               {initial}
             </span>
           )}
           <div>
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{displayName}</p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">{roleLabel}</p>
+            <p className={s.name}>{displayName}</p>
+            <p className={s.role}>{roleLabel}</p>
           </div>
         </div>
         <SignOutButton label={tCommon("signOut")} />
       </div>
 
-      <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">{tCommon("language")}</p>
+      <div className={`${s.row} ${s.between}`}>
+        <p>{tCommon("language")}</p>
         <LanguageSwitcher />
+      </div>
+
+      <div className={`${s.row} ${s.between}`}>
+        <p>{t("theme")}</p>
+        <ThemeSwitcher initial={theme} />
       </div>
 
       {user.role === "TEACHER" && (
         <Link
           href="/billing"
-          className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+          className={`${s.row} ${s.link}`}
         >
-          <CreditCard className="h-4 w-4" aria-hidden />
+          <CreditCard size={16} aria-hidden />
           {tBilling("title")}
         </Link>
       )}
+
+      {user.role !== "STUDENT" && (
+        <Link href="/feedback" className={`${s.row} ${s.link}`}>
+          <MessageSquareText size={16} aria-hidden />
+          {t("feedbackLink")}
+        </Link>
+      )}
+
+      <Link
+        href="/install"
+        className={`${s.row} ${s.link}`}
+      >
+        <Smartphone size={16} aria-hidden />
+        {tInstall("link")}
+      </Link>
 
       <QrScannerButton
         triggerLabel={t("haveInvite")}
         title={tDashboard("acceptInviteTitle")}
         helpText={tDashboard("acceptInviteHelp")}
         variant="ghost"
-        className="w-full justify-start gap-2 rounded-lg border border-zinc-200 bg-white p-4 text-sm font-normal text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+        className={`${s.invite} ${s.link}`}
       />
 
       <DeleteAccountSection email={user.email} />

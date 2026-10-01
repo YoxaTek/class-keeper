@@ -17,10 +17,9 @@ const noFlags = { hasMidterm: false, hasFinal: false };
 
 describe("calculateGrade — attendance (professor's worked example)", () => {
   // 24 total sessions. Student joined at week 3 (4 sessions before that are
-  // NOT_ENROLLED). Of the 20 sessions while enrolled: 2 EXCUSED (both within
-  // the default cap of 3, so excluded from the denominator entirely), 2
-  // ABSENT, and the rest PRESENT (16).
-  // Expected: 16 / (16 + 2) = 88.9% attendance.
+  // NOT_ENROLLED). Of the 20 sessions while enrolled: 2 EXCUSED (leave counts
+  // as attended), 2 ABSENT, and the rest PRESENT (16).
+  // Expected: (16 + 2) / 20 = 90% attendance.
   const attendance = [
     ...Array(4).fill({ status: "NOT_ENROLLED" as const }),
     ...Array(16).fill({ status: "PRESENT" as const }),
@@ -38,7 +37,7 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
       settings: baseSettings,
     });
 
-    expect(result.attendance.pct).toBeCloseTo(16 / 18, 5);
+    expect(result.attendance.pct).toBeCloseTo(18 / 20, 5);
   });
 
   it("computes the weighted attendance points", () => {
@@ -51,11 +50,11 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
       settings: baseSettings,
     });
 
-    expect(result.attendance.score).toBeCloseTo((16 / 18) * 15, 5);
+    expect(result.attendance.score).toBeCloseTo((18 / 20) * 15, 5);
   });
 
   it("treats excused absences beyond the cap as absent", () => {
-    // Same shape, but 5 EXCUSED instead of 2 -> 2 beyond the cap of 3 count as ABSENT.
+    // Same shape, but 5 EXCUSED instead of 2 -> 3 within the cap count as attended, 2 beyond it as ABSENT.
     const withExcessExcused = [
       ...Array(4).fill({ status: "NOT_ENROLLED" as const }),
       ...Array(16).fill({ status: "PRESENT" as const }),
@@ -72,8 +71,8 @@ describe("calculateGrade — attendance (professor's worked example)", () => {
       settings: baseSettings,
     });
 
-    // denominator = present(16) + absent(2) + excess_excused(2) = 20
-    expect(result.attendance.pct).toBeCloseTo(16 / 20, 5);
+    // attended = 16 + 3 = 19, absent = 2 + 2 excess = 4, denominator = 23
+    expect(result.attendance.pct).toBeCloseTo(19 / 23, 5);
   });
 });
 

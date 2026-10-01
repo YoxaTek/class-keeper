@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { JoinLinkCard } from "@/components/JoinLinkCard";
 import { RosterTable } from "./RosterTable";
 import { BulkAddForm } from "./BulkAddForm";
+import s from "./roster.module.scss";
 
 export default async function RosterPage({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;
@@ -28,7 +29,6 @@ export default async function RosterPage({ params }: { params: Promise<{ courseI
       student: enrollment.student,
       attendancePct: Math.round(grade.attendance.pct * 100),
       scorePct: totalMax > 0 ? Math.round((grade.total / totalMax) * 100) : 0,
-      passing: grade.passing,
     }))
     .sort((a, b) => a.student.name.localeCompare(b.student.name));
 
@@ -36,12 +36,10 @@ export default async function RosterPage({ params }: { params: Promise<{ courseI
     <div>
       <Breadcrumb items={[{ label: t("title") }]} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
-        <div className="space-y-2">
-          <RosterTable courseId={courseId} rows={rows} />
-        </div>
+      <div className={s.layout}>
+        <RosterTable courseId={courseId} rows={rows} />
 
-        <div className="space-y-4">
+        <div className={s.side}>
           <JoinLinkCard courseId={courseId} />
           <BulkAddForm courseId={courseId} />
         </div>

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./EvaluationForm.module.scss";
 
 export function EvaluationForm({
   enrollmentId,
@@ -40,8 +42,8 @@ export function EvaluationForm({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="space-y-1">
+    <div className={f.stackSm}>
+      <div className={f.field}>
         <label className={labelClass}>{t("narrative")}</label>
         <textarea
           value={narrative}
@@ -50,15 +52,15 @@ export function EvaluationForm({
           className={inputClass}
         />
       </div>
-      <div className="space-y-1">
+      <div className={f.field}>
         <label className={labelClass}>
-          {t("impressionScore")} <span className="text-zinc-400 dark:text-zinc-600">/ {maxImpressionScore}</span>
+          {t("impressionScore")} <span className={f.optional}>/ {maxImpressionScore}</span>
         </label>
         <input
           type="number"
           value={impressionScore}
           onChange={(e) => setImpressionScore(e.target.value)}
-          className={`${inputClass} w-24`}
+          className={`${inputClass} ${s.score}`}
         />
       </div>
       <Button variant="primary" size="sm" onClick={save} disabled={saving}>

@@ -1,46 +1,24 @@
-// Shared class strings for the app's restrained palette (zinc neutral,
-// one accent, red danger — nothing else). Centralized so every form field
-// and button reads the same way instead of drifting per-screen.
-//
-// The accent is the app icon's exact color (#0f6e56), not a stock Tailwind
-// shade, so buttons/focus rings/links actually match the app's own mark.
-export const ACCENT = "#0f6e56";
-export const ACCENT_HOVER = "#0c5d49";
+// Class names for the app's shared primitives — the styles themselves live
+// in ui.module.scss (tokens in src/styles/tokens.scss). Still exported as
+// plain strings so existing `className={`${inputClass} ...`}` call sites
+// keep working unchanged.
+import s from "./ui.module.scss";
 
-export const inputClass =
-  "w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 " +
-  "placeholder:text-zinc-400 focus:border-[#0f6e56] focus:outline-none focus:ring-1 focus:ring-[#0f6e56] " +
-  "dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500";
+export const inputClass = s.input;
+export const inputClassSm = `${s.input} ${s.sm}`;
+export const labelClass = s.label;
+export const cardClass = s.card;
+export const linkClass = s.link;
+export const cardHoverClass = s.cardHover;
+export const iconButtonClass = s.iconButton;
+export const iconDangerClass = `${s.iconButton} ${s.danger}`;
 
-export const inputClassSm = inputClass.replace("px-2.5 py-1.5 text-sm", "px-2 py-1 text-xs");
-
-export const labelClass = "block text-xs font-medium text-zinc-600 dark:text-zinc-400";
-
-export const cardClass =
-  "rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900";
-
-export const linkClass = "text-[#0f6e56] hover:underline dark:text-teal-400";
+const SIZES = { sm: s.sizeSm, md: s.sizeMd, lg: s.sizeLg };
 
 export function buttonClass(
   variant: "primary" | "secondary" | "danger" | "ghost" | "accent" = "secondary",
   size: "sm" | "md" | "lg" = "md",
   rounded: "md" | "full" = "md"
 ) {
-  const base = `inline-flex items-center justify-center gap-1.5 ${rounded === "full" ? "rounded-full" : "rounded-md"} font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50`;
-  // "lg" only widens the button (more horizontal room, same height as
-  // "md") — it's for a button that needs to stand out by taking up more
-  // space on the row, not one that needs to be physically taller.
-  const sizes = size === "sm" ? "px-2.5 py-1.5 text-xs" : size === "lg" ? "px-8 py-2 text-[13.5px]" : "px-3 py-2 text-sm";
-  const variants = {
-    primary: "bg-[#0f6e56] text-white hover:bg-[#0c5d49]",
-    secondary:
-      "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800",
-    danger: "border border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950",
-    ghost: "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
-    // A second prominent color, distinct from the teal accent — for an
-    // action (like exporting) that sits next to a primary button and needs
-    // its own visual weight rather than reading as a lesser/secondary one.
-    accent: "bg-blue-800 text-white hover:bg-blue-900",
-  };
-  return `${base} ${sizes} ${variants[variant]}`;
+  return [s.button, SIZES[size], s[variant], rounded === "full" && s.full].filter(Boolean).join(" ");
 }

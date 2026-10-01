@@ -2,6 +2,8 @@ import { CircleCheck, TriangleAlert } from "lucide-react";
 import { cardClass } from "@/components/ui/styles";
 import { DonutChart, GRADE_CATEGORY_COLORS } from "@/components/DonutChart";
 import type { GradeBreakdown } from "@/lib/grading/calculateGrade";
+import f from "@/components/ui/form.module.scss";
+import s from "./GradeBreakdownCard.module.scss";
 
 const CATEGORY_ORDER = ["attendance", "assignment", "quiz", "midterm", "final", "impression"] as const;
 
@@ -9,6 +11,7 @@ export function GradeBreakdownCard({
   grade,
   weights,
   labels,
+  hasData,
 }: {
   grade: GradeBreakdown;
   weights: {
@@ -30,6 +33,21 @@ export function GradeBreakdownCard({
     final: string;
     impression: string;
   };
+  /**
+   * Whether each category has anything recorded at all — a course that
+   * never added a midterm, or a student never given an impression score,
+   * shows 0 the same way a *graded* zero would. Only a category that's
+   * both zero AND empty gets dimmed, so a real bad score never quietly
+   * fades into looking like "nothing to see here".
+   */
+  hasData: {
+    attendance: boolean;
+    assignment: boolean;
+    quiz: boolean;
+    midterm: boolean;
+    final: boolean;
+    impression: boolean;
+  };
 }) {
   const totalMax =
     weights.attendance + weights.assignment + weights.quiz + weights.midterm + weights.final + weights.impression;
@@ -37,53 +55,45 @@ export function GradeBreakdownCard({
   const segments = CATEGORY_ORDER.map((key) => ({
     label: labels[key],
     value: grade[key].score,
-    colorLight: GRADE_CATEGORY_COLORS[key].light,
-    colorDark: GRADE_CATEGORY_COLORS[key].dark,
+    color: GRADE_CATEGORY_COLORS[key],
   }));
 
   return (
-    <section className={`${cardClass} space-y-4 p-4`}>
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{labels.title}</h3>
+    <section className={`${cardClass} ${s.card}`}>
+      <div className={f.rowBetween}>
+        <h3 className={s.title}>{labels.title}</h3>
         <span
-          className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-            grade.passing
-              ? "bg-[#0f6e56]/10 text-[#0f6e56] dark:text-teal-400"
-              : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
-          }`}
+          className={`${s.badge} ${grade.passing ? "" : s.below}`}
         >
-          {grade.passing ? <CircleCheck className="h-3.5 w-3.5" /> : <TriangleAlert className="h-3.5 w-3.5" />}
+          {grade.passing ? <CircleCheck size={12} /> : <TriangleAlert size={12} />}
           {grade.passing ? labels.passing : labels.belowPassing}
         </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-6">
+      <div className={s.body}>
         <DonutChart
           segments={segments}
           max={totalMax}
           centerLabel={`${grade.total.toFixed(1)}`}
           centerSubLabel={`/ ${totalMax}`}
         />
-        <ul className="flex-1 min-w-[180px] space-y-1.5 text-sm">
-          {CATEGORY_ORDER.map((key) => (
-            <li key={key} className="flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                <span
-                  className="h-2.5 w-2.5 shrink-0 rounded-full [background:var(--dot-light)] dark:[background:var(--dot-dark)]"
-                  style={
-                    {
-                      "--dot-light": GRADE_CATEGORY_COLORS[key].light,
-                      "--dot-dark": GRADE_CATEGORY_COLORS[key].dark,
-                    } as React.CSSProperties
-                  }
-                />
-                {labels[key]}
-              </span>
-              <span className="tabular font-medium text-zinc-900 dark:text-zinc-100">
-                {grade[key].score.toFixed(1)}/{weights[key]}
-              </span>
-            </li>
-          ))}
+        <ul className={s.list}>
+          {CATEGORY_ORDER.map((key) => {
+            // Dimmed only when BOTH zero and empty — a genuine zero score
+            // (data exists, it's just bad) stays at full brightness.
+            const isEmpty = !hasData[key] && grade[key].score === 0;
+            return (
+              <li key={key} className={`${s.item} ${isEmpty ? s.empty : ""}`}>
+                <span className={s.name}>
+                  <span className={s.dot} style={{ background: GRADE_CATEGORY_COLORS[key] }} />
+                  {labels[key]}
+                </span>
+                <span className={`tabular ${s.score}`}>
+                  {grade[key].score.toFixed(1)}/{weights[key]}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

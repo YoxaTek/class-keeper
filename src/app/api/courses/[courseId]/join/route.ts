@@ -7,7 +7,9 @@ import { ensureAttendanceForEnrollment } from "@/lib/attendanceDefaults";
 const schema = z.object({
   name: z.string().min(1),
   chineseName: z.string().min(1).optional(),
-  studentId: z.string().min(1),
+  // Required: it is the natural key that recognizes a roster row a teacher
+  // already added for the same person (see below).
+  studentId: z.string().trim().min(1),
 });
 
 // Read-only preview for the QR scanner's in-place join dialog — the course

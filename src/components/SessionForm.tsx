@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarCheck2, GraduationCap, Award, Plus, X } from "lucide-react";
 import { DateInput } from "@/components/ui/DateInput";
-import { inputClass, labelClass, buttonClass } from "@/components/ui/styles";
+import { inputClass, labelClass, buttonClass, iconDangerClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./SessionForm.module.scss";
 
 export interface AssessmentFormValue {
   /** Present when editing an existing assessment; absent for one just added in this form. */
@@ -131,14 +133,14 @@ export function SessionForm({
 
   return (
     <form id="session-form" onSubmit={onSubmit}>
-      <div className="space-y-5">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="min-w-0 space-y-1">
+      <div className={f.stack}>
+        <div className={s.dateRow}>
+          <div className={`${f.field} ${f.minW0}`}>
             <label className={labelClass}>{t("common.date")}</label>
             <DateInput value={values.date} onChange={(date) => setValues((v) => ({ ...v, date }))} required />
           </div>
 
-          <div className="space-y-1">
+          <div className={f.field}>
             <label className={labelClass}>{t("sessions.label")}</label>
             <input
               value={values.label}
@@ -149,10 +151,10 @@ export function SessionForm({
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div className={s.covers}>
           <label className={labelClass}>{t("sessions.covers")}</label>
-          <p className="text-xs text-zinc-500 dark:text-zinc-500">{t("sessions.coversHint")}</p>
-          <div className="flex flex-wrap gap-2">
+          <p className={f.hint}>{t("sessions.coversHint")}</p>
+          <div className={f.wrap}>
             {FLAGS.map(({ key, labelKey, Icon }) => {
               const active = values[key] as boolean;
               return (
@@ -161,13 +163,9 @@ export function SessionForm({
                   type="button"
                   onClick={() => setValues((v) => ({ ...v, [key]: !v[key] }))}
                   aria-pressed={active}
-                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    active
-                      ? "border-[#0f6e56] bg-[#0f6e56]/10 font-medium text-[#0f6e56] dark:text-teal-400"
-                      : "border-zinc-300 text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-900"
-                  }`}
+                  className={`${s.chip} ${active ? s.active : ""}`}
                 >
-                  <Icon className="h-4 w-4" aria-hidden />
+                  <Icon size={16} aria-hidden />
                   {t(labelKey)}
                 </button>
               );
@@ -176,9 +174,9 @@ export function SessionForm({
         </div>
 
         {MAX_SCORE_FIELDS.some(({ flagKey }) => values[flagKey]) && (
-          <div className="flex flex-wrap gap-3">
+          <div className={s.maxScores}>
             {MAX_SCORE_FIELDS.filter(({ flagKey }) => values[flagKey]).map(({ maxKey, labelKey }) => (
-              <div key={maxKey} className="w-36 space-y-1">
+              <div key={maxKey} className={s.maxScore}>
                 <label className={labelClass}>{t(labelKey)}</label>
                 <input
                   type="number"
@@ -198,7 +196,7 @@ export function SessionForm({
             no reason to spend two full-width rows on them. The moment either
             list gets a row (label + score + remove control), that's too
             cramped in a half-width column, so both drop to full width. */}
-        <div className={values.quizzes.length === 0 && values.assignments.length === 0 ? "flex gap-3" : "space-y-5"}>
+        <div className={`${s.lists} ${values.quizzes.length === 0 && values.assignments.length === 0 ? "" : s.stacked}`}>
           <AssessmentListEditor
             titleKey="sessions.quizzes"
             addLabelKey="sessions.addQuiz"
@@ -249,12 +247,12 @@ function AssessmentListEditor({
   t: ReturnType<typeof useTranslations>;
 }) {
   return (
-    <div className="min-w-0 flex-1 space-y-1.5">
+    <div className={s.editor}>
       <label className={labelClass}>{t(titleKey)}</label>
-      <div className="space-y-2">
+      <div className={f.stackXs}>
         {items.map((item, i) => (
-          <div key={i} className="flex items-end gap-2">
-            <div className="flex-1 space-y-1">
+          <div key={i} className={s.item}>
+            <div className={s.itemLabel}>
               <label className={labelClass}>{t("sessions.labelOptional")}</label>
               <input
                 value={item.label}
@@ -263,7 +261,7 @@ function AssessmentListEditor({
                 className={inputClass}
               />
             </div>
-            <div className="w-28 space-y-1">
+            <div className={s.itemScore}>
               <label className={labelClass}>{t(maxScoreLabelKey)}</label>
               <input
                 type="number"
@@ -277,15 +275,15 @@ function AssessmentListEditor({
               type="button"
               onClick={() => onRemove(i)}
               title={t("common.delete")}
-              className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-red-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-red-400"
+              className={iconDangerClass}
             >
-              <X className="h-4 w-4" aria-hidden />
+              <X size={16} aria-hidden />
             </button>
           </div>
         ))}
       </div>
       <button type="button" onClick={onAdd} className={buttonClass("secondary", "sm")}>
-        <Plus className="h-3.5 w-3.5" aria-hidden />
+        <Plus size={14} aria-hidden />
         {t(addLabelKey)}
       </button>
     </div>

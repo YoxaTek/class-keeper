@@ -197,6 +197,16 @@ model Course {
   finalExamSessionId String? // optional override: which session's score counts as the final exam
   institute          String? // shown on the public join page; one value for the whole course, not per student
 
+  // Schedule + presentation (all optional — a course works without them).
+  code            String? // e.g. "CHI-101"
+  section         String? // e.g. "Cohort A (Day)"
+  room            String? // e.g. "Room 402 • Language Hall"
+  weekdays        Int[]   @default([]) // meeting days, 0 = Sunday … 6 = Saturday
+  startTime       String? // "HH:MM", 24h
+  endTime         String? // "HH:MM", 24h
+  plannedSessions Int     @default(0) // how many class meetings the course is planned for (sessions are pre-created from this at creation)
+  color           String  @default("terracotta") // binder stripe color key: terracotta | teal | clay | rust
+
   assistants  CourseAssistant[]
   enrollments Enrollment[]
   sessions    Session[]

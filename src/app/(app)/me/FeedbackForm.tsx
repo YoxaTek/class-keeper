@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CircleCheck, MessageSquarePlus } from "lucide-react";
+import { CircleCheck, MessageSquarePlus, Pencil } from "lucide-react";
 import type { Feedback } from "@prisma/client";
 import { Button } from "@/components/ui/Button";
 import { inputClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./me.module.scss";
 
 export function FeedbackForm({ enrollmentId, existing }: { enrollmentId: string; existing: Feedback | null }) {
   const t = useTranslations("studentView");
-  const [comment, setComment] = useState("");
+  const tc = useTranslations("common");
   const [submitted, setSubmitted] = useState(existing);
+  const [comment, setComment] = useState(existing?.comment ?? "");
+  const [editing, setEditing] = useState(!existing);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,29 +32,37 @@ export function FeedbackForm({ enrollmentId, existing }: { enrollmentId: string;
     setSubmitting(false);
     if (res.ok) {
       setSubmitted(await res.json());
+      setEditing(false);
     } else {
       const body = await res.json().catch(() => null);
       setError(typeof body?.error === "string" ? body.error : "Could not submit feedback.");
     }
   }
 
-  if (submitted) {
+  if (submitted && !editing) {
     return (
-      <div className="flex items-start gap-2">
-        <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0f6e56] dark:text-teal-400" aria-hidden />
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("feedback")}</h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">
-            {t("feedbackSubmitted", { date: new Date(submitted.submittedAt).toLocaleDateString() })}
-          </p>
+      <div className={f.stackXs}>
+        <div className={s.sent}>
+          <CircleCheck size={16} aria-hidden />
+          <div>
+            <h3 className={f.subheading}>{t("feedback")}</h3>
+            <p className={f.muted}>
+              {t("feedbackSubmitted", { date: new Date(submitted.submittedAt).toLocaleDateString() })}
+            </p>
+          </div>
         </div>
+        <p className={s.comment}>{submitted.comment}</p>
+        <Button type="button" variant="secondary" size="sm" onClick={() => setEditing(true)} className={s.edit}>
+          <Pencil size={14} aria-hidden />
+          {t("feedbackEdit")}
+        </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-2">
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("feedback")}</h3>
+    <form onSubmit={onSubmit} className={f.stackXs}>
+      <h3 className={f.subheading}>{t("feedback")}</h3>
       <textarea
         required
         value={comment}
@@ -59,11 +71,27 @@ export function FeedbackForm({ enrollmentId, existing }: { enrollmentId: string;
         rows={4}
         className={inputClass}
       />
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <Button type="submit" variant="primary" size="sm" disabled={submitting}>
-        <MessageSquarePlus className="h-3.5 w-3.5" aria-hidden />
-        {t("feedbackSubmit")}
-      </Button>
+      {error && <p className={f.error}>{error}</p>}
+      <div className={f.actions}>
+        {submitted && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setComment(submitted.comment);
+              setError(null);
+              setEditing(false);
+            }}
+          >
+            {tc("cancel")}
+          </Button>
+        )}
+        <Button type="submit" variant="primary" size="sm" disabled={submitting}>
+          <MessageSquarePlus size={14} aria-hidden />
+          {submitted ? t("feedbackUpdate") : t("feedbackSubmit")}
+        </Button>
+      </div>
     </form>
   );
 }

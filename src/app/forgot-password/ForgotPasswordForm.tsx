@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, linkClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function ForgotPasswordForm() {
   const t = useTranslations("forgotPassword");
@@ -67,8 +68,8 @@ export function ForgotPasswordForm() {
 
   if (step === "done") {
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">{t("success")}</p>
+      <div className={f.form}>
+        <p className={f.body}>{t("success")}</p>
         <Link href="/login" className={linkClass}>
           {t("backToLogin")}
         </Link>
@@ -78,16 +79,13 @@ export function ForgotPasswordForm() {
 
   if (step === "password") {
     return (
-      <form onSubmit={onResetPassword} className="space-y-4">
-        <div className="space-y-1">
+      <form onSubmit={onResetPassword} className={f.form}>
+        <div className={f.field}>
           <label htmlFor="password" className={labelClass}>
             {t("newPassword")}
           </label>
-          <div className="relative">
-            <Lock
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
-              aria-hidden
-            />
+          <div className={f.control}>
+            <Lock className={f.iconStart} aria-hidden />
             <input
               id="password"
               type="password"
@@ -95,20 +93,17 @@ export function ForgotPasswordForm() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`${inputClass} pl-9`}
+              className={`${inputClass} ${f.padStart}`}
             />
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className={f.field}>
           <label htmlFor="confirmPassword" className={labelClass}>
             {t("confirmPassword")}
           </label>
-          <div className="relative">
-            <Lock
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
-              aria-hidden
-            />
+          <div className={f.control}>
+            <Lock className={f.iconStart} aria-hidden />
             <input
               id="confirmPassword"
               type="password"
@@ -116,14 +111,14 @@ export function ForgotPasswordForm() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`${inputClass} pl-9`}
+              className={`${inputClass} ${f.padStart}`}
             />
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className={f.error}>{error}</p>}
 
-        <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+        <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
           {submitting ? t("submitting") : t("submit")}
         </Button>
       </form>
@@ -131,16 +126,13 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={onVerifyEmail} className="space-y-4">
-      <div className="space-y-1">
+    <form onSubmit={onVerifyEmail} className={f.form}>
+      <div className={f.field}>
         <label htmlFor="email" className={labelClass}>
           {tLogin("email")}
         </label>
-        <div className="relative">
-          <Mail
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
-            aria-hidden
-          />
+        <div className={f.control}>
+          <Mail className={f.iconStart} aria-hidden />
           <input
             id="email"
             type="email"
@@ -148,18 +140,18 @@ export function ForgotPasswordForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={tLogin("emailPlaceholder")}
-            className={`${inputClass} pl-9`}
+            className={`${inputClass} ${f.padStart}`}
           />
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
-      <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+      <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
         {submitting ? t("verifying") : t("continue")}
       </Button>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-500">
+      <p className={f.muted}>
         <Link href="/login" className={linkClass}>
           {t("backToLogin")}
         </Link>

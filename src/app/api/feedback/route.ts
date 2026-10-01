@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -15,7 +14,12 @@ const schema = z.object({
 export async function POST(request: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (session.user.role !== "STUDENT") {
+  // Role comes from the database, not the session cookie: joining a class
+  // flips the account to STUDENT in the DB, but the cookie keeps the role it
+  // was minted with until the next sign-in (see getCurrentUser), so a student
+  // who joined in this same visit would be refused here.
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
+  if (user?.role !== "STUDENT") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -30,15 +34,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  try {
-    const feedback = await prisma.feedback.create({
-      data: { enrollmentId: enrollment.id, comment: body.data.comment },
-    });
-    return NextResponse.json(feedback, { status: 201 });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      return NextResponse.json({ error: "Feedback already submitted for this course" }, { status: 409 });
-    }
-    throw e;
-  }
+  // One feedback per enrollment, and the student can come back and edit it:
+  // submitting again replaces the comment and refreshes the submitted time.
+  const feedback = await prisma.feedback.upsert({
+    where: { enrollmentId: enrollment.id },
+    create: { enrollmentId: enrollment.id, comment: body.data.comment },
+    update: { comment: body.data.comment, submittedAt: new Date() },
+  });
+  return NextResponse.json(feedback, { status: 200 });
 }

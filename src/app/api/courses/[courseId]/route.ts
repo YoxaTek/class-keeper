@@ -48,6 +48,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ co
       weightFinal: data.weightFinal,
       weightImpression: data.weightImpression,
       institute: data.institute ?? null,
+      code: data.code || null,
+      section: data.section || null,
+      room: data.room || null,
+      weekdays: data.weekdays,
+      startTime: data.startTime || null,
+      endTime: data.endTime || null,
+      plannedSessions: data.plannedSessions,
+      color: data.color,
     },
   });
 

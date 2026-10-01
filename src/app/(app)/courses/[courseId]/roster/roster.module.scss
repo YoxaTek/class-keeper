@@ -1,0 +1,142 @@
+@use "mixins";
+
+.layout {
+  display: grid;
+  gap: 1.5rem;
+
+  @include mixins.lg {
+    grid-template-columns: 1fr 18rem;
+  }
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+
+  @include mixins.sm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mixins.lg {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-muted);
+}
+
+// Whole-card link without position: absolute: the card is a one-cell grid.
+// The empty overlay anchor and the visible content share that cell; the
+// content ignores pointer events (so clicks fall through to the anchor)
+// except on the edit/delete buttons, which opt back in.
+.card {
+  display: grid;
+  padding: 1rem;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.overlay {
+  display: block;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  pointer-events: none;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.avatar {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-label);
+}
+
+.who {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chinese {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-muted);
+}
+
+.id {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  pointer-events: auto;
+}
+
+.pills {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--positive-soft);
+  color: var(--positive-text);
+
+  &.low {
+    background: var(--error-soft);
+    color: var(--danger-text);
+  }
+}

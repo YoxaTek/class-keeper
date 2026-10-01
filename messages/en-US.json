@@ -28,7 +28,10 @@
       "STUDENT": "student"
     },
     "saving": "Saving…",
-    "language": "Language"
+    "language": "Language",
+    "close": "Close",
+    "mobileNav": "Mobile navigation",
+    "tagline": "Attendance, grading, and roster management for a Chinese language class."
   },
   "login": {
     "title": "Sign in",
@@ -55,7 +58,8 @@
     "scanQr": "Scan QR code to join a course",
     "scanQrTitle": "Scan QR code to join a course",
     "scanQrHelp": "Point your camera at the QR code your teacher is sharing.",
-    "scannedBanner": "Code scanned — sign in to continue."
+    "scannedBanner": "Code scanned — sign in to continue.",
+    "joinCourseBanner": "Sign in to join {course}."
   },
   "qrScanner": {
     "uploadQrImage": "Upload a photo instead",
@@ -73,7 +77,8 @@
     "haveAccount": "Already have an account?",
     "name": "Name",
     "submit": "Create account",
-    "error": "Couldn't create your account. Please try again."
+    "error": "Couldn't create your account. Please try again.",
+    "joinCourseBanner": "Create an account to join {course}."
   },
   "forgotPassword": {
     "title": "Forgot password?",
@@ -97,7 +102,6 @@
   "dashboard": {
     "title": "Courses",
     "subtitle": "{count} courses this term",
-    "newCourse": "Add",
     "acceptInvite": "Accept an invite",
     "acceptInviteTitle": "Scan an invite QR code",
     "acceptInviteHelp": "Point your camera at the invite or join QR code you were sent.",
@@ -130,7 +134,57 @@
     "addStudentsPlaceholder": "One student name per line (optional — you can also add students later from the Roster tab)",
     "editTitle": "Edit course",
     "institute": "Institute",
-    "institutePlaceholder": "e.g. Lincoln High School"
+    "institutePlaceholder": "e.g. Lincoln High School",
+    "createCourse": "Create Course",
+    "welcomeBack": "Welcome back, {name}",
+    "heroSubtitle": "Ready to lead your classes today?",
+    "activeCourses": "{count} Active Courses",
+    "enrolledStudents": "{count} Enrolled Students",
+    "teacherFallback": "teacher",
+    "enrolledBadge": "{count} Enrolled",
+    "classesConducted": "Progress: {done}/{total} classes conducted",
+    "cohortHealth": "Cohort health",
+    "avgShort": "Avg",
+    "attendanceShort": "Attendance",
+    "openWorkspace": "Open Workspace",
+    "quickActions": "Frequent Quick Actions",
+    "markAttendance": "Mark Attendance",
+    "markAttendanceHint": "Quick roll call for today",
+    "gradebookEntry": "Gradebook Entry",
+    "gradebookEntryHint": "Input quiz & midterms",
+    "courseDetails": "Course details",
+    "courseCode": "Course ID / Code",
+    "section": "Section / Cohort",
+    "binderColor": "Binder color",
+    "color_terracotta": "Terracotta Rust",
+    "color_teal": "Slate Teal",
+    "color_clay": "Clay",
+    "color_rust": "Deep Rust",
+    "scheduleTitle": "Planned sessions & schedule",
+    "plannedSessions": "Total class sessions",
+    "classesUnit": "Classes",
+    "weekdays": "Weekly recurring days",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "room": "Classroom / Facility",
+    "welcomeNew": "Welcome, {name}",
+    "emptySubtitle": "You don't have any courses yet. Let's build your scholarly canvas.",
+    "launchTitle": "Ready to launch your first course?",
+    "launchBody": "Set up your course and its class schedule, or accept an invite, to start tracking attendance and grades.",
+    "createFirstCourse": "Create Your First Course",
+    "howItWorks": "How ClassKeeper works in 4 steps",
+    "step1Title": "Create a course",
+    "step1Body": "Set your academic term, schedule recurring classes, and define your course grading breakdown.",
+    "step2Title": "Add your students & TAs",
+    "step2Body": "Invite students via class link or QR code, add student names in bulk, and invite Teaching Assistants (TAs) to help manage classes.",
+    "step3Title": "Mark attendance in one tap",
+    "step3Body": "Quickly record present, absent, or excused leave for each class session with zero hassle.",
+    "quickSetup": "Quick setup",
+    "guideMinutes": "4 min guide",
+    "syncsAcross": "Syncs across desktop & mobile",
+    "createFirstCourseShort": "Create First Course",
+    "step4Title": "Record quizzes & assignments",
+    "step4Body": "Input scores for quizzes, assignments, midterm exams, and final grades separately from daily roll-call."
   },
   "roster": {
     "title": "Students",
@@ -160,7 +214,7 @@
     "filterPast": "Past",
     "label": "Label",
     "covers": "Covers",
-  "coversHint": "Attendance, midterm, and final toggle on or off. Add any number of quizzes or assignments below.",
+    "coversHint": "Attendance, midterm, and final toggle on or off. Add any number of quizzes or assignments below.",
     "attendanceTurnout": "Attendance",
     "scoreAverage": "Score avg.",
     "attendance": "Attendance",
@@ -213,7 +267,10 @@
     "narrative": "Narrative",
     "impressionScore": "Impression score",
     "attendanceHistory": "Attendance history",
-    "scoreHistory": "Scores"
+    "scoreHistory": "Scores",
+    "midtermAndFinal": "Midterm & final exam",
+    "noScoresYet": "No scores recorded yet",
+    "noScoresYetHint": "Quiz and assignment scores are entered from each class's attendance screen."
   },
   "belowPassing": {
     "title": "Below passing",
@@ -231,7 +288,10 @@
     "feedbackSubmit": "Submit feedback",
     "feedbackSubmitted": "Feedback submitted on {date}. Thank you!",
     "noEvaluationYet": "Not written yet.",
-    "sessionScores": "Class scores"
+    "sessionScores": "Class scores",
+    "noProfile": "No student profile is linked to this account.",
+    "feedbackEdit": "Edit feedback",
+    "feedbackUpdate": "Update feedback"
   },
   "onboarding": {
     "title": "Set up your account",
@@ -272,7 +332,12 @@
     "confirmEmailLabel": "Type {email} to confirm",
     "wrongPassword": "Incorrect password.",
     "deleting": "Deleting…",
-    "error": "Couldn't delete your account. Please try again."
+    "error": "Couldn't delete your account. Please try again.",
+    "theme": "Theme",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "feedbackLink": "Student feedback"
   },
   "billing": {
     "title": "Billing",
@@ -296,12 +361,36 @@
     "error": "Something went wrong. Please try again."
   },
   "join": {
-    "title": "Join this class",
+    "title": "Join this course",
     "name": "Name",
     "studentId": "Student ID",
-    "submit": "Join class",
+    "submit": "Join course",
     "submitting": "Joining…",
-    "error": "Couldn't join this class. Please try again.",
-    "alreadyTeaching": "This account already teaches a class — sign in with a different account to join as a student."
+    "error": "Couldn't join this course. Please try again.",
+    "alreadyTeaching": "This account already teaches a course — sign in with a different account to join as a student.",
+    "chineseName": "Chinese name"
+  },
+  "install": {
+    "link": "Install ClassKeeper on your phone",
+    "title": "Install ClassKeeper",
+    "intro": "Add ClassKeeper to your phone's home screen to open it like an app — no app store needed.",
+    "iosTitle": "iPhone / iPad (Safari)",
+    "iosNote": "Must be Safari — other iOS browsers can't add to the home screen.",
+    "ios1": "Open ClassKeeper in Safari and sign in.",
+    "ios2": "Tap the Share button (square with an arrow pointing up) in the toolbar.",
+    "ios3": "Scroll down and tap “Add to Home Screen”.",
+    "ios4": "Keep the name “ClassKeeper” and tap “Add”.",
+    "ios5": "Open ClassKeeper from your home screen — it runs full screen like an app.",
+    "androidTitle": "Android (Chrome)",
+    "androidNote": "Other browsers (Edge, Samsung Internet, Firefox) have a similar “Add to Home screen” menu item.",
+    "android1": "Open ClassKeeper in Chrome and sign in.",
+    "android2": "Tap the ⋮ menu in the top-right corner.",
+    "android3": "Tap “Install app” (or “Add to Home screen” if you don't see it).",
+    "android4": "Tap “Install”, then confirm.",
+    "android5": "Open ClassKeeper from your home screen or app drawer."
+  },
+  "feedbackList": {
+    "title": "Student feedback",
+    "empty": "No feedback has been submitted yet."
   }
 }

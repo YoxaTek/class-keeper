@@ -6,6 +6,8 @@ import { UserRoundPlus } from "lucide-react";
 import { InviteLinkBox } from "@/components/InviteLinkBox";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, cardClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./inviteCoTeacher.module.scss";
 
 export function InviteCoTeacherForm() {
   const t = useTranslations();
@@ -35,10 +37,10 @@ export function InviteCoTeacherForm() {
   }
 
   return (
-    <div className={`${cardClass} max-w-sm space-y-2 p-4`}>
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("dashboard.inviteCoTeacher")}</h3>
-      <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
-        <div className="min-w-48 flex-1 space-y-1">
+    <div className={`${cardClass} ${f.panel} ${s.card}`}>
+      <h3 className={s.title}>{t("dashboard.inviteCoTeacher")}</h3>
+      <form onSubmit={onSubmit} className={s.form}>
+        <div className={`${f.field} ${s.email}`}>
           <label htmlFor="co-teacher-email" className={labelClass}>
             {t("roster.inviteTAEmail")}
           </label>
@@ -51,11 +53,11 @@ export function InviteCoTeacherForm() {
           />
         </div>
         <Button type="submit" variant="primary" disabled={submitting}>
-          <UserRoundPlus className="h-4 w-4" aria-hidden />
+          <UserRoundPlus size={16} aria-hidden />
           {t("dashboard.inviteCoTeacher")}
         </Button>
       </form>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
       {token && <InviteLinkBox token={token} />}
     </div>
   );

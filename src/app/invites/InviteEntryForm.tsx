@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { parseInviteLink } from "@/lib/parseInviteLink";
 import { Button } from "@/components/ui/Button";
 import { inputClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function InviteEntryForm() {
   const t = useTranslations("invites");
@@ -24,7 +25,7 @@ export function InviteEntryForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className={f.stackSm}>
       <input
         value={value}
         onChange={(e) => {
@@ -34,8 +35,8 @@ export function InviteEntryForm() {
         placeholder={t("entryPlaceholder")}
         className={inputClass}
       />
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <Button type="submit" variant="primary" className="w-full">
+      {error && <p className={f.error}>{error}</p>}
+      <Button type="submit" variant="primary" className={f.block}>
         {t("entrySubmit")}
       </Button>
     </form>

@@ -1,0 +1,59 @@
+// Shared by JoinLinkCard and InviteLinkBox: a read-only link + copy button,
+// and the "show QR code" toggle.
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.375rem;
+  background: var(--bg-subtle);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-label);
+}
+
+.copy {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-label);
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.copied {
+  color: var(--accent-text);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--accent-text);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.qr {
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+}

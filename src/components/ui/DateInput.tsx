@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { CalendarDays } from "lucide-react";
 import { inputClass } from "./styles";
+import f from "./form.module.scss";
+import s from "./DateInput.module.scss";
 
 /**
  * A date input where clicking anywhere in the field opens the native
@@ -32,7 +34,7 @@ export function DateInput({
   }
 
   return (
-    <div className="relative min-w-0">
+    <div className={`${f.control} ${f.minW0}`}>
       <input
         ref={ref}
         id={id}
@@ -43,10 +45,10 @@ export function DateInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onClick={openPicker}
-        className={`date-input ${inputClass} min-w-0 cursor-pointer pr-8 uppercase [color-scheme:light] dark:[color-scheme:dark] ${className ?? ""}`}
+        className={`${inputClass} ${s.input} ${className ?? ""}`}
       />
       <CalendarDays
-        className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400"
+        className={`${f.iconEnd} ${s.icon}`}
         aria-hidden
       />
     </div>

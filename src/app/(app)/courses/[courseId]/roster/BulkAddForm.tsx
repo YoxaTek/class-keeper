@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, cardClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./bulkAdd.module.scss";
 
 export function BulkAddForm({ courseId }: { courseId: string }) {
   const t = useTranslations("roster");
@@ -41,18 +43,18 @@ export function BulkAddForm({ courseId }: { courseId: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className={`${cardClass} space-y-2 p-4`}>
+    <form onSubmit={onSubmit} className={`${cardClass} ${f.panel}`}>
       <label className={labelClass}>{t("bulkPaste")}</label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t("bulkPastePlaceholder")}
         rows={6}
-        className={`${inputClass} font-mono`}
+        className={`${inputClass} ${s.names}`}
       />
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
       <Button type="submit" variant="primary" size="sm" disabled={submitting || !text.trim()}>
-        <UserPlus className="h-3.5 w-3.5" aria-hidden />
+        <UserPlus size={14} aria-hidden />
         {t("addStudents")}
       </Button>
     </form>

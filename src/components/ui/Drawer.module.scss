@@ -1,0 +1,136 @@
+@use "mixins";
+
+$duration: 0.2s;
+
+// The overlay is itself the backdrop *and* the flex container that places
+// the panel: bottom-anchored sheet on mobile, right-anchored full-height
+// side panel from `sm` up. No absolutely positioned layers.
+.overlay {
+  position: fixed; // viewport-pinned layer; dvh = visible height on iOS Safari
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 100dvh;
+  display: flex;
+  align-items: flex-end;
+  background: var(--backdrop);
+  touch-action: none; // a drag on the backdrop must not scroll the page behind
+  animation: backdrop-in $duration ease-out;
+
+  @include mixins.sm {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+
+  &.closing {
+    animation: backdrop-out $duration ease-in forwards;
+  }
+}
+
+.panel {
+  touch-action: auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 85dvh;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-radius: 1rem 1rem 0 0;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+  animation: sheet-in $duration ease-out;
+
+  @include mixins.sm {
+    max-width: 28rem;
+    max-height: none;
+    border-top: 0;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    animation: slide-in $duration ease-out;
+  }
+
+  .closing & {
+    animation: sheet-out $duration ease-in forwards;
+
+    @include mixins.sm {
+      animation: slide-out $duration ease-in forwards;
+    }
+  }
+}
+
+.handle {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 0.25rem;
+
+  @include mixins.sm {
+    display: none;
+  }
+
+  &::before {
+    content: "";
+    width: 2.25rem;
+    height: 0.25rem;
+    border-radius: 9999px;
+    background: var(--border-strong);
+  }
+}
+
+.header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.title {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.close {
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  color: var(--text-muted);
+
+  &:hover {
+    background: var(--bg-muted);
+    color: var(--text);
+  }
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 1rem max(1rem, env(safe-area-inset-bottom));
+}
+
+.footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+@keyframes backdrop-in {
+  from { background-color: transparent; }
+}
+@keyframes backdrop-out {
+  to { background-color: transparent; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+}
+@keyframes sheet-out {
+  to { transform: translateY(100%); }
+}
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+}
+@keyframes slide-out {
+  to { transform: translateX(100%); }
+}

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import type { Role } from "@prisma/client";
 import { Button } from "@/components/ui/Button";
+import f from "@/components/ui/form.module.scss";
 
 interface InviteContext {
   role: Role;
@@ -45,15 +46,15 @@ export function InviteAcceptForm({ token, invite }: { token: string; invite: Inv
   }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+    <div className={f.form}>
+      <div className={f.infoBox}>
         {t("inviteBanner", { name: invite.invitedByName, role: tRole(invite.role) })}
-        {invite.context && <div className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">{invite.context}</div>}
+        {invite.context && <div className={f.infoStrong}>{invite.context}</div>}
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
-      <Button type="button" variant="primary" onClick={onAccept} disabled={submitting} className="w-full">
+      <Button type="button" variant="primary" onClick={onAccept} disabled={submitting} className={f.block}>
         {t("accept")}
       </Button>
     </div>

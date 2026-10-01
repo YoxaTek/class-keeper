@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
-import { inputClass, labelClass } from "@/components/ui/styles";
+import { inputClass, labelClass, iconButtonClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function StudentFormDrawer({
   courseId,
@@ -67,9 +68,9 @@ export function StudentFormDrawer({
       <button
         onClick={() => setOpen(true)}
         title={t("common.edit")}
-        className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        className={iconButtonClass}
       >
-        <Pencil className="h-3.5 w-3.5" aria-hidden />
+        <Pencil size={14} aria-hidden />
       </button>
     );
   }
@@ -79,7 +80,7 @@ export function StudentFormDrawer({
       title={t("roster.editStudent")}
       onClose={() => setOpen(false)}
       footer={
-        <div className="flex gap-2">
+        <div className={f.actions}>
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             {t("common.cancel")}
           </Button>
@@ -89,8 +90,8 @@ export function StudentFormDrawer({
         </div>
       }
     >
-      <form id="student-form" onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-1">
+      <form id="student-form" onSubmit={onSubmit} className={f.form}>
+        <div className={f.field}>
           <label className={labelClass}>{t("common.name")}</label>
           <input
             autoFocus
@@ -100,22 +101,27 @@ export function StudentFormDrawer({
             className={inputClass}
           />
         </div>
-        <div className="space-y-1">
+        <div className={f.field}>
           <label className={labelClass}>{t("common.chineseName")}</label>
           <input value={chineseName} onChange={(e) => setChineseName(e.target.value)} className={inputClass} />
         </div>
-        <div className="space-y-1">
+        <div className={f.field}>
           <label className={labelClass}>{t("join.studentId")}</label>
           {initialStudentId ? (
-            <p className="tabular px-2.5 py-1.5 text-sm text-zinc-700 dark:text-zinc-300">{initialStudentId}</p>
+            <p className={`tabular ${f.value}`}>{initialStudentId}</p>
           ) : (
-            <input value={studentId} onChange={(e) => setStudentId(e.target.value)} className={inputClass} />
+            <input
+              required
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              className={inputClass}
+            />
           )}
         </div>
-        <div className="space-y-1">
+        <div className={f.field}>
           <label className={labelClass}>{t("common.email")}</label>
           {initialEmail ? (
-            <p className="px-2.5 py-1.5 text-sm text-zinc-700 dark:text-zinc-300">{initialEmail}</p>
+            <p className={f.value}>{initialEmail}</p>
           ) : (
             <input
               type="email"
@@ -125,7 +131,7 @@ export function StudentFormDrawer({
             />
           )}
         </div>
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className={f.error}>{error}</p>}
       </form>
     </Drawer>
   );

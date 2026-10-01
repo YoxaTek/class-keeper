@@ -26,7 +26,7 @@ export function AdSlot() {
 
   return (
     <ins
-      className="adsbygoogle block"
+      className="adsbygoogle"
       style={{ display: "block" }}
       data-ad-client={clientId}
       data-ad-slot={slotId}

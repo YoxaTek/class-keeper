@@ -28,7 +28,10 @@
       "STUDENT": "estudyante"
     },
     "saving": "Sine-save…",
-    "language": "Wika"
+    "language": "Wika",
+    "close": "Isara",
+    "mobileNav": "Mobile navigation",
+    "tagline": "Attendance, grading, at roster management para sa klase ng wikang Tsino."
   },
   "login": {
     "title": "Mag-sign in",
@@ -55,7 +58,8 @@
     "scanQr": "I-scan ang QR code para sumali sa kurso",
     "scanQrTitle": "I-scan ang QR code para sumali sa kurso",
     "scanQrHelp": "Itutok ang iyong camera sa QR code na ibinahagi ng iyong guro.",
-    "scannedBanner": "Na-scan ang code — mag-sign in para magpatuloy."
+    "scannedBanner": "Na-scan ang code — mag-sign in para magpatuloy.",
+    "joinCourseBanner": "Mag-sign in para sumali sa {course}."
   },
   "qrScanner": {
     "uploadQrImage": "Mag-upload na lang ng larawan",
@@ -73,7 +77,8 @@
     "haveAccount": "May account ka na ba?",
     "name": "Pangalan",
     "submit": "Gumawa ng account",
-    "error": "Hindi magawa ang account mo. Pakisubukang muli."
+    "error": "Hindi magawa ang account mo. Pakisubukang muli.",
+    "joinCourseBanner": "Gumawa ng account para sumali sa {course}."
   },
   "forgotPassword": {
     "title": "Nakalimutan ang password?",
@@ -97,7 +102,6 @@
   "dashboard": {
     "title": "Mga Course",
     "subtitle": "{count} kurso sa termino na ito",
-    "newCourse": "Magdagdag",
     "acceptInvite": "Tanggapin ang imbitasyon",
     "acceptInviteTitle": "I-scan ang QR code ng imbitasyon",
     "acceptInviteHelp": "Itutok ang iyong camera sa QR code ng imbitasyon o pagsali na natanggap mo.",
@@ -130,7 +134,57 @@
     "addStudentsPlaceholder": "Isang pangalan ng estudyante bawat linya (opsyonal — maaari mo ring idagdag mamaya sa tab na Listahan ng Estudyante)",
     "editTitle": "I-edit ang course",
     "institute": "Institusyon",
-    "institutePlaceholder": "hal. Lincoln High School"
+    "institutePlaceholder": "hal. Lincoln High School",
+    "createCourse": "Gumawa ng Kurso",
+    "welcomeBack": "Welcome back, {name}",
+    "heroSubtitle": "Handa ka na bang manguna sa mga klase mo ngayon?",
+    "activeCourses": "{count} Aktibong Kurso",
+    "enrolledStudents": "{count} Naka-enroll na Estudyante",
+    "teacherFallback": "guro",
+    "enrolledBadge": "{count} Naka-enroll",
+    "classesConducted": "Progreso: {done}/{total} klase na naidaos",
+    "cohortHealth": "Kalagayan ng klase",
+    "avgShort": "Avg",
+    "attendanceShort": "Attendance",
+    "openWorkspace": "Buksan ang Workspace",
+    "quickActions": "Mabilisang Aksyon",
+    "markAttendance": "Mag-mark ng Attendance",
+    "markAttendanceHint": "Mabilis na roll call ngayon",
+    "gradebookEntry": "Pag-input ng Grado",
+    "gradebookEntryHint": "Ilagay ang quiz at midterm",
+    "courseDetails": "Detalye ng kurso",
+    "courseCode": "Course ID / Code",
+    "section": "Section / Cohort",
+    "binderColor": "Kulay ng kurso",
+    "color_terracotta": "Terracotta",
+    "color_teal": "Slate Teal",
+    "color_clay": "Clay",
+    "color_rust": "Deep Rust",
+    "scheduleTitle": "Mga nakaplanong sesyon at iskedyul",
+    "plannedSessions": "Kabuuang sesyon ng klase",
+    "classesUnit": "Klase",
+    "weekdays": "Mga araw bawat linggo",
+    "startTime": "Oras ng simula",
+    "endTime": "Oras ng pagtatapos",
+    "room": "Silid-aralan / Pasilidad",
+    "welcomeNew": "Welcome, {name}",
+    "emptySubtitle": "Wala ka pang kurso. Simulan na natin.",
+    "launchTitle": "Handa ka na bang ilunsad ang una mong kurso?",
+    "launchBody": "I-set up ang kurso at iskedyul ng klase, o tanggapin ang imbitasyon, para masimulan ang pag-track ng attendance at grado.",
+    "createFirstCourse": "Gawin ang Unang Kurso",
+    "howItWorks": "Paano gumagana ang ClassKeeper sa 4 na hakbang",
+    "step1Title": "Gumawa ng kurso",
+    "step1Body": "Itakda ang term, i-schedule ang mga paulit-ulit na klase, at tukuyin ang timbang ng grado.",
+    "step2Title": "Idagdag ang mga estudyante at TA",
+    "step2Body": "Mag-imbita ng estudyante gamit ang class link o QR code, magdagdag ng mga pangalan nang sabay-sabay, at mag-imbita ng Teaching Assistants (TA).",
+    "step3Title": "Attendance sa isang tap",
+    "step3Body": "Mabilis na itala ang present, absent, o leave sa bawat klase.",
+    "quickSetup": "Mabilis na setup",
+    "guideMinutes": "4 minutong gabay",
+    "syncsAcross": "Sync sa desktop at mobile",
+    "createFirstCourseShort": "Gawin ang Unang Kurso",
+    "step4Title": "Itala ang quiz at assignment",
+    "step4Body": "Ilagay ang marka sa quiz, assignment, midterm, at final nang hiwalay sa araw-araw na roll call."
   },
   "roster": {
     "title": "Listahan ng Estudyante",
@@ -160,7 +214,7 @@
     "filterPast": "Nakaraan",
     "label": "Label",
     "covers": "Sinasaklaw",
-  "coversHint": "Ang pagdalo, midterm, at final na pagsusulit ay maaaring i-on o i-off. Magdagdag ng kahit ilang pagsusulit o takdang-aralin sa ibaba.",
+    "coversHint": "Ang pagdalo, midterm, at final na pagsusulit ay maaaring i-on o i-off. Magdagdag ng kahit ilang pagsusulit o takdang-aralin sa ibaba.",
     "attendanceTurnout": "Pagdalo",
     "scoreAverage": "Average na Marka",
     "attendance": "Pagdalo",
@@ -213,7 +267,10 @@
     "narrative": "Puna",
     "impressionScore": "Marka ng Impresyon",
     "attendanceHistory": "Kasaysayan ng Pagdalo",
-    "scoreHistory": "Kasaysayan ng Marka"
+    "scoreHistory": "Kasaysayan ng Marka",
+    "midtermAndFinal": "Midterm at final na pagsusulit",
+    "noScoresYet": "Wala pang naitalang marka",
+    "noScoresYetHint": "Ang marka sa pagsusulit at takdang-aralin ay inilalagay mula sa attendance screen ng bawat klase."
   },
   "belowPassing": {
     "title": "Nasa Ibaba ng Pasang Marka",
@@ -231,7 +288,10 @@
     "feedbackSubmit": "Isumite ang Feedback",
     "feedbackSubmitted": "Naisumite ang feedback noong {date}. Salamat!",
     "noEvaluationYet": "Wala pang isinusulat.",
-    "sessionScores": "Marka bawat klase"
+    "sessionScores": "Marka bawat klase",
+    "noProfile": "Walang student profile na naka-link sa account na ito.",
+    "feedbackEdit": "I-edit ang feedback",
+    "feedbackUpdate": "I-update ang feedback"
   },
   "onboarding": {
     "title": "I-set up ang iyong account",
@@ -272,7 +332,12 @@
     "confirmEmailLabel": "I-type ang {email} para kumpirmahin",
     "wrongPassword": "Maling password.",
     "deleting": "Binubura…",
-    "error": "Hindi mabura ang iyong account. Pakisubukang muli."
+    "error": "Hindi mabura ang iyong account. Pakisubukang muli.",
+    "theme": "Tema",
+    "theme_system": "System",
+    "theme_light": "Maliwanag",
+    "theme_dark": "Madilim",
+    "feedbackLink": "Feedback ng mga estudyante"
   },
   "billing": {
     "title": "Billing",
@@ -302,6 +367,30 @@
     "submit": "Sumali sa klase",
     "submitting": "Sumasali…",
     "error": "Hindi makasali sa klaseng ito. Pakisubukang muli.",
-    "alreadyTeaching": "Nagtuturo na ang account na ito — gumamit ng ibang account para sumali bilang estudyante."
+    "alreadyTeaching": "Nagtuturo na ang account na ito — gumamit ng ibang account para sumali bilang estudyante.",
+    "chineseName": "Pangalang Tsino"
+  },
+  "install": {
+    "link": "I-install ang ClassKeeper sa iyong telepono",
+    "title": "I-install ang ClassKeeper",
+    "intro": "Idagdag ang ClassKeeper sa home screen ng iyong telepono para mabuksan ito na parang app — hindi kailangan ng app store.",
+    "iosTitle": "iPhone / iPad (Safari)",
+    "iosNote": "Dapat Safari — hindi makakapagdagdag sa home screen ang ibang iOS browser.",
+    "ios1": "Buksan ang ClassKeeper sa Safari at mag-sign in.",
+    "ios2": "I-tap ang Share button (parisukat na may arrow na nakaturo pataas) sa toolbar.",
+    "ios3": "Mag-scroll pababa at i-tap ang “Add to Home Screen”.",
+    "ios4": "Panatilihin ang pangalang “ClassKeeper” at i-tap ang “Add”.",
+    "ios5": "Buksan ang ClassKeeper mula sa home screen — full screen itong tatakbo na parang app.",
+    "androidTitle": "Android (Chrome)",
+    "androidNote": "May katulad na “Add to Home screen” na opsyon ang ibang browser (Edge, Samsung Internet, Firefox).",
+    "android1": "Buksan ang ClassKeeper sa Chrome at mag-sign in.",
+    "android2": "I-tap ang ⋮ menu sa kanang itaas.",
+    "android3": "I-tap ang “Install app” (o “Add to Home screen” kung hindi ito lumabas).",
+    "android4": "I-tap ang “Install”, pagkatapos ay kumpirmahin.",
+    "android5": "Buksan ang ClassKeeper mula sa home screen o app drawer."
+  },
+  "feedbackList": {
+    "title": "Feedback ng mga estudyante",
+    "empty": "Wala pang naisumiteng feedback."
   }
 }

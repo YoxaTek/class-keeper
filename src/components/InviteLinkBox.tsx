@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Copy, Check, QrCode } from "lucide-react";
+import f from "@/components/ui/form.module.scss";
+import s from "./linkShare.module.scss";
 
 export function InviteLinkBox({ token, showQr = false }: { token: string; showQr?: boolean }) {
   const t = useTranslations("common");
@@ -24,21 +26,21 @@ export function InviteLinkBox({ token, showQr = false }: { token: string; showQr
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-1.5">
+    <div className={f.stackXs}>
+      <div className={s.row}>
         <input
           readOnly
           value={url}
           onFocus={(e) => e.currentTarget.select()}
-          className="w-full rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
+          className={s.field}
         />
         <button
           type="button"
           onClick={copy}
           title={copied ? t("copied") : t("copy")}
-          className="flex shrink-0 items-center gap-1 rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          className={s.copy}
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-[#0f6e56] dark:text-teal-400" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check size={14} className={s.copied} /> : <Copy size={14} />}
         </button>
       </div>
 
@@ -47,9 +49,9 @@ export function InviteLinkBox({ token, showQr = false }: { token: string; showQr
           <button
             type="button"
             onClick={() => setQrOpen((v) => !v)}
-            className="flex items-center gap-1.5 text-xs text-[#0f6e56] hover:underline dark:text-teal-400"
+            className={s.toggle}
           >
-            <QrCode className="h-3.5 w-3.5" aria-hidden />
+            <QrCode size={14} aria-hidden />
             {qrOpen ? tRoster("hideQr") : tRoster("showQr")}
           </button>
 
@@ -63,7 +65,7 @@ export function InviteLinkBox({ token, showQr = false }: { token: string; showQr
               width={180}
               height={180}
               unoptimized
-              className="rounded-md border border-zinc-200 dark:border-zinc-800"
+              className={s.qr}
             />
           )}
         </>

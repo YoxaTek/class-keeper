@@ -150,13 +150,14 @@ function calculateAttendance(
   const present = attendance.filter((a) => a.status === "PRESENT").length;
   const absent = attendance.filter((a) => a.status === "ABSENT").length;
   const excused = attendance.filter((a) => a.status === "EXCUSED").length;
-  // NOT_ENROLLED is excluded entirely — no action needed.
+  // NOT_ENROLLED is excluded entirely.
 
-  const excessExcused = Math.max(0, excused - maxExcusedAbsences);
-  const effectiveAbsent = absent + excessExcused;
+  // Leave counts as attended up to the cap; any beyond it counts as absent.
+  const attended = present + Math.min(excused, maxExcusedAbsences);
+  const effectiveAbsent = absent + Math.max(0, excused - maxExcusedAbsences);
 
-  const denominator = present + effectiveAbsent;
-  const pct = denominator === 0 ? 0 : present / denominator;
+  const denominator = attended + effectiveAbsent;
+  const pct = denominator === 0 ? 0 : attended / denominator;
 
   return { pct, score: pct * weight };
 }
@@ -242,11 +243,7 @@ function calculateFinal(
 export function calculateGrade(input: GradingInput): GradeBreakdown {
   const { settings } = input;
 
-  const attendance = calculateAttendance(
-    input.attendance,
-    settings.maxExcusedAbsences,
-    settings.weightAttendance
-  );
+  const attendance = calculateAttendance(input.attendance, settings.maxExcusedAbsences, settings.weightAttendance);
   const assignment = calculateAssessmentAverage(input.scores, input.assessments, "ASSIGNMENT", settings.weightAssignment);
   const quiz = calculateAssessmentAverage(input.scores, input.assessments, "QUIZ", settings.weightQuiz);
   const midterm = calculateMidterm(input.scores, input.sessions, settings.weightMidterm);

@@ -10,6 +10,8 @@ import { QrScannerButton } from "@/components/QrScanner";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, linkClass } from "@/components/ui/styles";
 import type { AuthProviderId } from "@/lib/authProviders";
+import f from "@/components/ui/form.module.scss";
+import s from "./login.module.scss";
 
 export function LoginForm({
   providers,
@@ -21,6 +23,7 @@ export function LoginForm({
   hideQrScan?: boolean;
 }) {
   const t = useTranslations("login");
+  const tInstall = useTranslations("install");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,27 +57,22 @@ export function LoginForm({
   const signupHref = callbackUrl === "/" ? "/signup" : `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`;
 
   return (
-    <div className="space-y-5">
+    <div className={f.stack}>
       <ProviderSignInButtons providers={providers} callbackUrl={callbackUrl} />
 
       {providers.length > 0 && (
-        <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-600">
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <div className={f.divider}>
           {t("or")}
-          <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-1">
+      <form onSubmit={onSubmit} className={f.form}>
+        <div className={f.field}>
           <label htmlFor="email" className={labelClass}>
             {t("email")}
           </label>
-          <div className="relative">
-            <Mail
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
-              aria-hidden
-            />
+          <div className={f.control}>
+            <Mail className={f.iconStart} aria-hidden />
             <input
               id="email"
               type="email"
@@ -82,20 +80,17 @@ export function LoginForm({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("emailPlaceholder")}
-              className={`${inputClass} pl-9`}
+              className={`${inputClass} ${f.padStart}`}
             />
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className={f.field}>
           <label htmlFor="password" className={labelClass}>
             {t("password")}
           </label>
-          <div className="relative">
-            <Lock
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
-              aria-hidden
-            />
+          <div className={f.control}>
+            <Lock className={f.iconStart} aria-hidden />
             <input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -103,48 +98,54 @@ export function LoginForm({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t("passwordPlaceholder")}
-              className={`${inputClass} pl-9 pr-9`}
+              className={`${inputClass} ${f.padBoth}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+              className={f.iconEnd}
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? <EyeOff /> : <Eye />}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className={f.rowBetween}>
+          <label className={f.checkLabel}>
             <input
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-300 text-[#0f6e56] focus:ring-[#0f6e56] dark:border-zinc-700 dark:bg-zinc-900"
+              className={f.checkbox}
             />
             {t("rememberMe")}
           </label>
-          <Link href="/forgot-password" className={`text-sm ${linkClass}`}>
+          <Link href="/forgot-password" className={linkClass}>
             {t("forgotPassword")}
           </Link>
         </div>
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{t("error")}</p>}
+        {error && <p className={f.error}>{t("error")}</p>}
 
-        <Button type="submit" variant="primary" disabled={submitting} className="w-full text-base font-bold">
+        <Button type="submit" variant="primary" disabled={submitting} className={`${f.block} ${s.submit}`}>
           {t("submit")}
-          <ArrowRight className="h-4 w-4" aria-hidden />
+          <ArrowRight size={16} aria-hidden />
         </Button>
       </form>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-500">
+      <p className={f.muted}>
         {t("noAccount")} <Link href={signupHref} className={linkClass}>{t("createOne")}</Link>
       </p>
 
+      <p className={f.muted}>
+        <Link href="/install" className={linkClass}>
+          {tInstall("link")}
+        </Link>
+      </p>
+
       {!hideQrScan && (
-        <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <div className={s.qr}>
           <QrScannerButton triggerLabel={t("scanQr")} title={t("scanQrTitle")} helpText={t("scanQrHelp")} />
         </div>
       )}

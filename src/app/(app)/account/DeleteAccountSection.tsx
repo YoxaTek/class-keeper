@@ -5,6 +5,8 @@ import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cardClass, inputClass, labelClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
+import s from "./account.module.scss";
 
 export function DeleteAccountSection({ email }: { email: string }) {
   const t = useTranslations("account");
@@ -34,13 +36,13 @@ export function DeleteAccountSection({ email }: { email: string }) {
   }
 
   return (
-    <div className={`${cardClass} space-y-4 border-red-200 p-4 dark:border-red-900`}>
-      <div className="space-y-1">
-        <h2 className="text-sm font-semibold text-red-700 dark:text-red-400">{t("deleteAccount")}</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("deleteWarning")}</p>
+    <div className={`${cardClass} ${s.danger}`}>
+      <div className={f.field}>
+        <h2 className={s.dangerTitle}>{t("deleteAccount")}</h2>
+        <p className={f.muted}>{t("deleteWarning")}</p>
       </div>
 
-      <div className="space-y-1">
+      <div className={f.field}>
         <label htmlFor="confirmEmail" className={labelClass}>
           {t("confirmEmailLabel", { email })}
         </label>
@@ -53,7 +55,7 @@ export function DeleteAccountSection({ email }: { email: string }) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
       <Button
         type="button"

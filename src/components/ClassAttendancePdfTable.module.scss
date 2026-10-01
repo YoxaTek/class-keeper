@@ -1,0 +1,47 @@
+// Print sheet. Fixed column widths for everything except the last
+// (feedback) column, which absorbs the leftover width and wraps long notes.
+.title {
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  tr {
+    text-align: center;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--neutral-500);
+    padding: 0.25rem 0.5rem;
+  }
+
+  th {
+    padding-block: 0.75rem;
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .wrap {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}
+
+.colNo { width: 2rem; }
+.colId { width: 6rem; }
+.colName { width: 8rem; }
+.colChinese { width: 5rem; }
+.colStatus { width: 7rem; }
+.colScore { width: 6rem; }

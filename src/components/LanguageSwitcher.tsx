@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { setLocale } from "@/lib/actions/setLocale";
 import { localeNativeNames } from "@/i18n/config";
+import s from "./LanguageSwitcher.module.scss";
 
 const OTHER: Record<"en-US" | "zh-TW", { locale: "en-US" | "zh-TW"; label: string }> = {
   "en-US": { locale: "zh-TW", label: "中" },
@@ -32,7 +33,7 @@ export function LanguageSwitcher() {
       onClick={onClick}
       disabled={isPending}
       aria-label={localeNativeNames[target.locale]}
-      className="rounded-md px-2 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+      className={s.button}
     >
       {target.label}
     </button>

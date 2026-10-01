@@ -1,0 +1,36 @@
+// The ring and its centre label share one grid cell, so the label is
+// centred over the ring without position: absolute.
+.donut {
+  display: inline-grid;
+  place-items: center;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.ring {
+  transform: rotate(-90deg);
+}
+
+.track {
+  stroke: var(--bg-muted);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}

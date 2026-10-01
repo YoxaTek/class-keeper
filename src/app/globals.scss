@@ -1,0 +1,40 @@
+@use "../styles/reset";
+@use "../styles/tokens";
+
+// Restrained palette: zinc (structure/neutral), teal (accent/primary),
+// red (danger/below-threshold). Nothing else — no gradients, no per-status
+// rainbow. Status is communicated with icons + labels, not extra hues.
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  background: var(--bg-page);
+  color: var(--text);
+}
+
+// Tabular figures everywhere numbers are compared down a column — scores,
+// percentages, dates — so digits align like a real spreadsheet.
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+// A print-only portal (see ExportSessionPdfButton) renders its printable
+// content directly under <body>, alongside the whole normal page — this
+// hides every other direct child of <body> while printing, so only the
+// portal's own content (marked .print-portal) ends up on the page.
+@media print {
+  body.print-portal-active > *:not(.print-portal) {
+    display: none !important;
+  }
+}

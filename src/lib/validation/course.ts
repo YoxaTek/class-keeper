@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export const COURSE_COLORS = ["terracotta", "teal", "clay", "rust"] as const;
+export type CourseColor = (typeof COURSE_COLORS)[number];
+
+const timeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM")
+  .nullable()
+  .optional();
+
 export const courseInputSchema = z
   .object({
     name: z.string().min(1),
@@ -15,6 +24,14 @@ export const courseInputSchema = z
     weightFinal: z.number().min(0).default(15),
     weightImpression: z.number().min(0).default(10),
     institute: z.string().nullable().optional(),
+    code: z.string().nullable().optional(),
+    section: z.string().nullable().optional(),
+    room: z.string().nullable().optional(),
+    weekdays: z.array(z.number().int().min(0).max(6)).default([]),
+    startTime: timeSchema,
+    endTime: timeSchema,
+    plannedSessions: z.number().int().min(0).max(200).default(0),
+    color: z.enum(COURSE_COLORS).default("terracotta"),
   })
   // The grading weights are percentage points fed directly into the total
   // grade (see calculateGrade.ts) — they have to sum to 100 or every course's

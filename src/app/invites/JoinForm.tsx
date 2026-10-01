@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function JoinForm({
   courseId,
@@ -29,7 +30,7 @@ export function JoinForm({
     const res = await fetch(`/api/courses/${courseId}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, chineseName: chineseName || undefined, studentId }),
+      body: JSON.stringify({ name, chineseName: chineseName || undefined, studentId: studentId.trim() }),
     });
 
     if (!res.ok) {
@@ -46,15 +47,15 @@ export function JoinForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1">
+    <form onSubmit={onSubmit} className={f.form}>
+      <div className={f.field}>
         <label htmlFor="name" className={labelClass}>
           {t("name")}
         </label>
         <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       </div>
 
-      <div className="space-y-1">
+      <div className={f.field}>
         <label htmlFor="chineseName" className={labelClass}>
           {t("chineseName")}
         </label>
@@ -66,7 +67,7 @@ export function JoinForm({
         />
       </div>
 
-      <div className="space-y-1">
+      <div className={f.field}>
         <label htmlFor="studentId" className={labelClass}>
           {t("studentId")}
         </label>
@@ -79,9 +80,9 @@ export function JoinForm({
         />
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
-      <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+      <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
         {submitting ? t("submitting") : t("submit")}
       </Button>
     </form>

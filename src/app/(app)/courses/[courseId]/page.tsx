@@ -8,6 +8,8 @@ import { ClassDeleteButton } from "./ClassDeleteButton";
 import { ExportSessionPdfButton } from "./ExportSessionPdfButton";
 import { scoreRecordMax, pctFor } from "@/lib/grading/calculateGrade";
 import { buildClassRecordTitle, courseWeekNumber } from "@/lib/classRecordTitle";
+import { cardHoverClass } from "@/components/ui/styles";
+import css from "./classes.module.scss";
 
 type Filter = "all" | "upcoming" | "past";
 
@@ -73,20 +75,16 @@ export default async function SessionsListPage({
   ];
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className={css.page}>
       <Breadcrumb items={[{ label: t("sessions.title") }]} />
 
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex gap-1">
+      <div className={css.toolbar}>
+        <div className={css.filters}>
           {filters.map((f) => (
             <Link
               key={f.key}
               href={f.key === "all" ? `/courses/${courseId}` : `/courses/${courseId}?filter=${f.key}`}
-              className={`tabular rounded-md px-2.5 py-1.5 text-[11.5px] ${
-                filter === f.key
-                  ? "bg-[#0f6e56]/10 font-bold text-[#0f6e56] dark:text-teal-400"
-                  : "font-semibold text-zinc-500 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:bg-zinc-900"
-              }`}
+              className={`tabular ${css.filter} ${filter === f.key ? css.active : ""}`}
             >
               {f.label} ({f.count})
             </Link>
@@ -96,7 +94,7 @@ export default async function SessionsListPage({
       </div>
 
       {sessions.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className={css.grid}>
           {sessions.map((s) => {
             // The denominator is the roster actually enrolled as of this
             // session's date, not "however many Attendance rows happen to
@@ -120,21 +118,18 @@ export default async function SessionsListPage({
             const coverLabels = covers(s);
 
             return (
-              <article
-                key={s.id}
-                className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <Link href={href} className="min-w-0 flex-1">
-                    <p className="tabular text-[15px] font-bold text-zinc-900 dark:text-zinc-100">
+              <article key={s.id} className={cardHoverClass}>
+                <div className={css.head}>
+                  <Link href={href} className={css.when}>
+                    <p className={`tabular ${css.date}`}>
                       {dateFmt.format(s.date)}
                     </p>
-                    {s.label && <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-500">{s.label}</p>}
+                    {s.label && <p className={css.label}>{s.label}</p>}
                   </Link>
                   {/* Actions live in the header now, not a separate footer row — no
                       room left for the old chevron-as-affordance once PDF/edit/delete
                       moved up here, so the card itself (below) carries that instead. */}
-                  <div className="flex shrink-0 items-center gap-0.5">
+                  <div className={css.actions}>
                     <ExportSessionPdfButton
                       title={buildClassRecordTitle({
                         courseName: course.name,
@@ -176,36 +171,29 @@ export default async function SessionsListPage({
                   </div>
                 </div>
 
-                <Link href={href} className="mt-2.5 block space-y-2.5">
+                <Link href={href} className={css.body}>
                   {coverLabels.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className={css.covers}>
                       {coverLabels.map((label) => (
-                        <span
-                          key={label}
-                          className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                        >
+                        <span key={label} className={css.cover}>
                           {label}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-500">—</p>
+                    <p className={css.none}>—</p>
                   )}
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className={css.stats}>
                     {/* Healthy turnout gets the same teal tint as an active filter
                         pill, not a neutral gray — a session with no attendance
                         problem is still worth reading as "good", not "no signal". */}
                     <span
-                      className={`tabular rounded-full px-2 py-0.5 text-[12px] font-bold ${
-                        turnoutLow
-                          ? "bg-red-50 text-red-700 dark:bg-red-400/10 dark:text-red-400"
-                          : "bg-[#0f6e56]/10 text-[#0f6e56] dark:text-teal-400"
-                      }`}
+                      className={`tabular ${css.turnout} ${turnoutLow ? css.low : ""}`}
                     >
                       {s.hasAttendance ? `${turnout} ${t("sessions.attendanceTurnout").toLowerCase()}` : "—"}
                     </span>
                     {(s.assessments.length > 0 || s.hasMidterm || s.hasFinal) && (
-                      <span className="tabular text-[12px] text-zinc-500 dark:text-zinc-500">
+                      <span className={`tabular ${css.average}`}>
                         {scoreAvg} {t("sessions.scoreAverage").toLowerCase()}
                       </span>
                     )}
@@ -216,7 +204,7 @@ export default async function SessionsListPage({
           })}
         </div>
       ) : (
-        <div className="flex flex-1 items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-500">
+        <div className={css.empty}>
           {t("sessions.empty", { button: t("sessions.newSession") })}
         </div>
       )}

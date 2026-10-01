@@ -1,0 +1,17 @@
+// The input spans the whole cell and draws its own calendar icon on top, so
+// clicking anywhere opens the picker; the native indicator is hidden so the
+// two don't double up.
+.input {
+  min-width: 0;
+  cursor: pointer;
+  padding-right: 2rem;
+  text-transform: uppercase;
+
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0;
+  }
+}
+
+.icon {
+  pointer-events: none;
+}

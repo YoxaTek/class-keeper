@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
+import { iconDangerClass } from "@/components/ui/styles";
 
 export function ClassDeleteButton({ courseId, sessionId }: { courseId: string; sessionId: string }) {
   const t = useTranslations("sessions");
@@ -24,9 +25,9 @@ export function ClassDeleteButton({ courseId, sessionId }: { courseId: string; s
       onClick={onDelete}
       disabled={deleting}
       title={tc("delete")}
-      className="rounded p-1.5 text-zinc-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950 dark:hover:text-red-400"
+      className={iconDangerClass}
     >
-      <Trash2 className="h-3.5 w-3.5" aria-hidden />
+      <Trash2 size={14} aria-hidden />
     </button>
   );
 }

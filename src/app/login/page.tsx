@@ -2,7 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { getEnabledProviders } from "@/lib/authProviders";
 import { safeCallbackUrl } from "@/lib/safeCallbackUrl";
 import { AuthShell } from "@/components/AuthShell";
+import { joinCourseLabel } from "@/lib/joinCourseLabel";
 import { LoginForm } from "./LoginForm";
+import f from "@/components/ui/form.module.scss";
+import s from "./login.module.scss";
 
 export default async function LoginPage({
   searchParams,
@@ -19,18 +22,19 @@ export default async function LoginPage({
   // code" button again reads as if nothing happened, and there's nothing
   // left to scan for since the target is already baked into callbackUrl.
   const fromScan = safeUrl.startsWith("/invites");
+  const joinCourse = await joinCourseLabel(safeUrl);
 
   return (
     <AuthShell appName={tCommon("appName")}>
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
+      <div className={f.stack}>
+        <div className={f.field}>
+          <h1 className={s.title}>{t("title")}</h1>
+          <p className={f.muted}>{t("subtitle")}</p>
         </div>
 
         {fromScan && (
-          <p className="rounded-md border border-[#0f6e56]/20 bg-[#0f6e56]/5 p-3 text-sm text-[#0f6e56] dark:border-teal-400/20 dark:bg-teal-400/5 dark:text-teal-400">
-            {t("scannedBanner")}
+          <p className={f.notice}>
+            {joinCourse ? t("joinCourseBanner", { course: joinCourse }) : t("scannedBanner")}
           </p>
         )}
 

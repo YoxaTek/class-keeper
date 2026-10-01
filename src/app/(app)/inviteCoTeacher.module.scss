@@ -1,0 +1,22 @@
+.card {
+  max-width: 24rem;
+}
+
+.title {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.email {
+  min-width: 12rem;
+  flex: 1;
+}

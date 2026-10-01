@@ -1,0 +1,94 @@
+.dateRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.covers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+// A "covers X" toggle pill.
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 9999px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-muted);
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  &.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 500;
+    color: var(--accent-text);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.maxScores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.maxScore {
+  display: flex;
+  width: 9rem;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+// Quiz + assignment editors side by side while both are empty (just two
+// "add" buttons); stacked as soon as either has a row.
+.lists {
+  display: flex;
+  gap: 0.75rem;
+
+  &.stacked {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+}
+
+.editor {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.item {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.itemLabel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemScore {
+  display: flex;
+  width: 7rem;
+  flex-direction: column;
+  gap: 0.25rem;
+}

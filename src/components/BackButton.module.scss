@@ -1,0 +1,11 @@
+.back {
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  padding: 0.375rem;
+  color: var(--text-muted);
+
+  &:hover {
+    background: var(--bg-muted);
+    color: var(--text);
+  }
+}

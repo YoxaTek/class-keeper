@@ -1,8 +1,8 @@
-import { CircleCheck, Clock, CircleX, CircleDashed } from "lucide-react";
+import { CircleCheck, Clock, CircleX, CircleDashed, type LucideIcon } from "lucide-react";
 import type { AttendanceStatus } from "@prisma/client";
-import type { ComponentType } from "react";
+import s from "./attendanceStatus.module.scss";
 
-export const attendanceIcon: Record<AttendanceStatus, ComponentType<{ className?: string }>> = {
+export const attendanceIcon: Record<AttendanceStatus, LucideIcon> = {
   PRESENT: CircleCheck,
   EXCUSED: Clock,
   ABSENT: CircleX,
@@ -10,8 +10,22 @@ export const attendanceIcon: Record<AttendanceStatus, ComponentType<{ className?
 };
 
 export const attendanceColor: Record<AttendanceStatus, string> = {
-  PRESENT: "text-[#0f6e56] dark:text-teal-400",
-  EXCUSED: "text-amber-600 dark:text-amber-400",
-  ABSENT: "text-red-600 dark:text-red-400",
-  NOT_ENROLLED: "text-indigo-600 dark:text-indigo-400",
+  PRESENT: s.present,
+  EXCUSED: s.excused,
+  ABSENT: s.absent,
+  NOT_ENROLLED: s.notEnrolled,
+};
+
+// Solid-fill counterparts, for the compact status buttons (filled when selected).
+export const attendanceFill: Record<AttendanceStatus, string> = {
+  PRESENT: s.fillPresent,
+  EXCUSED: s.fillExcused,
+  ABSENT: s.fillAbsent,
+  NOT_ENROLLED: s.fillNotEnrolled,
+};
+
+// attendanceColor with a neutral NOT_ENROLLED instead of indigo.
+export const attendanceTextMuted: Record<AttendanceStatus, string> = {
+  ...attendanceColor,
+  NOT_ENROLLED: s.notEnrolledMuted,
 };

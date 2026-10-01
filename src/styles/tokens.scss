@@ -1,0 +1,226 @@
+// ALL colors and shadows live here — nothing else in src/ hard-codes one
+// (the only exceptions are Google's brand logo artwork in
+// ProviderSignInButtons.tsx and the `themeColor` in app/layout.tsx, which
+// Next requires as a literal for the browser chrome).
+//
+// Theme: "Terracotta & Clay" (see design/DESIGN.md) — terracotta primary,
+// slate-teal for positive/verified states, warm parchment surfaces.
+//
+// Components reference the semantic names only (`var(--text)`, `var(--border)`…).
+// To restyle the app edit this file; to add a theme, add one more
+// `:root[data-theme="…"]` block that includes a values mixin.
+//
+// THEMES
+//   light   — the base values under :root.
+//   dark    — @mixin dark-values (warm espresso), applied (a) when the user
+//             picked "Dark" (html[data-theme="dark"]) or (b) when they follow
+//             the device ("System", no data-theme) and the device is dark.
+//   The choice is stored in the `theme` cookie by ThemeSwitcher and read in
+//   app/layout.tsx so the first paint is already correct (no flash).
+
+// ---------------------------------------------------------------------------
+// Dark theme values. Only what differs from light is listed.
+// ---------------------------------------------------------------------------
+@mixin dark-values {
+  color-scheme: dark;
+
+  // Palette: design/DESIGN_dark_mode.md — amber-skewed charcoals, kiln-fired
+  // terracotta, ivory parchment text. Surface stack: canvas #121110 →
+  // panels #1a1816 → cards #24211e → floating/hover #2e2a26.
+  --accent: #ea580c;
+  --accent-hover: #f97316;
+  --accent-text: #fb923c;
+  --accent-soft: rgb(234 88 12 / 0.15);
+  --accent-soft-strong: rgb(234 88 12 / 0.25);
+  --on-accent: #f5f3f0;
+  --positive-text: #5eead4;
+  --positive-soft: rgb(45 212 191 / 0.12);
+
+  --bg-page: #121110;
+  --bg-surface: #24211e;
+  --bg-field: #1a1816;
+  --bg-sidebar: #1a1816;
+  --bg-hover: #2e2a26;
+  --bg-muted: #2e2a26;
+  --bg-subtle: #1a1816;
+  --backdrop: rgb(8 7 6 / 0.6);
+
+  --text: #f5f3f0;
+  --text-body: #e2ded9;
+  --text-label: #d5cfca;
+  --text-muted: #b9b3ad;
+  --text-faint: #a8a29e;
+
+  --border: #3f3a34;
+  --border-soft: #2e2a26;
+  --border-strong: #4a433b;
+
+  --error: #f98474;
+  --error-soft: rgb(234 88 12 / 0.15);
+  --error-box-text: #ffb4ab;
+  --danger-text: #ffa38a;
+  --danger-border: #7f2d1c;
+  --danger-bg-hover: #3a1a12;
+
+  --warning: #fbbf24;
+  --warning-soft: rgb(251 191 36 / 0.14);
+  --amber: #fbbf24;
+  --amber-solid: #fbbf24;
+  --indigo: #a5b4fc;
+
+  --slider-empty: #3f3a34;
+  --status-btn-bg: transparent;
+  --status-btn-bg-hover: #2e2a26;
+  --status-btn-border: #4a433b;
+  --on-amber: #1c1917;
+  --fill-neutral: #57534e;
+
+  --chart-attendance: #3987e5;
+  --chart-assignment: #d95926;
+  --chart-quiz: #199e70;
+  --chart-midterm: #c98500;
+  --chart-final: #d55181;
+  --chart-impression: #008300;
+
+  --binder-terracotta: #ea580c;
+  --binder-teal: #2dd4bf;
+  --binder-clay: #a98a7e;
+  --binder-rust: #d97722;
+
+  --brand: #2a130a;
+  --brand-text: #ffdbce;
+
+  // Floating card / modal overlay glows from the dark spec (earthen umber, not pitch black).
+  --shadow-sm: 0 1px 2px rgb(8 7 6 / 0.4);
+  --shadow-md: 0 4px 20px -2px rgb(10 9 8 / 0.65), 0 0 0 1px #3f3a34;
+  --shadow-lg: 0 20px 48px -8px rgb(8 7 6 / 0.85), 0 0 0 1px #4a433b;
+}
+
+// ---------------------------------------------------------------------------
+// Light theme (base) — also where every non-themed value is defined.
+// ---------------------------------------------------------------------------
+:root {
+  color-scheme: light;
+
+  // ---- raw palette: warm neutrals (stone) ----
+  --neutral-50: #fafaf9;
+  --neutral-100: #f5f5f4;
+  --neutral-200: #e7e5e4;
+  --neutral-300: #d6d3d1;
+  --neutral-400: #a8a29e;
+  --neutral-500: #78716c;
+  --neutral-600: #57534e;
+  --neutral-700: #44403c;
+  --neutral-800: #292524;
+  --neutral-900: #1c1917;
+  --neutral-950: #0c0a09;
+
+  // ---- accent: terracotta rust ----
+  --accent: #c2410c;
+  --accent-hover: #9a3412;
+  --accent-text: #9b2f00; // accent when used as text on a surface
+  --accent-soft: rgb(194 65 12 / 0.1); // tinted background
+  --accent-soft-strong: color-mix(in srgb, var(--accent) 18%, transparent);
+  --accent-faint: color-mix(in srgb, var(--accent) 5%, transparent);
+  --accent-border: color-mix(in srgb, var(--accent) 30%, transparent);
+  --accent-border-hover: color-mix(in srgb, var(--accent) 50%, transparent);
+  --on-accent: #fff; // text/icons on any solid colored fill
+
+  // ---- secondary / positive: slate teal (verified, passing, healthy) ----
+  --secondary: #0f766e; // solid fill (secondary button, "present")
+  --secondary-hover: #115e59;
+  --positive-text: #0f766e;
+  --positive-soft: rgb(15 118 110 / 0.1);
+
+  // ---- surfaces ----
+  --bg-page: #fdfbf7; // warm alabaster canvas
+  --bg-surface: #fff; // cards, header, popups
+  // Dark fields recess to the page background, not the card's — at the
+  // card's own color an input on a card was indistinguishable from the card.
+  --bg-field: #fff;
+  --bg-sidebar: #fff;
+  --bg-hover: #f7f4ee;
+  --bg-muted: #eee9df; // recessed: chips, toggles, unselected panels
+  --bg-subtle: #f7f4ee; // inset: table header bands, info boxes
+  --bg-bar: color-mix(in srgb, var(--bg-sidebar) 95%, transparent); // sticky Save bar
+  --bg-bar-dirty: color-mix(in srgb, var(--amber-solid) 10%, var(--bg-sidebar));
+  --backdrop: rgb(41 37 36 / 0.4);
+  --black: #000; // camera preview
+
+  // ---- text ----
+  --text: #292524;
+  --text-body: #44403c;
+  --text-label: #57534e;
+  --text-muted: #78716c;
+  --text-faint: #a8a29e;
+
+  // ---- borders ----
+  --border: #e7dfd5;
+  --border-soft: #f7f4ee;
+  --border-strong: #d6cbbe;
+
+  // ---- status ----
+  --error: #b91c1c;
+  --error-soft: rgb(234 88 12 / 0.12);
+  --error-box-text: #991b1b;
+  --danger-text: #b91c1c;
+  --danger-border: #f3c9bb;
+  --danger-bg-hover: #fff1ec;
+
+  --warning: #b45309;
+  --warning-soft: rgb(180 83 9 / 0.12);
+
+  --amber: #b45309; // attendance: excused (text)
+  --amber-solid: #d97706; // attendance: excused (fill) / unsaved dot
+  --indigo: #6d5bd0; // attendance: not enrolled (text)
+
+  // ---- controls ----
+  --slider-empty: #d6cbbe; // empty part of a range slider
+  // compact attendance status buttons (unselected state)
+  --status-btn-bg: #eee9df;
+  --status-btn-bg-hover: #e3dcd0;
+  --status-btn-border: transparent;
+  --on-amber: #fff; // text on the amber (excused) fill
+  --fill-neutral: #78716c; // not-enrolled fill
+
+  // ---- grade-breakdown chart (fixed categorical order, CVD-validated) ----
+  --chart-attendance: #2a78d6;
+  --chart-assignment: #eb6834;
+  --chart-quiz: #1baf7a;
+  --chart-midterm: #eda100;
+  --chart-final: #e87ba4;
+  --chart-impression: #008300;
+
+  // ---- course "binder" colors (the stripe on a course card) ----
+  --binder-terracotta: #9b2f00;
+  --binder-teal: #0f766e;
+  --binder-clay: #8d7168;
+  --binder-rust: #b94a27;
+
+  // ---- brand panel on signed-out screens ----
+  --brand: #7c2a0a;
+  --brand-text: #ffdbd0;
+  --brand-icon: #ffb59d;
+
+  // ---- third-party sign-in buttons ----
+  --facebook: #1877f2;
+  --line: #06c755;
+
+  // ---- warm ambient shadows (design/DESIGN.md elevation levels 1–3) ----
+  --shadow-sm: 0 2px 4px -1px rgb(68 64 60 / 0.04), 0 4px 12px -2px rgb(194 65 12 / 0.05);
+  --shadow-md: 0 8px 20px -4px rgb(68 64 60 / 0.08), 0 4px 10px -2px rgb(194 65 12 / 0.06);
+  --shadow-lg: 0 16px 36px -6px rgb(41 37 36 / 0.14), 0 6px 16px -3px rgb(154 52 18 / 0.08);
+  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.25);
+}
+
+// "System": follow the device unless the user forced light.
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-values;
+  }
+}
+
+// "Dark": forced, regardless of the device.
+:root[data-theme="dark"] {
+  @include dark-values;
+}

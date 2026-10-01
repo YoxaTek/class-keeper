@@ -1,0 +1,124 @@
+// The dropdown is the one place that still uses position: absolute — a
+// popover has to float over the header without taking part in its layout.
+.root {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  margin-top: 0.25rem;
+  width: 15rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.who {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.name {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.role {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-label);
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+// A settings row (label on the left, switch on the right).
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-label);
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem 0.375rem 0.375rem;
+
+  &:hover {
+    background: var(--bg-muted);
+  }
+
+  img {
+    border-radius: 9999px;
+  }
+}
+
+.initial {
+  display: flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--accent);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: var(--on-accent);
+}
+
+.chevron {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--text-faint);
+  transition: transform 0.15s;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.setting + .item {
+  border-top: 1px solid var(--border);
+}

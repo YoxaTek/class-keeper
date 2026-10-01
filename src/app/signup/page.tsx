@@ -3,7 +3,9 @@ import { getEnabledProviders } from "@/lib/authProviders";
 import { safeCallbackUrl } from "@/lib/safeCallbackUrl";
 import { prisma } from "@/lib/prisma";
 import { AuthShell } from "@/components/AuthShell";
+import { joinCourseLabel } from "@/lib/joinCourseLabel";
 import { SignupForm } from "./SignupForm";
+import f from "@/components/ui/form.module.scss";
 
 export default async function SignupPage({
   searchParams,
@@ -16,6 +18,7 @@ export default async function SignupPage({
   const { callbackUrl } = await searchParams;
 
   const safeUrl = safeCallbackUrl(callbackUrl);
+  const joinCourse = await joinCourseLabel(safeUrl);
   const params = new URL(safeUrl, "http://x").searchParams;
   const courseId = params.get("course");
   const token = params.get("token");
@@ -33,11 +36,13 @@ export default async function SignupPage({
 
   return (
     <AuthShell appName={tCommon("appName")}>
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("subtitle")}</p>
+      <div className={f.stack}>
+        <div className={f.field}>
+          <h1 className={f.heading}>{t("title")}</h1>
+          <p className={f.muted}>{t("subtitle")}</p>
         </div>
+
+        {joinCourse && <p className={f.notice}>{t("joinCourseBanner", { course: joinCourse })}</p>}
 
         <SignupForm providers={providers} callbackUrl={safeUrl} initialInstitution={initialInstitution} />
       </div>

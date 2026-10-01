@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
 import { getEffectivePlanTier, getEffectiveSubscription } from "@/lib/subscriptions/effectiveSubscription";
 import { BillingPlans } from "./BillingPlans";
+import s from "./billing.module.scss";
+import f from "@/components/ui/form.module.scss";
 
 export default async function BillingPage({
   searchParams,
@@ -28,16 +30,16 @@ export default async function BillingPage({
   const hasSubscription = getEffectiveSubscription(user) !== null;
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
+    <div className={s.page}>
+      <h1 className={f.pageTitle}>{t("title")}</h1>
 
       {checkout === "success" && (
-        <p className="rounded-md border border-[#0f6e56]/30 bg-[#0f6e56]/10 px-3 py-2 text-sm text-[#0f6e56] dark:text-teal-400">
+        <p className={`${s.notice} ${s.success}`}>
           {t("checkoutSuccess")}
         </p>
       )}
       {checkout === "canceled" && (
-        <p className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+        <p className={s.notice}>
           {t("checkoutCanceled")}
         </p>
       )}

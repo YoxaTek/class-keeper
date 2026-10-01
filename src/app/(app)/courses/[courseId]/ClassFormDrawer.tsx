@@ -6,8 +6,9 @@ import { useTranslations } from "next-intl";
 import { Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
-import { buttonClass } from "@/components/ui/styles";
+import { buttonClass, iconButtonClass } from "@/components/ui/styles";
 import { SessionForm, type SessionFormValues } from "@/components/SessionForm";
+import f from "@/components/ui/form.module.scss";
 
 type Props =
   | { mode: "create"; courseId: string }
@@ -31,15 +32,15 @@ export function ClassFormDrawer(props: Props) {
         <button
           onClick={() => setOpen(true)}
           title={tc("edit")}
-          className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className={iconButtonClass}
         >
-          <Pencil className="h-3.5 w-3.5" aria-hidden />
+          <Pencil size={14} aria-hidden />
         </button>
       );
     }
     return (
       <button onClick={() => setOpen(true)} className={buttonClass("primary", "sm")}>
-        <Plus className="h-3.5 w-3.5" aria-hidden />
+        <Plus size={14} aria-hidden />
         {t("newSession")}
       </button>
     );
@@ -50,7 +51,7 @@ export function ClassFormDrawer(props: Props) {
       title={props.mode === "edit" ? t("editTitle") : t("newTitle")}
       onClose={() => setOpen(false)}
       footer={
-        <div className="flex gap-2">
+        <div className={f.actions}>
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             {tc("cancel")}
           </Button>

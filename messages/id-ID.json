@@ -28,7 +28,10 @@
       "STUDENT": "siswa"
     },
     "saving": "Menyimpan…",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "close": "Tutup",
+    "mobileNav": "Navigasi seluler",
+    "tagline": "Manajemen kehadiran, penilaian, dan daftar siswa untuk kelas bahasa Mandarin."
   },
   "login": {
     "title": "Masuk",
@@ -55,7 +58,8 @@
     "scanQr": "Pindai kode QR untuk bergabung ke kursus",
     "scanQrTitle": "Pindai kode QR untuk bergabung ke kursus",
     "scanQrHelp": "Arahkan kamera Anda ke kode QR yang dibagikan guru Anda.",
-    "scannedBanner": "Kode berhasil dipindai — masuk untuk melanjutkan."
+    "scannedBanner": "Kode berhasil dipindai — masuk untuk melanjutkan.",
+    "joinCourseBanner": "Masuk untuk bergabung dengan {course}."
   },
   "qrScanner": {
     "uploadQrImage": "Unggah foto sebagai gantinya",
@@ -73,7 +77,8 @@
     "haveAccount": "Sudah punya akun?",
     "name": "Nama",
     "submit": "Buat akun",
-    "error": "Tidak dapat membuat akun. Silakan coba lagi."
+    "error": "Tidak dapat membuat akun. Silakan coba lagi.",
+    "joinCourseBanner": "Buat akun untuk bergabung dengan {course}."
   },
   "forgotPassword": {
     "title": "Lupa kata sandi?",
@@ -97,7 +102,6 @@
   "dashboard": {
     "title": "Semester",
     "subtitle": "{count} kursus semester ini",
-    "newCourse": "Tambah",
     "acceptInvite": "Terima undangan",
     "acceptInviteTitle": "Pindai kode QR undangan",
     "acceptInviteHelp": "Arahkan kamera Anda ke kode QR undangan atau bergabung yang Anda terima.",
@@ -130,7 +134,57 @@
     "addStudentsPlaceholder": "Satu nama siswa per baris (opsional — Anda juga bisa menambahkannya nanti dari tab Daftar siswa)",
     "editTitle": "Edit semester",
     "institute": "Institusi",
-    "institutePlaceholder": "mis. SMA Lincoln"
+    "institutePlaceholder": "mis. SMA Lincoln",
+    "createCourse": "Buat Kursus",
+    "welcomeBack": "Selamat datang kembali, {name}",
+    "heroSubtitle": "Siap memimpin kelas Anda hari ini?",
+    "activeCourses": "{count} Kursus Aktif",
+    "enrolledStudents": "{count} Siswa Terdaftar",
+    "teacherFallback": "guru",
+    "enrolledBadge": "{count} Terdaftar",
+    "classesConducted": "Kemajuan: {done}/{total} kelas terlaksana",
+    "cohortHealth": "Kondisi kelas",
+    "avgShort": "Rata-rata",
+    "attendanceShort": "Kehadiran",
+    "openWorkspace": "Buka Ruang Kerja",
+    "quickActions": "Aksi Cepat",
+    "markAttendance": "Catat Kehadiran",
+    "markAttendanceHint": "Absen cepat hari ini",
+    "gradebookEntry": "Input Nilai",
+    "gradebookEntryHint": "Masukkan nilai kuis & UTS",
+    "courseDetails": "Detail kursus",
+    "courseCode": "ID / Kode Kursus",
+    "section": "Seksi / Kelompok",
+    "binderColor": "Warna kursus",
+    "color_terracotta": "Terakota",
+    "color_teal": "Teal Batu",
+    "color_clay": "Tanah Liat",
+    "color_rust": "Karat Tua",
+    "scheduleTitle": "Sesi terencana & jadwal",
+    "plannedSessions": "Total sesi kelas",
+    "classesUnit": "Kelas",
+    "weekdays": "Hari rutin mingguan",
+    "startTime": "Jam mulai",
+    "endTime": "Jam selesai",
+    "room": "Ruang kelas / Fasilitas",
+    "welcomeNew": "Selamat datang, {name}",
+    "emptySubtitle": "Anda belum memiliki kursus. Mari mulai membangunnya.",
+    "launchTitle": "Siap meluncurkan kursus pertama Anda?",
+    "launchBody": "Siapkan kursus dan jadwal kelasnya, atau terima undangan, untuk mulai mencatat kehadiran dan nilai.",
+    "createFirstCourse": "Buat Kursus Pertama Anda",
+    "howItWorks": "Cara kerja ClassKeeper dalam 4 langkah",
+    "step1Title": "Buat kursus",
+    "step1Body": "Atur semester, jadwalkan kelas rutin, dan tentukan bobot penilaian kursus.",
+    "step2Title": "Tambahkan siswa & asisten",
+    "step2Body": "Undang siswa lewat tautan kelas atau kode QR, tambahkan nama siswa sekaligus, dan undang asisten pengajar (TA) untuk membantu mengelola kelas.",
+    "step3Title": "Absen dengan satu ketukan",
+    "step3Body": "Catat hadir, absen, atau izin untuk setiap sesi kelas dengan cepat.",
+    "quickSetup": "Pengaturan cepat",
+    "guideMinutes": "Panduan 4 menit",
+    "syncsAcross": "Sinkron di desktop & seluler",
+    "createFirstCourseShort": "Buat Kursus Pertama",
+    "step4Title": "Catat kuis & tugas",
+    "step4Body": "Masukkan nilai kuis, tugas, UTS, dan nilai akhir terpisah dari absensi harian."
   },
   "roster": {
     "title": "Daftar siswa",
@@ -160,7 +214,7 @@
     "filterPast": "Lampau",
     "label": "Label",
     "covers": "Mencakup",
-  "coversHint": "Kehadiran, UTS, dan ujian akhir bisa diaktifkan atau dinonaktifkan. Tambahkan kuis atau tugas sebanyak yang dibutuhkan di bawah.",
+    "coversHint": "Kehadiran, UTS, dan ujian akhir bisa diaktifkan atau dinonaktifkan. Tambahkan kuis atau tugas sebanyak yang dibutuhkan di bawah.",
     "attendanceTurnout": "Kehadiran",
     "scoreAverage": "Rata-rata nilai",
     "attendance": "Kehadiran",
@@ -213,7 +267,10 @@
     "narrative": "Catatan",
     "impressionScore": "Nilai kesan",
     "attendanceHistory": "Riwayat kehadiran",
-    "scoreHistory": "Riwayat nilai"
+    "scoreHistory": "Riwayat nilai",
+    "midtermAndFinal": "UTS & ujian akhir",
+    "noScoresYet": "Belum ada nilai yang tercatat",
+    "noScoresYetHint": "Nilai kuis dan tugas dimasukkan dari layar kehadiran setiap kelas."
   },
   "belowPassing": {
     "title": "Di bawah nilai kelulusan",
@@ -231,7 +288,10 @@
     "feedbackSubmit": "Kirim masukan",
     "feedbackSubmitted": "Masukan dikirim pada {date}. Terima kasih!",
     "noEvaluationYet": "Belum ditulis.",
-    "sessionScores": "Nilai per kelas"
+    "sessionScores": "Nilai per kelas",
+    "noProfile": "Tidak ada profil siswa yang terhubung dengan akun ini.",
+    "feedbackEdit": "Ubah masukan",
+    "feedbackUpdate": "Perbarui masukan"
   },
   "onboarding": {
     "title": "Siapkan akun Anda",
@@ -272,7 +332,12 @@
     "confirmEmailLabel": "Ketik {email} untuk konfirmasi",
     "wrongPassword": "Kata sandi salah.",
     "deleting": "Menghapus…",
-    "error": "Tidak dapat menghapus akun Anda. Silakan coba lagi."
+    "error": "Tidak dapat menghapus akun Anda. Silakan coba lagi.",
+    "theme": "Tema",
+    "theme_system": "Sistem",
+    "theme_light": "Terang",
+    "theme_dark": "Gelap",
+    "feedbackLink": "Masukan siswa"
   },
   "billing": {
     "title": "Penagihan",
@@ -302,6 +367,30 @@
     "submit": "Gabung kelas",
     "submitting": "Bergabung…",
     "error": "Tidak dapat bergabung dengan kelas ini. Silakan coba lagi.",
-    "alreadyTeaching": "Akun ini sudah mengajar kelas — gunakan akun lain untuk bergabung sebagai siswa."
+    "alreadyTeaching": "Akun ini sudah mengajar kelas — gunakan akun lain untuk bergabung sebagai siswa.",
+    "chineseName": "Nama Tionghoa"
+  },
+  "install": {
+    "link": "Instal ClassKeeper di ponsel Anda",
+    "title": "Instal ClassKeeper",
+    "intro": "Tambahkan ClassKeeper ke layar utama ponsel agar bisa dibuka seperti aplikasi — tanpa toko aplikasi.",
+    "iosTitle": "iPhone / iPad (Safari)",
+    "iosNote": "Harus Safari — browser iOS lain tidak bisa menambahkan ke layar utama.",
+    "ios1": "Buka ClassKeeper di Safari dan masuk.",
+    "ios2": "Ketuk tombol Bagikan (kotak dengan panah ke atas) di bilah alat.",
+    "ios3": "Gulir ke bawah dan ketuk “Tambah ke Layar Utama”.",
+    "ios4": "Biarkan nama “ClassKeeper” lalu ketuk “Tambah”.",
+    "ios5": "Buka ClassKeeper dari layar utama — berjalan layar penuh seperti aplikasi.",
+    "androidTitle": "Android (Chrome)",
+    "androidNote": "Browser lain (Edge, Samsung Internet, Firefox) memiliki menu “Tambahkan ke layar utama” yang serupa.",
+    "android1": "Buka ClassKeeper di Chrome dan masuk.",
+    "android2": "Ketuk menu ⋮ di pojok kanan atas.",
+    "android3": "Ketuk “Instal aplikasi” (atau “Tambahkan ke layar utama” jika tidak terlihat).",
+    "android4": "Ketuk “Instal”, lalu konfirmasi.",
+    "android5": "Buka ClassKeeper dari layar utama atau laci aplikasi."
+  },
+  "feedbackList": {
+    "title": "Masukan siswa",
+    "empty": "Belum ada masukan yang dikirim."
   }
 }

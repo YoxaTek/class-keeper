@@ -7,6 +7,8 @@ import type { PlanTier } from "@prisma/client";
 import { Button } from "@/components/ui/Button";
 import { cardClass } from "@/components/ui/styles";
 import { PLAN_LIMITS } from "@/lib/subscriptions/planLimits";
+import f from "@/components/ui/form.module.scss";
+import s from "./billing.module.scss";
 
 const TIERS: PlanTier[] = ["FREE", "PRO", "INSTITUTION"];
 
@@ -73,27 +75,27 @@ export function BillingPlans({
 
   return (
     <>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className={s.plans}>
         {TIERS.map((tier) => {
           const isCurrent = tier === currentTier;
           return (
-            <div key={tier} className={`${cardClass} flex flex-col gap-3 p-4`}>
+            <div key={tier} className={`${cardClass} ${s.plan}`}>
               <div>
-                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t(`plan.${tier}`)}</h2>
+                <h2 className={f.subheading}>{t(`plan.${tier}`)}</h2>
                 {isCurrent && (
-                  <span className="mt-1 inline-block rounded-full bg-[#0f6e56]/10 px-2 py-0.5 text-xs font-medium text-[#0f6e56] dark:text-teal-400">
+                  <span className={s.current}>
                     {t("currentPlan")}
                   </span>
                 )}
               </div>
 
-              <ul className="flex-1 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-                {features(tier).map((f) => (
-                  <li key={f} className="flex items-start gap-1.5">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0f6e56] dark:text-teal-400" aria-hidden />
-                    {f}
+              <ul className={s.features}>
+                {features(tier).map((feature) => (
+                  <li key={feature}>
+                    <Check size={14} aria-hidden />
+                    {feature}
                   </li>
                 ))}
               </ul>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Copy, Check, QrCode } from "lucide-react";
 import { cardClass, labelClass } from "@/components/ui/styles";
+import s from "./linkShare.module.scss";
+import f from "@/components/ui/form.module.scss";
 
 export function JoinLinkCard({ courseId }: { courseId: string }) {
   const t = useTranslations("roster");
@@ -24,33 +26,33 @@ export function JoinLinkCard({ courseId }: { courseId: string }) {
   }
 
   return (
-    <div className={`${cardClass} space-y-2 p-4`}>
+    <div className={`${cardClass} ${f.panel}`}>
       <label className={labelClass}>{t("joinLink")}</label>
-      <p className="text-xs text-zinc-500 dark:text-zinc-500">{t("joinLinkHelp")}</p>
+      <p className={f.hint}>{t("joinLinkHelp")}</p>
 
-      <div className="flex items-center gap-1.5">
+      <div className={s.row}>
         <input
           readOnly
           value={url}
           onFocus={(e) => e.currentTarget.select()}
-          className="w-full rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
+          className={s.field}
         />
         <button
           type="button"
           onClick={copy}
           title={copied ? tCommon("copied") : tCommon("copy")}
-          className="flex shrink-0 items-center gap-1 rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          className={s.copy}
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-[#0f6e56] dark:text-teal-400" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check size={14} className={s.copied} /> : <Copy size={14} />}
         </button>
       </div>
 
       <button
         type="button"
         onClick={() => setShowQr((v) => !v)}
-        className="flex items-center gap-1.5 text-xs text-[#0f6e56] hover:underline dark:text-teal-400"
+        className={s.toggle}
       >
-        <QrCode className="h-3.5 w-3.5" aria-hidden />
+        <QrCode size={14} aria-hidden />
         {showQr ? t("hideQr") : t("showQr")}
       </button>
 
@@ -65,7 +67,7 @@ export function JoinLinkCard({ courseId }: { courseId: string }) {
           width={180}
           height={180}
           unoptimized
-          className="rounded-md border border-zinc-200 dark:border-zinc-800"
+          className={s.qr}
         />
       )}
     </div>

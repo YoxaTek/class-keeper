@@ -9,6 +9,7 @@ import { linkClass } from "@/components/ui/styles";
 import { InviteAcceptForm } from "./InviteAcceptForm";
 import { InviteEntryForm } from "./InviteEntryForm";
 import { JoinForm } from "./JoinForm";
+import f from "@/components/ui/form.module.scss";
 
 // The single place any invite (TEACHER/TA/STUDENT via a token) or class
 // join (self-serve by name + student ID) gets accepted — reachable whether
@@ -50,14 +51,14 @@ export default async function InvitesPage({
 
     return (
       <AuthShell appName={tCommon("appName")}>
-        <div className="space-y-5">
-          <div className="space-y-1">
-            <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{tInvite("title")}</h1>
+        <div className={f.stack}>
+          <div className={f.field}>
+            <h1 className={f.heading}>{tInvite("title")}</h1>
           </div>
 
           {inviteError && (
-            <div className="space-y-2">
-              <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+            <div className={f.stackXs}>
+              <p className={f.errorBox}>
                 {t(`error.${inviteError}`)}
               </p>
               <Link href="/" className={linkClass}>
@@ -91,17 +92,17 @@ export default async function InvitesPage({
 
     return (
       <AuthShell appName={tCommon("appName")}>
-        <div className="space-y-5">
-          <div className="space-y-1">
-            <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{tJoin("title")}</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-500">
+        <div className={f.stack}>
+          <div className={f.field}>
+            <h1 className={f.heading}>{tJoin("title")}</h1>
+            <p className={f.muted}>
               {course.subject.name} · {course.name}
               {course.institute && ` · ${course.institute}`}
             </p>
           </div>
 
           {alreadyTeaches ? (
-            <p className="text-sm text-red-600 dark:text-red-400">{tJoin("alreadyTeaching")}</p>
+            <p className={f.error}>{tJoin("alreadyTeaching")}</p>
           ) : (
             <JoinForm courseId={course.id} initialName={user.name ?? ""} initialStudentId={studentId ?? ""} />
           )}
@@ -113,10 +114,10 @@ export default async function InvitesPage({
   // ---- No token/course in the URL: manual entry ----
   return (
     <AuthShell appName={tCommon("appName")}>
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t("entryTitle")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">{t("entrySubtitle")}</p>
+      <div className={f.stack}>
+        <div className={f.field}>
+          <h1 className={f.heading}>{t("entryTitle")}</h1>
+          <p className={f.muted}>{t("entrySubtitle")}</p>
         </div>
         <InviteEntryForm />
       </div>

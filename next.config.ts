@@ -4,6 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // Lets any module.scss do `@use "mixins";` without relative paths.
+  sassOptions: { loadPaths: ["./src/styles"] },
   experimental: {
     // Every page here is dynamically rendered (reads the session), so the
     // client router cache's default staleTime for dynamic segments (0s)

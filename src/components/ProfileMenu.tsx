@@ -1,81 +1,81 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
-import { ChevronDown, LogOut, Settings, CreditCard } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import type { Role } from "@prisma/client";
+import type { Theme } from "@/lib/theme";
+import s from "./ProfileMenu.module.scss";
 
 export function ProfileMenu({
   name,
   email,
   image,
   role,
+  theme,
 }: {
   name: string | null;
   email: string;
   image: string | null;
   role: Role;
+  theme: Theme;
 }) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Close on any click outside the menu (replaces a full-screen backdrop layer).
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: PointerEvent) {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
 
   const displayName = name || email;
   const initial = displayName.charAt(0).toUpperCase();
   const roleLabel = t(`common.role.${role}`);
 
   return (
-    <div className="relative">
+    <div ref={rootRef} className={s.root}>
       {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-md border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="border-b border-zinc-100 px-3 py-2 dark:border-zinc-800">
-              <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{displayName}</p>
-              <p className="truncate text-xs text-zinc-500 dark:text-zinc-500">{roleLabel}</p>
-            </div>
-            <Link
-              href="/account"
-              onClick={() => setOpen(false)}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            >
-              <Settings className="h-4 w-4" aria-hidden />
-              {t("account.title")}
-            </Link>
-            {role === "TEACHER" && (
-              <Link
-                href="/billing"
-                onClick={() => setOpen(false)}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              >
-                <CreditCard className="h-4 w-4" aria-hidden />
-                {t("billing.title")}
-              </Link>
-            )}
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            >
-              <LogOut className="h-4 w-4" aria-hidden />
-              {t("common.signOut")}
-            </button>
+        <div className={s.menu}>
+          <div className={s.who}>
+            <p className={s.name}>{displayName}</p>
+            <p className={s.role}>{roleLabel}</p>
           </div>
-        </>
+          <Link href="/account" onClick={() => setOpen(false)} className={s.item}>
+            <Settings aria-hidden />
+            {t("account.title")}
+          </Link>
+          <div className={s.setting}>
+            <span>{t("common.language")}</span>
+            <LanguageSwitcher />
+          </div>
+          <div className={s.setting}>
+            <span>{t("account.theme")}</span>
+            <ThemeSwitcher initial={theme} compact />
+          </div>
+          <button onClick={() => signOut({ callbackUrl: "/login" })} className={s.item}>
+            <LogOut aria-hidden />
+            {t("common.signOut")}
+          </button>
+        </div>
       )}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-md py-1.5 pl-1.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-      >
+      <button onClick={() => setOpen((v) => !v)} className={s.trigger}>
         {image ? (
-          <Image src={image} alt="" width={24} height={24} className="rounded-full" />
+          <Image src={image} alt="" width={36} height={36} />
         ) : (
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0f6e56] text-xs font-medium text-white">
-            {initial}
-          </span>
+          <span className={s.initial}>{initial}</span>
         )}
-        <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+        <ChevronDown className={`${s.chevron} ${open ? s.open : ""}`} aria-hidden />
       </button>
     </div>
   );

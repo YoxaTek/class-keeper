@@ -28,7 +28,10 @@
       "STUDENT": "學生"
     },
     "saving": "儲存中…",
-    "language": "語言"
+    "language": "語言",
+    "close": "關閉",
+    "mobileNav": "行動版導覽",
+    "tagline": "為華語課程打造的出席、成績與名單管理工具。"
   },
   "login": {
     "title": "登入",
@@ -55,7 +58,8 @@
     "scanQr": "掃描 QR code 加入課程",
     "scanQrTitle": "掃描 QR code 加入課程",
     "scanQrHelp": "將相機對準老師分享的 QR code。",
-    "scannedBanner": "已掃描代碼——請登入以繼續。"
+    "scannedBanner": "已掃描代碼——請登入以繼續。",
+    "joinCourseBanner": "請登入以加入 {course}。"
   },
   "qrScanner": {
     "uploadQrImage": "改為上傳照片",
@@ -73,7 +77,8 @@
     "haveAccount": "已經有帳號了嗎？",
     "name": "姓名",
     "submit": "建立帳號",
-    "error": "無法建立帳號，請再試一次。"
+    "error": "無法建立帳號，請再試一次。",
+    "joinCourseBanner": "請建立帳號以加入 {course}。"
   },
   "forgotPassword": {
     "title": "忘記密碼？",
@@ -97,7 +102,6 @@
   "dashboard": {
     "title": "課程",
     "subtitle": "本學期 {count} 門課程",
-    "newCourse": "新增",
     "acceptInvite": "接受邀請",
     "acceptInviteTitle": "掃描邀請 QR code",
     "acceptInviteHelp": "將相機對準您收到的邀請或加入 QR code。",
@@ -130,7 +134,57 @@
     "addStudentsPlaceholder": "每行輸入一位學生姓名（選填，之後也可以在「學生」頁籤新增）",
     "editTitle": "編輯課程",
     "institute": "學校／機構",
-    "institutePlaceholder": "例如：林肯高中"
+    "institutePlaceholder": "例如：林肯高中",
+    "createCourse": "建立課程",
+    "welcomeBack": "歡迎回來，{name}",
+    "heroSubtitle": "準備好帶領今天的課程了嗎？",
+    "activeCourses": "{count} 門進行中課程",
+    "enrolledStudents": "{count} 位在籍學生",
+    "teacherFallback": "老師",
+    "enrolledBadge": "{count} 位學生",
+    "classesConducted": "進度：已上 {done}/{total} 堂課",
+    "cohortHealth": "班級概況",
+    "avgShort": "平均",
+    "attendanceShort": "出席",
+    "openWorkspace": "進入課程",
+    "quickActions": "常用快捷操作",
+    "markAttendance": "點名",
+    "markAttendanceHint": "快速完成今日點名",
+    "gradebookEntry": "成績登錄",
+    "gradebookEntryHint": "輸入小考與期中成績",
+    "courseDetails": "課程資料",
+    "courseCode": "課程代碼",
+    "section": "班別／梯次",
+    "binderColor": "課程顏色",
+    "color_terracotta": "陶土紅",
+    "color_teal": "石板青",
+    "color_clay": "黏土色",
+    "color_rust": "深鏽紅",
+    "scheduleTitle": "預定課堂與時間表",
+    "plannedSessions": "課堂總數",
+    "classesUnit": "堂課",
+    "weekdays": "每週上課日",
+    "startTime": "開始時間",
+    "endTime": "結束時間",
+    "room": "教室／場地",
+    "welcomeNew": "歡迎，{name}",
+    "emptySubtitle": "您目前還沒有任何課程，讓我們開始建立吧。",
+    "launchTitle": "準備好開設第一門課程了嗎？",
+    "launchBody": "設定課程與上課時間表，或接受邀請，即可開始記錄出席與成績。",
+    "createFirstCourse": "建立第一門課程",
+    "howItWorks": "四步驟上手 ClassKeeper",
+    "step1Title": "建立課程",
+    "step1Body": "設定學期、安排每週固定上課時間，並訂定成績比重。",
+    "step2Title": "加入學生與助教",
+    "step2Body": "透過課程連結或 QR Code 邀請學生、批次輸入學生姓名，並邀請助教協助管理課程。",
+    "step3Title": "一鍵完成點名",
+    "step3Body": "輕鬆記錄每堂課的出席、缺席或請假。",
+    "quickSetup": "快速設定",
+    "guideMinutes": "4 分鐘導覽",
+    "syncsAcross": "電腦與手機同步",
+    "createFirstCourseShort": "建立第一門課程",
+    "step4Title": "登錄小考與作業",
+    "step4Body": "獨立於每日點名之外，輸入小考、作業、期中考與期末成績。"
   },
   "roster": {
     "title": "學生",
@@ -160,7 +214,7 @@
     "filterPast": "已到來",
     "label": "課堂名稱",
     "covers": "內容",
-  "coversHint": "出席、期中考、期末考可個別開關；小考與作業可在下方新增任意數量。",
+    "coversHint": "出席、期中考、期末考可個別開關；小考與作業可在下方新增任意數量。",
     "attendanceTurnout": "出席率",
     "scoreAverage": "平均分數",
     "attendance": "出席",
@@ -213,7 +267,10 @@
     "narrative": "評語內容",
     "impressionScore": "平時印象分數",
     "attendanceHistory": "出席紀錄",
-    "scoreHistory": "成績紀錄"
+    "scoreHistory": "成績紀錄",
+    "midtermAndFinal": "期中考與期末考",
+    "noScoresYet": "尚無成績紀錄",
+    "noScoresYetHint": "小考與作業成績會從各課堂的點名畫面輸入。"
   },
   "belowPassing": {
     "title": "未達及格",
@@ -231,7 +288,10 @@
     "feedbackSubmit": "送出回饋",
     "feedbackSubmitted": "已於 {date} 送出回饋，謝謝！",
     "noEvaluationYet": "尚未填寫。",
-    "sessionScores": "各堂課成績"
+    "sessionScores": "各堂課成績",
+    "noProfile": "此帳號尚未連結任何學生資料。",
+    "feedbackEdit": "編輯意見回饋",
+    "feedbackUpdate": "更新意見回饋"
   },
   "onboarding": {
     "title": "設定您的帳號",
@@ -272,7 +332,12 @@
     "confirmEmailLabel": "輸入 {email} 以確認",
     "wrongPassword": "密碼錯誤。",
     "deleting": "刪除中…",
-    "error": "無法刪除帳號，請再試一次。"
+    "error": "無法刪除帳號，請再試一次。",
+    "theme": "主題",
+    "theme_system": "跟隨系統",
+    "theme_light": "淺色",
+    "theme_dark": "深色",
+    "feedbackLink": "學生意見回饋"
   },
   "billing": {
     "title": "帳單",
@@ -302,6 +367,30 @@
     "submit": "加入班期",
     "submitting": "加入中…",
     "error": "無法加入此班期，請再試一次。",
-    "alreadyTeaching": "此帳號已經是教師身分，請使用其他帳號以學生身分加入。"
+    "alreadyTeaching": "此帳號已經是教師身分，請使用其他帳號以學生身分加入。",
+    "chineseName": "中文姓名"
+  },
+  "install": {
+    "link": "在手機上安裝 ClassKeeper",
+    "title": "安裝 ClassKeeper",
+    "intro": "將 ClassKeeper 加入手機主畫面，即可像 App 一樣開啟，無需透過應用程式商店。",
+    "iosTitle": "iPhone / iPad（Safari）",
+    "iosNote": "必須使用 Safari，其他 iOS 瀏覽器無法加入主畫面。",
+    "ios1": "在 Safari 中開啟 ClassKeeper 並登入。",
+    "ios2": "點選工具列中的「分享」按鈕（向上箭頭的方形圖示）。",
+    "ios3": "向下捲動，點選「加入主畫面」。",
+    "ios4": "保留名稱「ClassKeeper」，點選「加入」。",
+    "ios5": "從主畫面開啟 ClassKeeper，會像 App 一樣全螢幕執行。",
+    "androidTitle": "Android（Chrome）",
+    "androidNote": "其他瀏覽器（Edge、Samsung Internet、Firefox）也有類似的「新增至主畫面」選項。",
+    "android1": "在 Chrome 中開啟 ClassKeeper 並登入。",
+    "android2": "點選右上角的 ⋮ 選單。",
+    "android3": "點選「安裝應用程式」（若沒看到，請選「新增至主畫面」）。",
+    "android4": "點選「安裝」並確認。",
+    "android5": "從主畫面或應用程式列表開啟 ClassKeeper。"
+  },
+  "feedbackList": {
+    "title": "學生意見回饋",
+    "empty": "目前還沒有學生提交意見回饋。"
   }
 }

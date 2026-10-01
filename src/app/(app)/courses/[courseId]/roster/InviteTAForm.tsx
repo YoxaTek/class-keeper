@@ -6,6 +6,7 @@ import { UserRoundPlus } from "lucide-react";
 import { InviteLinkBox } from "@/components/InviteLinkBox";
 import { Button } from "@/components/ui/Button";
 import { cardClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function InviteTAForm({ courseId }: { courseId: string }) {
   const t = useTranslations();
@@ -33,12 +34,12 @@ export function InviteTAForm({ courseId }: { courseId: string }) {
   }
 
   return (
-    <div className={`${cardClass} space-y-2 p-4`}>
-      <Button type="button" variant="primary" size="sm" onClick={invite} disabled={submitting} className="w-full">
-        <UserRoundPlus className="h-3.5 w-3.5" aria-hidden />
+    <div className={`${cardClass} ${f.panel}`}>
+      <Button type="button" variant="primary" size="sm" onClick={invite} disabled={submitting} className={f.block}>
+        <UserRoundPlus size={14} aria-hidden />
         {t("roster.inviteTA")}
       </Button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
       {token && <InviteLinkBox token={token} showQr />}
     </div>
   );

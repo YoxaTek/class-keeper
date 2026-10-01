@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { inputClass, labelClass } from "@/components/ui/styles";
 import { parseInviteLink, buildInvitesLoginRedirect } from "@/lib/parseInviteLink";
+import f from "@/components/ui/form.module.scss";
+import s from "./QrScanner.module.scss";
 
 // jsQR is only needed once a scan actually starts — keep it out of the
 // initial bundle of every page that merely renders the scan button (login).
@@ -306,7 +308,7 @@ export function QrScannerButton({
     const res = await fetch(`/api/courses/${courseId}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: joinName, chineseName: joinChineseName || undefined, studentId: joinStudentId }),
+      body: JSON.stringify({ name: joinName, chineseName: joinChineseName || undefined, studentId: joinStudentId.trim() }),
     });
 
     if (!res.ok) {
@@ -332,7 +334,7 @@ export function QrScannerButton({
         }}
         className={className}
       >
-        <QrCode className="h-5 w-5" aria-hidden />
+        <QrCode size={20} aria-hidden />
         {triggerLabel}
       </Button>
     );
@@ -346,21 +348,21 @@ export function QrScannerButton({
         reset();
       }}
     >
-      <div className="space-y-3">
+      <div className={f.stackSm}>
         {view.kind === "scan" && (
           <>
-            <div className="mx-auto aspect-square w-full max-w-[min(100%,36dvh)] overflow-hidden rounded-md border border-zinc-200 bg-black dark:border-zinc-800">
-              <video ref={videoRef} muted playsInline className="h-full w-full object-cover" />
+            <div className={s.preview}>
+              <video ref={videoRef} muted playsInline />
             </div>
-            <canvas ref={canvasRef} className="hidden" />
+            <canvas ref={canvasRef} hidden />
 
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileSelected} className="hidden" />
-            <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="w-full">
-              <ImageUp className="h-3.5 w-3.5" aria-hidden />
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileSelected} hidden />
+            <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className={f.block}>
+              <ImageUp size={14} aria-hidden />
               {t("uploadQrImage")}
             </Button>
 
-            <form onSubmit={onPasteSubmit} className="space-y-2">
+            <form onSubmit={onPasteSubmit} className={f.stackXs}>
               <input
                 value={pasted}
                 onChange={(e) => {
@@ -370,42 +372,42 @@ export function QrScannerButton({
                 placeholder={tInvites("entryPlaceholder")}
                 className={inputClass}
               />
-              {pasteError && <p className="text-sm text-red-600 dark:text-red-400">{tInvites("entryError")}</p>}
-              <Button type="submit" variant="secondary" size="sm" className="w-full">
+              {pasteError && <p className={f.error}>{tInvites("entryError")}</p>}
+              <Button type="submit" variant="secondary" size="sm" className={f.block}>
                 {tInvites("entrySubmit")}
               </Button>
             </form>
 
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">{helpText}</p>
+            <p className={f.hint}>{helpText}</p>
           </>
         )}
 
         {view.kind === "loading" && (
-          <p className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-500">{tCommon("loading")}</p>
+          <p className={s.status}>{tCommon("loading")}</p>
         )}
 
         {view.kind === "redirecting" && (
-          <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <CircleCheck className="h-8 w-8 text-[#0f6e56] dark:text-teal-400" aria-hidden />
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">{t("recognized")}</p>
+          <div className={s.recognized}>
+            <CircleCheck size={32} aria-hidden />
+            <p className={f.body}>{t("recognized")}</p>
           </div>
         )}
 
         {view.kind === "invite" && (
           <>
-            <div className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+            <div className={f.infoBox}>
               {tInvites("inviteBanner", { name: view.invite.invitedByName, role: tRole(view.invite.role) })}
               {view.invite.context && (
-                <div className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">{view.invite.context}</div>
+                <div className={f.infoStrong}>{view.invite.context}</div>
               )}
             </div>
-            {actionError && <p className="text-sm text-red-600 dark:text-red-400">{actionError}</p>}
+            {actionError && <p className={f.error}>{actionError}</p>}
             <Button
               type="button"
               variant="primary"
               onClick={() => onAcceptInvite(view.token)}
               disabled={submitting}
-              className="w-full"
+              className={f.block}
             >
               {tInvites("accept")}
             </Button>
@@ -413,12 +415,12 @@ export function QrScannerButton({
         )}
 
         {view.kind === "join" && (
-          <form onSubmit={(e) => onSubmitJoin(e, view.course.id)} className="space-y-3">
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+          <form onSubmit={(e) => onSubmitJoin(e, view.course.id)} className={f.stackSm}>
+            <p className={f.body}>
               {view.course.subject.name} · {view.course.name}
               {view.course.institute && ` · ${view.course.institute}`}
             </p>
-            <div className="space-y-1">
+            <div className={f.field}>
               <label htmlFor="qr-join-name" className={labelClass}>
                 {tJoin("name")}
               </label>
@@ -430,7 +432,7 @@ export function QrScannerButton({
                 className={inputClass}
               />
             </div>
-            <div className="space-y-1">
+            <div className={f.field}>
               <label htmlFor="qr-join-chinese-name" className={labelClass}>
                 {tJoin("chineseName")}
               </label>
@@ -441,7 +443,7 @@ export function QrScannerButton({
                 className={inputClass}
               />
             </div>
-            <div className="space-y-1">
+            <div className={f.field}>
               <label htmlFor="qr-join-student-id" className={labelClass}>
                 {tJoin("studentId")}
               </label>
@@ -453,8 +455,8 @@ export function QrScannerButton({
                 className={inputClass}
               />
             </div>
-            {actionError && <p className="text-sm text-red-600 dark:text-red-400">{actionError}</p>}
-            <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+            {actionError && <p className={f.error}>{actionError}</p>}
+            <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
               {submitting ? tJoin("submitting") : tJoin("submit")}
             </Button>
           </form>
@@ -462,9 +464,9 @@ export function QrScannerButton({
 
         {view.kind === "error" && (
           <>
-            <p className="text-sm text-red-600 dark:text-red-400">{view.message}</p>
-            <Button type="button" variant="secondary" onClick={reset} className="w-full">
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+            <p className={f.error}>{view.message}</p>
+            <Button type="button" variant="secondary" onClick={reset} className={f.block}>
+              <ArrowLeft size={14} aria-hidden />
               {t("scanAgain")}
             </Button>
           </>

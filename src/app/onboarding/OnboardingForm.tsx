@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/styles";
+import f from "@/components/ui/form.module.scss";
 
 export function OnboardingForm({ initialName }: { initialName: string }) {
   const t = useTranslations("onboarding");
@@ -45,17 +46,17 @@ export function OnboardingForm({ initialName }: { initialName: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1">
+    <form onSubmit={onSubmit} className={f.form}>
+      <div className={f.field}>
         <label htmlFor="name" className={labelClass}>
           {t("name")}
         </label>
         <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       </div>
 
-      <div className="space-y-1">
+      <div className={f.field}>
         <label htmlFor="institution" className={labelClass}>
-          {t("institution")} <span className="text-zinc-400 dark:text-zinc-600">({t("optional")})</span>
+          {t("institution")} <span className={f.optional}>({t("optional")})</span>
         </label>
         <input
           id="institution"
@@ -66,9 +67,9 @@ export function OnboardingForm({ initialName }: { initialName: string }) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className={f.error}>{error}</p>}
 
-      <Button type="submit" variant="primary" disabled={submitting} className="w-full">
+      <Button type="submit" variant="primary" disabled={submitting} className={f.block}>
         {t("submit")}
       </Button>
     </form>

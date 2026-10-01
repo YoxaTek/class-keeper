@@ -1,0 +1,26 @@
+// Attendance status colors: text-only (history rows, icons) and solid fills
+// (the compact status buttons on the take-attendance screen).
+.present { color: var(--positive-text); }
+.excused { color: var(--amber); }
+.absent { color: var(--error); }
+.notEnrolled { color: var(--indigo); }
+// Not-enrolled without the extra indigo hue, for screens held to the
+// zinc/teal/red/amber palette.
+.notEnrolledMuted { color: var(--text-label); }
+
+.fillPresent {
+  background: var(--secondary);
+  color: var(--on-accent);
+}
+.fillExcused {
+  background: var(--amber-solid);
+  color: var(--on-amber);
+}
+.fillAbsent {
+  background: var(--error);
+  color: var(--on-accent);
+}
+.fillNotEnrolled {
+  background: var(--fill-neutral);
+  color: var(--on-accent);
+}

@@ -13,6 +13,8 @@ import {
   type PdfFeedback,
   type PdfScore,
 } from "@/components/ClassAttendancePdfTable";
+import { iconButtonClass } from "@/components/ui/styles";
+import s from "./ExportSessionPdfButton.module.scss";
 
 /**
  * Exports one class's roster/attendance sheet straight from the class list —
@@ -66,16 +68,16 @@ export function ExportSessionPdfButton({
         type="button"
         onClick={() => setPrinting(true)}
         title={t("exportPdf")}
-        className="flex items-center gap-1 rounded p-1.5 text-[9.5px] font-bold text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        className={`${iconButtonClass} ${s.trigger}`}
       >
-        <Printer className="h-3.5 w-3.5" aria-hidden />
+        <Printer size={14} aria-hidden />
         {/* "PDF" isn't translated — it's a file-format name, not a phrase,
             same in every locale this app ships. */}
         PDF
       </button>
       {printing &&
         createPortal(
-          <div className="print-portal hidden print:block">
+          <div className={`print-portal ${s.portal}`}>
             <ClassAttendancePdfTable
               title={title}
               session={session}

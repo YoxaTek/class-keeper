@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { AssessmentType, AttendanceStatus, ScoreCategory, Session } from "@prisma/client";
 import { assessmentDisplayLabel } from "@/lib/assessmentLabel";
+import s from "./ClassAttendancePdfTable.module.scss";
 
 export type PdfEnrollment = {
   id: string;
@@ -128,50 +129,43 @@ export function ClassAttendancePdfTable({
         }
       </style>
       <div>
-      <p className="mb-2 text-center text-xl font-bold">{title}</p>
-      {/* table-fixed with every column pinned to a width except 回答狀況,
-          which is meant to be the widest — it absorbs whatever's left over
-          (keeping the table w-full with no blank space on the right)
-          instead of a fixed cap, but still wraps onto multiple lines so a
-          long note doesn't force the fixed columns to shrink. */}
-      <table className="w-full table-fixed border-collapse text-sm">
-        <thead>
-          <tr className="text-center">
-            <th className="w-8 border border-zinc-500 px-2 py-3">#</th>
-            <th className="w-24 border border-zinc-500 px-2 py-3">{t("join.studentId")}</th>
-            <th className="w-32 border border-zinc-500 px-2 py-3">{t("common.name")}</th>
-            <th className="w-20 border border-zinc-500 px-2 py-3">{t("common.chineseName")}</th>
-            <th className="w-28 border border-zinc-500 px-2 py-3">出席狀況</th>
-            {scoreColumns.map((col) => (
-              <th key={col.header} className="w-24 border border-zinc-500 px-2 py-3">
-                {col.header}
-              </th>
-            ))}
-            {session.hasFeedback && <th className="border border-zinc-500 px-2 py-3 text-left">回答狀況</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {enrollments.map((row, i) => (
-            <tr key={row.id} className="text-center">
-              <td className="tabular border border-zinc-500 px-2 py-1">{i + 1}</td>
-              <td className="tabular border border-zinc-500 px-2 py-1">{row.student.studentId || "-"}</td>
-              <td className="border border-zinc-500 px-2 py-1">{row.student.name}</td>
-              <td className="border border-zinc-500 px-2 py-1">{row.student.chineseName || "-"}</td>
-              <td className="border border-zinc-500 px-2 py-1 break-words">{attendanceCell(attendanceByEnrollment.get(row.id))}</td>
+        <p className={s.title}>{title}</p>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th className={s.colNo}>#</th>
+              <th className={s.colId}>{t("join.studentId")}</th>
+              <th className={s.colName}>{t("common.name")}</th>
+              <th className={s.colChinese}>{t("common.chineseName")}</th>
+              <th className={s.colStatus}>出席狀況</th>
               {scoreColumns.map((col) => (
-                <td key={col.header} className="tabular border border-zinc-500 px-2 py-1">
-                  {col.get(row.id)}
-                </td>
+                <th key={col.header} className={s.colScore}>
+                  {col.header}
+                </th>
               ))}
-              {session.hasFeedback && (
-                <td className="whitespace-normal break-words border border-zinc-500 px-2 py-1 text-left">
-                  {feedbackByEnrollment.get(row.id) || "—"}
-                </td>
-              )}
+              {session.hasFeedback && <th className={s.left}>回答狀況</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {enrollments.map((row, i) => (
+              <tr key={row.id}>
+                <td className="tabular">{i + 1}</td>
+                <td className="tabular">{row.student.studentId || "-"}</td>
+                <td>{row.student.name}</td>
+                <td>{row.student.chineseName || "-"}</td>
+                <td className={s.wrap}>{attendanceCell(attendanceByEnrollment.get(row.id))}</td>
+                {scoreColumns.map((col) => (
+                  <td key={col.header} className="tabular">
+                    {col.get(row.id)}
+                  </td>
+                ))}
+                {session.hasFeedback && (
+                  <td className={`${s.wrap} ${s.left}`}>{feedbackByEnrollment.get(row.id) || "—"}</td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );
