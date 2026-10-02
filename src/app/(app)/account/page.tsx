@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CreditCard, MessageSquareText, Smartphone } from "lucide-react";
 import { getCurrentUser } from "@/lib/currentUser";
+import { InstallLink } from "@/components/InstallLink";
 import { QrScannerButton } from "@/components/QrScanner";
 import { SignOutButton } from "@/components/SignOutButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -75,13 +76,10 @@ export default async function AccountPage() {
         </Link>
       )}
 
-      <Link
-        href="/install"
-        className={`${s.row} ${s.link}`}
-      >
+      <InstallLink className={`${s.row} ${s.link}`}>
         <Smartphone size={16} aria-hidden />
         {tInstall("link")}
-      </Link>
+      </InstallLink>
 
       <QrScannerButton
         triggerLabel={t("haveInvite")}

@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
 import { getLocale, getMessages } from "next-intl/server";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { InstallProvider } from "@/components/InstallProvider";
 import { AuthSessionProvider } from "@/components/AuthSessionProvider";
 import { GoogleAdSense } from "@/components/GoogleAdSense";
 import { THEME_COOKIE, isTheme, themeAttribute } from "@/lib/theme";
@@ -55,7 +56,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         style={{ fontFamily: "var(--font-jakarta), var(--font-noto-sans-tc), -apple-system, sans-serif" }}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthSessionProvider>{children}</AuthSessionProvider>
+          <AuthSessionProvider>
+            <InstallProvider>{children}</InstallProvider>
+          </AuthSessionProvider>
         </NextIntlClientProvider>
         <ServiceWorkerRegister />
         <GoogleAdSense />

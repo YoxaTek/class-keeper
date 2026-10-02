@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { InstallLink } from "@/components/InstallLink";
 import { ProviderSignInButtons } from "@/components/ProviderSignInButtons";
 import { QrScannerButton } from "@/components/QrScanner";
 import { Button } from "@/components/ui/Button";
@@ -139,9 +140,7 @@ export function LoginForm({
       </p>
 
       <p className={f.muted}>
-        <Link href="/install" className={linkClass}>
-          {tInstall("link")}
-        </Link>
+        <InstallLink className={linkClass}>{tInstall("link")}</InstallLink>
       </p>
 
       {!hideQrScan && (

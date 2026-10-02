@@ -114,49 +114,42 @@
   }
 }
 
-// The tap hint: a pulsing dot with a pointing hand beside it. The grid
-// cell already starts inside the figure's padding, so the margins (set from
-// the step's marker position) line up with the image; the dot is centred on
-// that point.
+// The tap hint: a see-through ring that pulses outwards, so the text under
+// it stays readable. The grid cell already starts inside the figure's
+// padding, so the margins (set from the step's marker position) line up with
+// the image; the ring is centred on that point.
 .marker {
   z-index: 1;
   display: grid;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 2rem;
+  height: 2rem;
   align-self: start;
   justify-self: start;
   translate: -50% -50%;
+  pointer-events: none;
 
   > * {
     grid-area: 1 / 1;
   }
 }
 
-.ping {
+.ring {
+  border: 2px solid var(--accent);
   border-radius: 9999px;
-  background: var(--accent);
-  animation: ping 1.6s ease-out infinite;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  animation: ring 1.6s ease-out infinite;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
 }
 
-.hand {
-  align-self: start;
-  justify-self: start;
-  margin: 0.45rem 0 0 0.55rem;
-  font-size: 1.75rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
-}
-
-@keyframes ping {
+@keyframes ring {
   0% {
     box-shadow: 0 0 0 0 var(--accent-border-hover);
   }
   100% {
-    box-shadow: 0 0 0 1.25rem transparent;
+    box-shadow: 0 0 0 1rem transparent;
   }
 }
 

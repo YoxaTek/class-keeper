@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthShell } from "@/components/AuthShell";
 import { linkClass } from "@/components/ui/styles";
 import f from "@/components/ui/form.module.scss";
-import { InstallGuide } from "./InstallGuide";
+import { InstallGuide } from "@/components/InstallGuide";
 
 export default async function InstallPage() {
   const tCommon = await getTranslations("common");
