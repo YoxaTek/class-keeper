@@ -1,0 +1,75 @@
+@use "mixins";
+
+.banner {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  padding: 0.5rem 0.75rem;
+
+  // Phones only: desktop browsers don't "add to home screen".
+  @include mixins.sm {
+    display: none;
+  }
+
+  @include mixins.print {
+    display: none;
+  }
+}
+
+.close {
+  flex-shrink: 0;
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  color: var(--text-muted);
+
+  &:hover {
+    background: var(--bg-muted);
+    color: var(--text);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+}
+
+.text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+
+  strong {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-muted);
+  }
+}
+
+.install {
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: var(--on-accent);
+
+  &:hover {
+    background: var(--accent-hover);
+  }
+}

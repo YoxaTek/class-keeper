@@ -9,6 +9,7 @@ import type { Theme } from "@/lib/theme";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { AdSlot } from "@/components/AdSlot";
+import { InstallBanner } from "@/components/InstallBanner";
 import { BackButton } from "@/components/BackButton";
 import { MobileFooterNav } from "@/components/MobileFooterNav";
 import s from "./AppShell.module.scss";
@@ -35,6 +36,7 @@ export function AppShell({
 
   return (
     <div className={s.shell}>
+      <InstallBanner />
       <header className={s.header}>
         <div className={s.headerStart}>
           {/* Back appears everywhere except the two "home" screens. It is always

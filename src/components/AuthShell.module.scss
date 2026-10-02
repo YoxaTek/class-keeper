@@ -1,8 +1,14 @@
 @use "mixins";
 
-.shell {
+.root {
   display: flex;
   min-height: 100dvh;
+  flex-direction: column;
+}
+
+.shell {
+  display: flex;
+  flex: 1;
 }
 
 .brand {

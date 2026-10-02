@@ -1,59 +1,167 @@
 .guide {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
 }
 
-.guideTitle {
+// iPhone | Android segmented switch.
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg-muted);
+  padding: 0.25rem;
+}
+
+.tab {
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: background-color 0.15s, color 0.15s;
+
+  &.active {
+    background: var(--bg-surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
-.note {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--text-muted);
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  h2 {
+    font-size: 1.125rem;
+    line-height: 1.625rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  p {
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+    color: var(--accent-text);
+  }
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.5rem;
 }
 
 .step {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  background: var(--bg-field);
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: var(--text-body);
 }
 
-.icon {
+.stepHead {
   display: flex;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex-shrink: 0;
   align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  gap: 0.625rem;
 
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
+  h3 {
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
   }
 }
 
-.number {
-  font-weight: 600;
-  color: var(--text);
+.pill {
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: var(--accent-soft);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+
+// A screenshot in a rounded card. The tap marker shares the figure's single
+// grid cell with the image and is nudged into place with margins — no
+// absolute positioning.
+.shot {
+  display: grid;
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background: var(--bg-subtle);
+  padding: 0.5rem;
+  overflow: hidden;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+  }
+
+  // Tall phone screenshots would fill the screen: keep them phone-sized and centred.
+  &.portrait {
+    width: min(100%, 15rem);
+    margin-inline: auto;
+  }
+}
+
+// The tap hint: a pulsing dot with a pointing hand beside it. The grid
+// cell already starts inside the figure's padding, so the margins (set from
+// the step's marker position) line up with the image; the dot is centred on
+// that point.
+.marker {
+  z-index: 1;
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-self: start;
+  justify-self: start;
+  translate: -50% -50%;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.ping {
+  border-radius: 9999px;
+  background: var(--accent);
+  animation: ping 1.6s ease-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.hand {
+  align-self: start;
+  justify-self: start;
+  margin: 0.45rem 0 0 0.55rem;
+  font-size: 1.75rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+}
+
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-border-hover);
+  }
+  100% {
+    box-shadow: 0 0 0 1.25rem transparent;
+  }
+}
+
+.note {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: var(--text-muted);
 }

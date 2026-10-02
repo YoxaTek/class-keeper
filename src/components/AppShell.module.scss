@@ -19,7 +19,11 @@
   justify-content: space-between;
   border-bottom: 1px solid var(--border);
   background: var(--bg-surface);
-  padding: 0 1rem;
+  padding: 0 0.5rem; // tight on phones; the avatar and back buttons already have their own padding
+
+  @include mixins.sm {
+    padding: 0 1rem;
+  }
 
   @include mixins.print {
     display: none;
