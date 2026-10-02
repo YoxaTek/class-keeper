@@ -62,6 +62,19 @@
   gap: 0.75rem;
 }
 
+.shotWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.caption {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  color: var(--text-label);
+}
+
 .stepHead {
   display: flex;
   align-items: center;
@@ -130,6 +143,12 @@
 
   > * {
     grid-area: 1 / 1;
+  }
+
+  // Wider, to ring a switch rather than a button.
+  &.wide {
+    width: 4.5rem;
+    height: 2.75rem;
   }
 }
 

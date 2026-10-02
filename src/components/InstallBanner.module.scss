@@ -19,18 +19,6 @@
   }
 }
 
-.close {
-  flex-shrink: 0;
-  border-radius: 0.375rem;
-  padding: 0.25rem;
-  color: var(--text-muted);
-
-  &:hover {
-    background: var(--bg-muted);
-    color: var(--text);
-  }
-}
-
 .icon {
   flex-shrink: 0;
   border-radius: 0.625rem;
